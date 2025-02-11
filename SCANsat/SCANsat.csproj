@@ -1,113 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{3AE13948-477D-4375-8AB4-B45664966D9E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>SCANsat</RootNamespace>
     <AssemblyName>SCANsat</AssemblyName>
-    <ReleaseVersion>1.0.8.0</ReleaseVersion>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
+    <TargetFramework>net4.8</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <additionalargs>-debug:full</additionalargs>
-    <DefineConstants>DEBUG;ENABLE_PROFILER</DefineConstants>
-    <DebugSymbols>true</DebugSymbols>
-    <NoStdLib>true</NoStdLib>
-    <DebugType>portable</DebugType>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <DebugType>none</DebugType>
-    <NoStdLib>true</NoStdLib>
-    <DefineConstants>
-    </DefineConstants>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <Import Project="$(SolutionDir)KSPBuildTools\KSPCommon.props" />
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SCANconfigLoader.cs" />
-    <Compile Include="SCAN_Color_Config.cs" />
-    <Compile Include="SCAN_Data\SCANanomaly.cs" />
-    <Compile Include="SCAN_Data\SCANdata.cs" />
-    <Compile Include="SCAN_Data\SCANexperimentType.cs" />
-    <Compile Include="SCAN_Data\SCANROC.cs" />
-    <Compile Include="SCAN_Palettes\SCANPalette.cs" />
-    <Compile Include="SCAN_Palettes\SCANPaletteGroup.cs" />
-    <Compile Include="SCAN_Palettes\SCANPaletteKind.cs" />
-    <Compile Include="SCAN_Palettes\SCANPaletteType.cs" />
-    <Compile Include="SCAN_Data\SCANresourceBody.cs" />
-    <Compile Include="SCAN_Data\SCANresourceGlobal.cs" />
-    <Compile Include="SCAN_Data\SCANterrainConfig.cs" />
-    <Compile Include="SCAN_Data\SCANtype.cs" />
-    <Compile Include="SCAN_Data\SCANwaypoint.cs" />
-    <Compile Include="SCAN_Map\SCANmap.cs" />
-    <Compile Include="SCAN_Map\SCANmapExporter.cs" />
-    <Compile Include="SCAN_Map\SCANmapLegend.cs" />
-    <Compile Include="SCAN_Map\SCANmapProjection.cs" />
-    <Compile Include="SCAN_Map\SCANmapType.cs" />
-    <Compile Include="SCAN_Palette_Config.cs" />
-    <Compile Include="SCAN_PartModules\SCANexperiment.cs" />
-    <Compile Include="SCAN_PartModules\SCANresourceDisplay.cs" />
-    <Compile Include="SCAN_PartModules\SCANresourceScanner.cs" />
-    <Compile Include="SCAN_PartModules\SCANRPMStorage.cs" />
-    <Compile Include="SCAN_PartModules\SCANsat.cs" />
-    <Compile Include="SCAN_Platform\Extensions\Colors\UnityEngine.Color_.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="SCAN_Platform\Extensions\ConfigNodes\ConfigExtensions.cs" />
-    <Compile Include="SCAN_Platform\Extensions\Math\UnityEngine.Mathf_.cs" />
-    <Compile Include="SCAN_Platform\Extensions\MJExtensions.cs" />
-    <Compile Include="SCAN_Platform\Extensions\StringExtensions.cs" />
-    <Compile Include="SCAN_Platform\Logging.cs" />
-    <Compile Include="SCAN_Palettes\ColorBrewer.cs" />
-    <Compile Include="SCAN_Palettes\Include\Original.cs" />
-    <Compile Include="SCAN_Palettes\FixedColorPalettes.cs" />
-    <Compile Include="SCAN_Platform\SCAN_CLZF2.cs" />
-    <Compile Include="SCAN_Platform\SCAN_ConfigNodeStorage.cs" />
-    <Compile Include="SCAN_Platform\SCAN_MBE.cs" />
-    <Compile Include="SCAN_Settings_Config.cs" />
-    <Compile Include="SCAN_Toolbar\SCANappLauncher.cs" />
-    <Compile Include="SCAN_Toolbar\SCANtoolbar.cs" />
-    <Compile Include="SCAN_Toolbar\SCANtoolbarwrapper.cs" />
-    <Compile Include="SCAN_UI\UI_Framework\SCANEdgeDetect.cs" />
-    <Compile Include="SCAN_UI\UI_Framework\SCANremoteView.cs" />
-    <Compile Include="SCANcontroller.cs" />
-    <Compile Include="SCAN_UI\UI_Framework\SCANicon.cs" />
-    <Compile Include="SCAN_UI\UI_Framework\SCANcolorUtil.cs" />
-    <Compile Include="SCANquickload.cs" />
-    <Compile Include="SCANreflection.cs" />
-    <Compile Include="SCAN_UI\SCANsatRPM.cs" />
-    <Compile Include="SCANutil.cs" />
-    <Compile Include="SCANmainMenuLoader.cs" />
-    <Compile Include="SCAN_UI\UI_Framework\SCANStringBuilderCache.cs" />
-    <Compile Include="SCAN_UI\UI_Framework\SCANuiUtil.cs" />
-    <Compile Include="SCAN_Unity\SCAN_TextMeshPro.cs" />
-    <Compile Include="SCAN_Unity\SCAN_TMP_InputField.cs" />
-    <Compile Include="SCAN_Unity\SCAN_UI_BigMap.cs" />
-    <Compile Include="SCAN_Unity\SCAN_UI_Color.cs" />
-    <Compile Include="SCAN_Unity\SCAN_UI_Instruments.cs" />
-    <Compile Include="SCAN_Unity\SCAN_UI_Loader.cs" />
-    <Compile Include="SCAN_Unity\SCAN_UI_MainMap.cs" />
-    <Compile Include="SCAN_Unity\SCAN_UI_Overlay.cs" />
-    <Compile Include="SCAN_Unity\SCAN_UI_Settings.cs" />
-    <Compile Include="SCAN_Unity\SCAN_UI_ZoomMap.cs" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SCANsat.Unity\SCANsat.Unity.csproj">
       <Project>{4ed5e40d-273a-4643-9009-04c1dd02f3e2}</Project>
@@ -115,5 +12,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <PackageReference Include="KSPBuildTools" Version="0.0.3-alpha.2" />
+  </ItemGroup>
 </Project>
