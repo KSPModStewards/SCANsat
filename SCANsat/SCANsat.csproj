@@ -5,6 +5,15 @@
     <AssemblyName>SCANsat</AssemblyName>
     <TargetFramework>net4.8</TargetFramework>
   </PropertyGroup>
+  <PropertyGroup>
+    <GenerateKSPAssemblyAttribute>true</GenerateKSPAssemblyAttribute>
+  </PropertyGroup>
+  <ItemGroup>
+    <KSPVersionFile Include="$(RepoRootPath)GameData/SCANsat/SCANsat.version">
+      <Destination>$(RepoRootPath)GameData/SCANsat/SCANsat.version</Destination>
+      <KSP_Version_Min>1.12.3</KSP_Version_Min>
+    </KSPVersionFile>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SCANsat.Unity\SCANsat.Unity.csproj">
       <Project>{4ed5e40d-273a-4643-9009-04c1dd02f3e2}</Project>

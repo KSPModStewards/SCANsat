@@ -2,5 +2,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <BinariesOutputRelativePath>GameData\SCANsat\Plugins</BinariesOutputRelativePath>
+    <GenerateKSPAssemblyVersionAttribute>true</GenerateKSPAssemblyVersionAttribute>
+    <GenerateKSPAssemblyDependencyAttributes>true</GenerateKSPAssemblyDependencyAttributes>
   </PropertyGroup>
+  <Import Project="SCANsat.version.props"/>
 </Project>

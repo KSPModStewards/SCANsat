@@ -5,7 +5,7 @@ VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SCANsat", "SCANsat\SCANsat.csproj", "{3AE13948-477D-4375-8AB4-B45664966D9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCANmechjeb", "SCANmechjeb\SCANmechjeb.csproj", "{A2B942AF-3AB2-4A9F-9211-FFC47364128D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SCANmechjeb", "SCANmechjeb\SCANmechjeb.csproj", "{A2B942AF-3AB2-4A9F-9211-FFC47364128D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SCANsat.Unity", "SCANsat.Unity\SCANsat.Unity.csproj", "{4ED5E40D-273A-4643-9009-04C1DD02F3E2}"
 EndProject
@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 		SCANsat.props = SCANsat.props
 		SCANsat.props.user = SCANsat.props.user
+		GameData\SCANsat\SCANsat.version = GameData\SCANsat\SCANsat.version
 	EndProjectSection
 EndProject
 Global

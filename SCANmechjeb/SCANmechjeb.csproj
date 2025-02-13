@@ -6,6 +6,9 @@
     <AssemblyName>SCANmechjeb</AssemblyName>
     <TargetFramework>net4.8</TargetFramework>
   </PropertyGroup>
+  <PropertyGroup>
+    <GenerateKSPAssemblyAttribute>true</GenerateKSPAssemblyAttribute>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="MechJeb2">
       <HintPath>$(KSPRoot)/GameData/MechJeb2/Plugins/MechJeb2.dll</HintPath>
