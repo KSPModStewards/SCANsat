@@ -1416,34 +1416,46 @@ namespace SCANsat
 
             if (!readableScaledSpaceMaps.ContainsKey(b) || readableScaledSpaceMaps[b] == null)
             {
-                if (scaledMesh.material.shader.name == "Terrain/Gas Giant")
+                if (scaledMesh.sharedMaterial.shader.name == "Terrain/Gas Giant")
                 {
-                    if (scaledMesh.material.HasProperty("_DetailCloudPatternTexture"))
-                        readableScaledSpaceMaps.Add(b, readableTexture(scaledMesh.material.GetTexture("_DetailCloudPatternTexture"), scaledMesh.material, true));
+                    if (scaledMesh.sharedMaterial.HasProperty("_DetailCloudPatternTexture"))
+                        readableScaledSpaceMaps.Add(b, readableTexture(scaledMesh.sharedMaterial.GetTexture("_DetailCloudPatternTexture"), scaledMesh.sharedMaterial, true));
                 }
-                //else if (scaledMesh.material.shader.name == "Emissive Multi Ramp Sunspots")
+                //else if (scaledMesh.sharedMaterial.shader.name == "Emissive Multi Ramp Sunspots")
                 //{
-                //    if (scaledMesh.material.HasProperty("_MainTex"))
-                //        readableScaledSpaceMaps.Add(b, readableTexture(scaledMesh.material.GetTexture("_MainTex"), scaledMesh.material, true));
+                //    if (scaledMesh.sharedMaterial.HasProperty("_MainTex"))
+                //        readableScaledSpaceMaps.Add(b, readableTexture(scaledMesh.sharedMaterial.GetTexture("_MainTex"), scaledMesh.sharedMaterial, true));
                 //}
                 else
                 {
-                    if (scaledMesh.material.HasProperty("_MainTex"))
-                        readableScaledSpaceMaps.Add(b, readableTexture(scaledMesh.material.GetTexture("_MainTex"), scaledMesh.material, true));
+                    if (scaledMesh.sharedMaterial.HasProperty("_MainTex"))
+                    {
+                        readableScaledSpaceMaps.Add(b, readableTexture(scaledMesh.sharedMaterial.GetTexture("_MainTex"), scaledMesh.sharedMaterial, true));
+                    }
+                    else if (scaledMesh.sharedMaterial.HasProperty("_ColorMap"))
+                    {
+                        readableScaledSpaceMaps.Add(b, readableTexture(scaledMesh.sharedMaterial.GetTexture("_ColorMap"), scaledMesh.sharedMaterial, true));
+                    }
                 }
             }
 
             if (!readableScaledSpaceNormalMaps.ContainsKey(b) || readableScaledSpaceNormalMaps[b] == null)
             {
-                if (scaledMesh.material.shader.name == "Terrain/Gas Giant")
+                if (scaledMesh.sharedMaterial.shader.name == "Terrain/Gas Giant")
                 {
-                    if (scaledMesh.material.HasProperty("_NormalMap"))
-                        readableScaledSpaceNormalMaps.Add(b, readableTexture(scaledMesh.material.GetTexture("_NormalMap"), scaledMesh.material, false));
+                    if (scaledMesh.sharedMaterial.HasProperty("_NormalMap"))
+                        readableScaledSpaceNormalMaps.Add(b, readableTexture(scaledMesh.sharedMaterial.GetTexture("_NormalMap"), scaledMesh.sharedMaterial, false));
                 }
                 else
                 {
-                    if (scaledMesh.material.HasProperty("_BumpMap"))
-                        readableScaledSpaceNormalMaps.Add(b, readableTexture(scaledMesh.material.GetTexture("_BumpMap"), scaledMesh.material, false));
+                    if (scaledMesh.sharedMaterial.HasProperty("_BumpMap"))
+                    {
+                        readableScaledSpaceNormalMaps.Add(b, readableTexture(scaledMesh.sharedMaterial.GetTexture("_BumpMap"), scaledMesh.sharedMaterial, false));
+                    }
+                    else if (scaledMesh.sharedMaterial.HasProperty("_NormalMap"))
+                    {
+                        readableScaledSpaceNormalMaps.Add(b, readableTexture(scaledMesh.sharedMaterial.GetTexture("_NormalMap"), scaledMesh.sharedMaterial, false));
+                    }
                 }
             }
 
