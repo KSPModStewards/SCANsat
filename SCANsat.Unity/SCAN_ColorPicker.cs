@@ -22,9 +22,9 @@ namespace SCANsat.Unity
 	public class SCAN_ColorPicker : MonoBehaviour
 	{
 		[SerializeField]
-		private ColorImage m_ColorOne = null;
+		private HSVPicker.UI.ColorImage m_ColorOne = null;
 		[SerializeField]
-		private ColorImage m_ColorTwo = null;
+		private HSVPicker.UI.ColorImage m_ColorTwo = null;
 		[SerializeField]
 		private Image m_OldColorOne = null;
 		[SerializeField]

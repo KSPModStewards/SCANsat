@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System;
 using SCANsat.Unity.HSVPicker.Enum;
 
@@ -9,7 +8,7 @@ namespace SCANsat.Unity.HSVPicker.UI
 	public class ColorLabel : MonoBehaviour
 	{
 		public ColorPicker picker;
-		public ColorValues type;
+		public Enum.ColorValues type;
 
 		private TextHandler label;
 
@@ -59,7 +58,7 @@ namespace SCANsat.Unity.HSVPicker.UI
 				float valueThree = 0;
 
 
-				if (type == ColorValues.R)
+				if (type == Enum.ColorValues.R)
 				{
 					valueOne = picker.GetValue(ColorValues.R) * 255;
 					valueTwo = picker.GetValue(ColorValues.G) * 255;
@@ -67,7 +66,7 @@ namespace SCANsat.Unity.HSVPicker.UI
 
 					label.OnTextUpdate.Invoke(string.Format("{0:N0},{1:N0},{2:N0}", Mathf.FloorToInt(valueOne), Mathf.FloorToInt(valueTwo), Mathf.FloorToInt(valueThree)));
 				}
-				else if (type == ColorValues.Hue)
+				else if (type == Enum.ColorValues.Hue)
 				{
 					valueOne = picker.GetValue(ColorValues.Hue) * 360;
 					valueTwo = picker.GetValue(ColorValues.Saturation) * 255;
@@ -75,7 +74,7 @@ namespace SCANsat.Unity.HSVPicker.UI
 
 					label.OnTextUpdate.Invoke(string.Format("{0:N0},{1:N0},{2:N0}", Mathf.FloorToInt(valueOne), Mathf.FloorToInt(valueTwo), Mathf.FloorToInt(valueThree)));
 				}
-				else if (type == ColorValues.Hex)
+				else if (type == Enum.ColorValues.Hex)
 				{
 					valueOne = picker.GetValue(ColorValues.R) * 255;
 					valueTwo = picker.GetValue(ColorValues.G) * 255;

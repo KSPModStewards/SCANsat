@@ -1,5 +1,9 @@
+.vs
+*.user
+bin
+obj
 
-SCANsat.Unity/SCANsat.Unity.csproj
-.vs/SCANsat/v16/.suo
-.vs/SCANsat/v16/.suo
-SCANsat.Unity/SCANsat.Unity.csproj
+GameData/SCANsat/Plugins/*.dll
+GameData/SCANsat/Plugins/*.pdb
+GameData/SCANsat/PluginData
+GameData/MechJeb2

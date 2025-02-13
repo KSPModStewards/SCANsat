@@ -98,6 +98,8 @@ namespace SCANsat.SCAN_Toolbar
 				removeButton(HighLogic.LoadedScene);
 
 			GameEvents.OnGameSettingsApplied.Remove(settingsApplied);
+
+			instance = null;
 		}
 
 		private void settingsApplied()
