@@ -5,6 +5,8 @@
 - Adopted by KSPModStewards organization
 - Fixed a memory leak in the applauncher code
 - Replace usages of Mesh.material in favor of Mesh.sharedMaterial, fixing a comptibility issue with Parallax Continued
+- Fixed some .cfg syntax errors in localization files
+- Merged some localization pull requests
 
 ## 20.4 - 2020-9-9
 
