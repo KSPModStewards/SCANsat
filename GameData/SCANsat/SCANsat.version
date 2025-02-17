@@ -7,7 +7,7 @@
     "REPOSITORY": "SCANsat",
     "ALLOW_PRE_RELEASE": false
   },
-  "VERSION": "1.20.4.0",
+  "VERSION": "20.4.0.0",
   "KSP_VERSION": "1.12",
   "KSP_VERSION_MIN": "1.12.3",
   "KSP_VERSION_MAX": "'1.12'"
