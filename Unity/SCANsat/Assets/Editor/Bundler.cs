@@ -9,7 +9,7 @@ public class Bundler
     static void BuildAllAssetBundles()
     {
 		BuildTarget[] platforms = { BuildTarget.StandaloneWindows
-									  , BuildTarget.StandaloneOSXUniversal
+									  , BuildTarget.StandaloneOSX
 									  , BuildTarget.StandaloneLinux };
 
 		string[] platformExts = { "-windows", "-macosx", "-linux" };
