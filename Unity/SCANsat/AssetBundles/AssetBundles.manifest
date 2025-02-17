@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 484482127
+CRC: 3813315843
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -15,4 +15,23 @@ AssetBundleManifest:
       Dependencies: {}
     Info_3:
       Name: scan_icons
+      Dependencies: {}
+    Info_4:
+      Name: scan_images
+      Dependencies: {}
+    Info_5:
+      Name: scansat_prefabs
+      Dependencies: {}
+    Info_6:
+      Name: scan_ghost
+      Dependencies: {}
+    Info_7:
+      Name: unity_ghost
+      Dependencies: {}
+    Info_8:
+      Name: scansat_core
+      Dependencies:
+        Dependency_0: squadcore
+    Info_9:
+      Name: squadcore
       Dependencies: {}

@@ -1,0 +1,17 @@
+ManifestFileVersion: 0
+CRC: 2271371924
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 2d4e75c4b91703abb749c2f153201fa7
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 5ad585dd02dfb5016c0dad519eab8f49
+HashAppended: 0
+ClassTypes:
+- Class: 49
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/XML/unity_ghost_bundle.xml
+Dependencies: []

@@ -1,18 +1,19 @@
 ManifestFileVersion: 0
-CRC: 294036308
+CRC: 3803738546
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 2c634b667505b45b481a1295b1d019fa
+    Hash: 586cc3be5d691283c8c58b985a6ff2f9
   TypeTreeHash:
     serializedVersion: 2
-    Hash: ce474e4a8b2e728b767e51cbbce77a69
+    Hash: 2c8988ac2083246e0cc7e34c05a709a4
 HashAppended: 0
 ClassTypes:
 - Class: 48
   Script: {instanceID: 0}
 - Class: 49
   Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Shaders/GrayscaleEffect.shader
 - Assets/Shaders/EdgeDetectX.shader

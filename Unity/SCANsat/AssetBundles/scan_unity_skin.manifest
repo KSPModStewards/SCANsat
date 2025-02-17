@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1679698617
+CRC: 93138977
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: c5981005448ba6d808b66c60eefbe654
+    Hash: a1dfd489fb7b42a91a23109d2e0b506d
   TypeTreeHash:
     serializedVersion: 2
-    Hash: fccb50b60b19417926df6e17eaf38a1b
+    Hash: 7579feb4afd6aab513e2576ee96e6b63
 HashAppended: 0
 ClassTypes:
 - Class: 28
@@ -15,6 +15,7 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 213
   Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Builtin skin/Sources/window.png
 - Assets/Builtin skin/Sources/button hover.png

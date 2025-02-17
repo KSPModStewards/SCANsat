@@ -1,0 +1,44 @@
+ManifestFileVersion: 0
+CRC: 3395988777
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: a9cc2278336b816119bd5e9150381f4e
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 24e4188fe4e4eb280bf8a24ddc4be5ea
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/SquadCore/KSPedia/Backgrounds/BackgroundWhite.png
+- Assets/SquadCore/Shaders/ParticleAlpha.shader
+- Assets/SquadCore/Shaders/EmissiveSpecular.shader
+- Assets/SquadCore/KSPedia/Backgrounds/BackgroundKSC.png
+- Assets/SquadCore/KSPedia/Backgrounds/BackgroundBlue.png
+- Assets/SquadCore/Shaders/CutoffBumped.shader
+- Assets/SquadCore/Shaders/SpecularBumpTransparent.shader
+- Assets/SquadCore/Shaders/Bumped.shader
+- Assets/SquadCore/Shaders/Emissive.shader
+- Assets/SquadCore/Shaders/Unlit.shader
+- Assets/SquadCore/Shaders/BumpedSpecular.shader
+- Assets/SquadCore/Shaders/Cutoff.shader
+- Assets/SquadCore/Shaders/SpecularTransparent.shader
+- Assets/SquadCore/Shaders/EmissiveBumpedSpecular.shader
+- Assets/SquadCore/Shaders/AlphaSpecular.shader
+- Assets/SquadCore/Shaders/Diffuse.shader
+- Assets/SquadCore/Shaders/Alpha.shader
+- Assets/SquadCore/Shaders/Specular.shader
+- Assets/SquadCore/KSPedia/Backgrounds/BackgroundBlueGrid.png
+- Assets/SquadCore/KSPedia/Backgrounds/BackgroundBlack.png
+- Assets/SquadCore/Shaders/KSPParticle AddSmooth.shader
+- Assets/SquadCore/Shaders/UnlitTransparent.shader
+- Assets/SquadCore/Shaders/SolidColorAlpha.shader
+- Assets/SquadCore/Shaders/ParticleAdd.shader
+Dependencies: []

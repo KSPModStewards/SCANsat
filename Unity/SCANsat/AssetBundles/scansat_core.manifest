@@ -1,0 +1,61 @@
+ManifestFileVersion: 0
+CRC: 2781241595
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 1fca94afde80bcbb5d96f88c8b175d55
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 53f759746f62b8e65fcde498a892c0b5
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+- Class: 114
+  Script: {fileID: 138879376, guid: 7f5bed1f9aa762b41942b1832536a846, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 128
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+- Class: 222
+  Script: {instanceID: 0}
+- Class: 224
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/KSPedia/Prefabs/SCANsat_Main_Map.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Colors_Terrain.prefab
+- Assets/KSPedia/Prefabs/SCANsat_ResourceMap.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Colors_Slope.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Basic.prefab
+- Assets/KSPedia/Prefabs/SCANsat_VisualMap.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Colors_Biome.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Colors_Resources.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Advanced.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Header.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Resources.prefab
+- Assets/KSPedia/Prefabs/SCANsat_AltimetryMap.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Intro.prefab
+- Assets/KSPedia/Prefabs/SCANsat_MultiMap.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Features.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Big_Map.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Resource_Settings.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Zoom_Map.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Resource_Overlay.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Resource_Tools.prefab
+- Assets/KSPedia/Prefabs/SCANsat_Colors.prefab
+- Assets/KSPedia/Prefabs/SCANsat_RPM.prefab
+Dependencies:
+- C:/Users/Jon/source/KSP-owned/SCANsat/Unity/SCANsat/AssetBundles/squadcore

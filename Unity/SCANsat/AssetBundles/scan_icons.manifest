@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2222263696
+CRC: 1850338300
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: ee25149c565f5467488a7b483f2c0436
+    Hash: 77780a48f9affd10d32b015c15988b01
   TypeTreeHash:
     serializedVersion: 2
-    Hash: eac84a435714e08b766dd74a3eef26c4
+    Hash: 3e27792bc06649de5b37c5ec0b1b5477
 HashAppended: 0
 ClassTypes:
 - Class: 28
@@ -17,10 +17,13 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 687078895
   Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Images/MysteryIcon.png
 - Assets/Images/AnomalyIcon.png
+- Assets/Images/SCAN_TargetIcon.png
 - Assets/Images/ManeuverMarker.png
+- Assets/Images/DeployedScienceIcon.png
 - Assets/Images/ExitMarker.png
 - Assets/Images/RoverIcon.png
 - Assets/Images/EVAIcon.png
@@ -28,6 +31,7 @@ Assets:
 - Assets/Images/SCANsat_AppLauncherSmall_Icon.png
 - Assets/Images/PodIcon.png
 - Assets/Images/PlaneIcon.png
+- Assets/Images/UI_Sprite.spriteatlas
 - Assets/Images/DNMarker.png
 - Assets/Images/AnomalyIconOutline.png
 - Assets/Images/AsteroidIcon.png
