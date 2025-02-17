@@ -12,10 +12,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D5F65BE9-5112-4289-8255-0588FFB67BEA}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		CHANGELOG.md = CHANGELOG.md
 		README.md = README.md
 		SCANsat.props = SCANsat.props
 		SCANsat.props.user = SCANsat.props.user
 		GameData\SCANsat\SCANsat.version = GameData\SCANsat\SCANsat.version
+		SCANsat.version.props = SCANsat.version.props
 	EndProjectSection
 EndProject
 Global
