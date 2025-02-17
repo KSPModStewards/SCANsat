@@ -1,1 +1,1 @@
-﻿KSPAssets ReadMe v1
+﻿KSPAssets ReadMe v1.1
