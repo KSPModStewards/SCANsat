@@ -34,10 +34,7 @@ namespace SCANsat.SCAN_Unity
 		private const string prefabAssetName = "scan_prefabs.scan";
 		private const string unitySkinAssetName = "scan_unity_skin.scan";
 		private const string iconAssetName = "scan_icons.scan";
-		private const string shadersAssetName = "scan_shaders";
-		private const string winShaderName = "-windows.scan";
-		private const string linuxShaderName = "-linux.scan";
-		private const string macShaderName = "-macosx.scan";
+		private const string shadersAssetName = "scan_shaders.scan";
 
 		private static bool loaded;
 		private static bool skinLoaded;
@@ -381,18 +378,7 @@ namespace SCANsat.SCAN_Unity
 
 		private static void loadShaders()
 		{
-			string shaderPath;
-
-			if (Application.platform == RuntimePlatform.WindowsPlayer && SystemInfo.graphicsDeviceVersion.StartsWith("OpenGL"))
-				shaderPath = shadersAssetName + linuxShaderName;
-			else if (Application.platform == RuntimePlatform.WindowsPlayer)
-				shaderPath = shadersAssetName + winShaderName;
-			else if (Application.platform == RuntimePlatform.LinuxPlayer)
-				shaderPath = shadersAssetName + linuxShaderName;
-			else
-				shaderPath = shadersAssetName + macShaderName;
-
-			AssetBundle shaders = AssetBundle.LoadFromFile(path + shaderPath);
+			AssetBundle shaders = AssetBundle.LoadFromFile(path + shadersAssetName);
 
 			if (shaders == null)
 				return;
@@ -410,7 +396,7 @@ namespace SCANsat.SCAN_Unity
                     _edgeDetectShader = s;
 			}
 
-			SCANUtil.SCANlog("Shader asset bundle loaded; using platform bundle: {0}", shaderPath);
+			SCANUtil.SCANlog("Shader asset bundle loaded; using platform bundle: {0}", shadersAssetName);
 
 			//shaders.Unload(false);
 
