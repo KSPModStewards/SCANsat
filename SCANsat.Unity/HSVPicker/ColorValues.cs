@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace SCANsat.Unity.HSVPicker.Enum
+namespace SCANsat.Unity.HSVPicker
 {
 	public enum ColorValues
 	{

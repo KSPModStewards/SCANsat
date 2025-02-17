@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using SCANsat.Unity.HSVPicker.Enum;
 using SCANsat.Unity.HSVPicker.Utility;
 
 namespace SCANsat.Unity.HSVPicker.UI
