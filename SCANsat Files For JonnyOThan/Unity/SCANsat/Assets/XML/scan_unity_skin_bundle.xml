@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KSPBundleDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" UrlName="scan_unity_skin" Name="scan_unity_skin" CreatedTime="-8587130464918481571">
+  <Author />
+  <Info />
+  <Assets>
+    <Asset Name="box" Path="Assets/Builtin skin/Sources/box.png" Type="Texture2D" Url="Builtin skin/Sources/box" AutoLoad="false" />
+    <Asset Name="button hover" Path="Assets/Builtin skin/Sources/button hover.png" Type="Texture2D" Url="Builtin skin/Sources/button hover" AutoLoad="false" />
+    <Asset Name="button on" Path="Assets/Builtin skin/Sources/button on.png" Type="Texture2D" Url="Builtin skin/Sources/button on" AutoLoad="false" />
+    <Asset Name="button" Path="Assets/Builtin skin/Sources/button.png" Type="Texture2D" Url="Builtin skin/Sources/button" AutoLoad="false" />
+    <Asset Name="horizontal scrollbar thumb" Path="Assets/Builtin skin/Sources/horizontal scrollbar thumb.png" Type="Texture2D" Url="Builtin skin/Sources/horizontal scrollbar thumb" AutoLoad="false" />
+    <Asset Name="horizontal scrollbar" Path="Assets/Builtin skin/Sources/horizontal scrollbar.png" Type="Texture2D" Url="Builtin skin/Sources/horizontal scrollbar" AutoLoad="false" />
+    <Asset Name="horizontalslider" Path="Assets/Builtin skin/Sources/horizontalslider.png" Type="Texture2D" Url="Builtin skin/Sources/horizontalslider" AutoLoad="false" />
+    <Asset Name="slider thumb active" Path="Assets/Builtin skin/Sources/slider thumb active.png" Type="Texture2D" Url="Builtin skin/Sources/slider thumb active" AutoLoad="false" />
+    <Asset Name="slider thumb" Path="Assets/Builtin skin/Sources/slider thumb.png" Type="Texture2D" Url="Builtin skin/Sources/slider thumb" AutoLoad="false" />
+    <Asset Name="slidert humb hover" Path="Assets/Builtin skin/Sources/slidert humb hover.png" Type="Texture2D" Url="Builtin skin/Sources/slidert humb hover" AutoLoad="false" />
+    <Asset Name="textfield hover" Path="Assets/Builtin skin/Sources/textfield hover.png" Type="Texture2D" Url="Builtin skin/Sources/textfield hover" AutoLoad="false" />
+    <Asset Name="textfield on" Path="Assets/Builtin skin/Sources/textfield on.png" Type="Texture2D" Url="Builtin skin/Sources/textfield on" AutoLoad="false" />
+    <Asset Name="textfield" Path="Assets/Builtin skin/Sources/textfield.png" Type="Texture2D" Url="Builtin skin/Sources/textfield" AutoLoad="false" />
+    <Asset Name="toggle active_border" Path="Assets/Builtin skin/Sources/toggle active_border.png" Type="Texture2D" Url="Builtin skin/Sources/toggle active_border" AutoLoad="false" />
+    <Asset Name="toggle_border" Path="Assets/Builtin skin/Sources/toggle_border.png" Type="Texture2D" Url="Builtin skin/Sources/toggle_border" AutoLoad="false" />
+    <Asset Name="tooltip" Path="Assets/Builtin skin/Sources/tooltip.png" Type="Texture2D" Url="Builtin skin/Sources/tooltip" AutoLoad="false" />
+    <Asset Name="vertical scrollbar thumb" Path="Assets/Builtin skin/Sources/vertical scrollbar thumb.png" Type="Texture2D" Url="Builtin skin/Sources/vertical scrollbar thumb" AutoLoad="false" />
+    <Asset Name="vertical scrollbar" Path="Assets/Builtin skin/Sources/vertical scrollbar.png" Type="Texture2D" Url="Builtin skin/Sources/vertical scrollbar" AutoLoad="false" />
+    <Asset Name="verticalslider" Path="Assets/Builtin skin/Sources/verticalslider.png" Type="Texture2D" Url="Builtin skin/Sources/verticalslider" AutoLoad="false" />
+    <Asset Name="window" Path="Assets/Builtin skin/Sources/window.png" Type="Texture2D" Url="Builtin skin/Sources/window" AutoLoad="false" />
+    <Asset Name="SCAN_Toggle_Border" Path="Assets/Images/SCAN_Toggle_Border.png" Type="Texture2D" Url="Images/SCAN_Toggle_Border" AutoLoad="false" />
+    <Asset Name="SCAN_Toggle_Hover_Border" Path="Assets/Images/SCAN_Toggle_Hover_Border.png" Type="Texture2D" Url="Images/SCAN_Toggle_Hover_Border" AutoLoad="false" />
+    <Asset Name="SCAN_Toggle_On_Hover_Border" Path="Assets/Images/SCAN_Toggle_On_Hover_Border.png" Type="Texture2D" Url="Images/SCAN_Toggle_On_Hover_Border" AutoLoad="false" />
+  </Assets>
+  <Dependencies />
+</KSPBundleDefinition>

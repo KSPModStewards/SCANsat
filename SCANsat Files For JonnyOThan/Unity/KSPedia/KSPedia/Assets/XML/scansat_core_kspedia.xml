@@ -1,0 +1,934 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KSPedia xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="scansat_core" CreatedTime="-8586027458703733726">
+  <Categories>
+    <Category Name="scansat">
+      <Title>SCANsat</Title>
+      <TitleScreen>SCANsat_Header</TitleScreen>
+      <Screens />
+      <Subcategories>
+        <Subcategory Name="intro">
+          <Title>SCANsat Introduction</Title>
+          <TitleScreen>SCANsat_Intro</TitleScreen>
+          <Screens>
+            <Screen>SCANsat_Basic</Screen>
+            <Screen>SCANsat_Advanced</Screen>
+            <Screen>SCANsat_Features</Screen>
+          </Screens>
+          <Subcategories />
+        </Subcategory>
+        <Subcategory Name="maps">
+          <Title>SCANsat Maps</Title>
+          <TitleScreen>SCANsat_Main_Map</TitleScreen>
+          <Screens>
+            <Screen>SCANsat_Big_Map</Screen>
+            <Screen>SCANsat_Zoom_Map</Screen>
+            <Screen>SCANsat_RPM</Screen>
+          </Screens>
+          <Subcategories />
+        </Subcategory>
+        <Subcategory Name="scanners">
+          <Title>SCANsat Scanners</Title>
+          <TitleScreen>SCANsat_AltimetryMap</TitleScreen>
+          <Screens>
+            <Screen>SCANsat_MultiMap</Screen>
+            <Screen>SCANsat_VisualMap</Screen>
+            <Screen>SCANsat_ResourceMap</Screen>
+          </Screens>
+          <Subcategories />
+        </Subcategory>
+        <Subcategory Name="resources">
+          <Title>SCANsat Resource Scanning</Title>
+          <TitleScreen>SCANsat_Resources</TitleScreen>
+          <Screens>
+            <Screen>SCANsat_Resource_Tools</Screen>
+            <Screen>SCANsat_Resource_Overlay</Screen>
+            <Screen>SCANsat_Resource_Settings</Screen>
+          </Screens>
+          <Subcategories />
+        </Subcategory>
+        <Subcategory Name="color">
+          <Title>SCANsat Color Management</Title>
+          <TitleScreen>SCANsat_Colors</TitleScreen>
+          <Screens>
+            <Screen>SCANsat_Colors_Terrain</Screen>
+            <Screen>SCANsat_Colors_Biome</Screen>
+            <Screen>SCANsat_Colors_Slope</Screen>
+            <Screen>SCANsat_Colors_Resources</Screen>
+          </Screens>
+          <Subcategories />
+        </Subcategory>
+      </Subcategories>
+    </Category>
+  </Categories>
+  <Screens>
+    <Screen Name="SCANsat_Zoom_Map">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Zoom_Map.prefab</AssetPath>
+      <Title>Zoom Map</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>SCANsat Zoom Map</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>The SCANsat zoom map allows for focusing on a specific area, showing greater detail. It uses an orthographic (spherical) map projection to minimize distortion near its center.</Text>
+        </Text>
+        <Text Name="Target Text">
+          <Text>Shows contract and custom waypoints. Create new waypoints with the button. *</Text>
+        </Text>
+        <Text Name="Readout">
+          <Text>Information about the area under the current mouse position.</Text>
+        </Text>
+        <Text Name="Toggles">
+          <Text>Various map overlay toggles.</Text>
+        </Text>
+        <Text Name="Anomaly">
+          <Text>Surface anomalies.</Text>
+        </Text>
+        <Text Name="Zoom Buttons">
+          <Text>Zoom in and out buttons.</Text>
+        </Text>
+        <Text Name="Map Selection">
+          <Text>Select different map types.</Text>
+        </Text>
+        <Text Name="Vessel Sync">
+          <Text>Sync the map to the current vessel location.</Text>
+        </Text>
+        <Text Name="Vessel Lock">
+          <Text>Lock the map to the current vessel location.</Text>
+        </Text>
+        <Text Name="Refresh">
+          <Text>Redraw the current map.</Text>
+        </Text>
+        <Text Name="Move Buttons">
+          <Text>Shift the map center.</Text>
+        </Text>
+        <Text Name="Window State">
+          <Text>Toggle between three different window sizes.</Text>
+        </Text>
+        <Text Name="Resource Selection">
+          <Text>Select resource for overlay.</Text>
+        </Text>
+        <Text Name="Resize">
+          <Text>Drag this handle to resize the map.</Text>
+        </Text>
+        <Text Name="MechJeb note">
+          <Text>* Note:</Text>
+        </Text>
+        <Text Name="MechJeb note/Note Text">
+          <Text>When MechJeb is installed the waypoint button can be used to set the landing guidance site.</Text>
+        </Text>
+        <Text Name="Compact caption">
+          <Text>Compact window states.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_VisualMap">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_VisualMap.prefab</AssetPath>
+      <Title>Visual Scans</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>Recon Scanners</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>Generate high-resolution visual maps and anomaly data.</Text>
+        </Text>
+        <Text Name="Ikonos">
+          <Text>VS-1 High Resolution Imager</Text>
+        </Text>
+        <Text Name="Ikonos/Ikonos Text">
+          <Text>No anomaly data.</Text>
+        </Text>
+        <Text Name="Worldview">
+          <Text>VS-3 Advanced High Resolution Imager</Text>
+        </Text>
+        <Text Name="Worldview/Abi Text">
+          <Text>Generate low-resolution visual and resource maps, and biome data.</Text>
+        </Text>
+        <Text Name="KH11">
+          <Text>VS-11 Classified Reconnaissance Imager</Text>
+        </Text>
+        <Text Name="KH11/Msi Text">
+          <Text>Generate low-resolution visual and resource maps, and biome data.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_RPM">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_RPM.prefab</AssetPath>
+      <Title>Raster Prop Monitor</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>Raster Prop Monitor
+</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>SCANsat includes support for IVA panel displays when using Raster Prop Monitor. *</Text>
+        </Text>
+        <Text Name="Zoom Out">
+          <Text>Zoom Out</Text>
+        </Text>
+        <Text Name="Zoom In">
+          <Text>Zoom In</Text>
+        </Text>
+        <Text Name="Map Mode">
+          <Text>Switch Map Mode</Text>
+        </Text>
+        <Text Name="Color">
+          <Text>Toggle Color</Text>
+        </Text>
+        <Text Name="Orbit Lines">
+          <Text>Toggle Orbit Lines</Text>
+        </Text>
+        <Text Name="Waypoints Anomalies">
+          <Text>Toggle Waypoint and Anomaly Icons</Text>
+        </Text>
+        <Text Name="Toggle Resource">
+          <Text>Toggle Resource Overlay</Text>
+        </Text>
+        <Text Name="Next Resource">
+          <Text>Next Resource</Text>
+        </Text>
+        <Text Name="Prev Resource">
+          <Text>Previous Resource</Text>
+        </Text>
+        <Text Name="RPM note">
+          <Text>* Note:</Text>
+        </Text>
+        <Text Name="RPM note/Note Text">
+          <Text>Raster Prop Monitor by Mihara and MOARdV.</Text>
+        </Text>
+        <Text Name="Toggle">
+          <Text>Toggle Map</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Resources">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Resources.prefab</AssetPath>
+      <Title>SCANsat Resources</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>SCANsat Resource Scanning</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>Want to supplement stock resource scanning, enhance it, or go beyond it? SCANsat has you covered.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_ResourceMap">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_ResourceMap.prefab</AssetPath>
+      <Title>Resource Scans</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>Resource Scanners</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>Generate high-resolution resource maps.</Text>
+        </Text>
+        <Text Name="Crism">
+          <Text>SCAN-R Resource Mapper</Text>
+        </Text>
+        <Text Name="Crism/Ikonos Text">
+          <Text>No anomaly data.</Text>
+        </Text>
+        <Text Name="Mise">
+          <Text>SCAN-R2 Advanced Resource Mapper</Text>
+        </Text>
+        <Text Name="Mise/Abi Text">
+          <Text>Generate low-resolution visual and resource maps, and biome data.</Text>
+        </Text>
+        <Text Name="Hyperion">
+          <Text>SCAN-RX Hyperspectral Resource Mapper</Text>
+        </Text>
+        <Text Name="Hyperion/Msi Text">
+          <Text>Generate low-resolution visual and resource maps, and biome data.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Resource_Tools">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Resource_Tools.prefab</AssetPath>
+      <Title>Resource Tools</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>SCANsat Resource Tools</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>SCANsat features a number of tools that can help to discover resource deposits and pinpoint the ideal location for your mining facility.</Text>
+        </Text>
+        <Text Name="Map Text">
+          <Text>The SCANsat big map features a resource selection button and a resource overlay toggle; mouse over the map to display the resource concentration at any location. Use these functions to find the best deposits.</Text>
+        </Text>
+        <Text Name="Instruments Text">
+          <Text>Use the instrument data window to see resource concentrations at your vessel’s current location.</Text>
+        </Text>
+        <Text Name="Zoom Text">
+          <Text>Use the zoom map for the most accurate data and to pinpoint a landing target.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Resource_Settings">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Resource_Settings.prefab</AssetPath>
+      <Title>Resource Settings</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>SCANsat Resource Scanning Settings</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>Adjust the resource scanning options to your likings. *</Text>
+        </Text>
+        <Text Name="MM note">
+          <Text>* Note:</Text>
+        </Text>
+        <Text Name="MM note/Note Text">
+          <Text>Module Manager is required for SCANsat resource scanning.</Text>
+        </Text>
+        <Text Name="Instant Scan">
+          <Text>Instant Scan:</Text>
+        </Text>
+        <Text Name="Instant Scan/Instant Scan Text">
+          <Text>Update all SCANsat resource databases when a stock resource scan is completed. Only visible when Stock Scanning is enabled.</Text>
+        </Text>
+        <Text Name="Biome Lock">
+          <Text>Biome Lock:</Text>
+        </Text>
+        <Text Name="Biome Lock/Biome Lock Text">
+          <Text>Bypass the requirement for ground-truthing surface scans.</Text>
+        </Text>
+        <Text Name="Disable Stock">
+          <Text>Disable Stock Scanning:</Text>
+        </Text>
+        <Text Name="Disable Stock/Disable Stock Text">
+          <Text>Completely disable all stock resource scanning functions; SCANsat features replacements for these.</Text>
+        </Text>
+        <Text Name="Narrow Band">
+          <Text>Narrow-Band Scanner:</Text>
+        </Text>
+        <Text Name="Narrow Band/Narrow Band Text">
+          <Text>Full resource abundance accuracy requires a Narrow-Band Scanner to be in an orbit that passes over a given area.</Text>
+        </Text>
+        <Text Name="Stock Threshold">
+          <Text>Stock Scanning Threshold:</Text>
+        </Text>
+        <Text Name="Stock Threshold/Stock Threshold Text">
+          <Text>Upon reaching the specified threshold of scanning with the M700 scanner, a stock resource scan will be performed (no science is awarded for this scan).</Text>
+        </Text>
+        <Text Name="Overlay Tooltips">
+          <Text>Overlay Tooltips:</Text>
+        </Text>
+        <Text Name="Overlay Tooltips/Overlay Tooltips Text">
+          <Text>Tooltips when the mouse is over the planet in map view.</Text>
+        </Text>
+        <Text Name="Resource Interpolation">
+          <Text>Interpolation:</Text>
+        </Text>
+        <Text Name="Resource Interpolation/Resource Interpolation Text">
+          <Text>Adjust the level of interpolation for resource maps; affects map accuracy.</Text>
+        </Text>
+        <Text Name="Resource Height">
+          <Text>Resource Map Height:</Text>
+        </Text>
+        <Text Name="Resource Height/Resource Height Text">
+          <Text>Adjust the size of the resource map; affects quality and accuracy.</Text>
+        </Text>
+        <Text Name="Biome Height">
+          <Text>Biome Map Height:</Text>
+        </Text>
+        <Text Name="Biome Height/Biome Height Text">
+          <Text>Adjust the size of the biome map.</Text>
+        </Text>
+        <Text Name="Coverage Transparency">
+          <Text>Coverage Transparency:</Text>
+        </Text>
+        <Text Name="Coverage Transparency/Coverage Transparency Text">
+          <Text>Adjust the transparency of the resource map for areas below the cutoff threshold.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Resource_Overlay">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Resource_Overlay.prefab</AssetPath>
+      <Title>Resource Overlay</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>SCANsat Planetary Overlay</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>SCANsat provides a complete planetary overlay system. It can be used to display resource deposits, and standard SCANsat terrain and biome data.</Text>
+        </Text>
+        <Text Name="Overlay Window">
+          <Text>Use the Overlay Control window to select the different map overlays.</Text>
+        </Text>
+        <Text Name="Tooltips">
+          <Text>Tooltips provide information about the location under the mouse cursor while an overlay is active.</Text>
+        </Text>
+        <Text Name="Overlay Toggle">
+          <Text>Toggle overlay maps.</Text>
+        </Text>
+        <Text Name="Refresh Overlay">
+          <Text>Refresh current map.</Text>
+        </Text>
+        <Text Name="Overlay Selection">
+          <Text>Available map overlay types.</Text>
+        </Text>
+        <Text Name="Resource Settings">
+          <Text>Open resource scanning and overlay options settings page.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_MultiMap">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_MultiMap.prefab</AssetPath>
+      <Title>Multispectral Scans</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>Multispectral Scanners</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>Generate low-resolution visual and resource maps, and biome data.</Text>
+        </Text>
+        <Text Name="Modis">
+          <Text>MS-1 Multispectral
+Scanner</Text>
+        </Text>
+        <Text Name="Modis/Modis Text">
+          <Text>No resource data.</Text>
+        </Text>
+        <Text Name="Abi">
+          <Text>MS-R Enhanced
+Multispectral Scanner</Text>
+        </Text>
+        <Text Name="Abi/Abi Text">
+          <Text>Generate low-resolution visual and resource maps, and biome data.</Text>
+        </Text>
+        <Text Name="Msi">
+          <Text>MS-2A Advanced
+Multispectral Scanner</Text>
+        </Text>
+        <Text Name="Msi/Msi Text">
+          <Text>Generate low-resolution visual and resource maps, and biome data.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Main_Map">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Main_Map.prefab</AssetPath>
+      <Title>Main Map</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>SCANsat Main Map</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>The SCANsat main map provides an overview of scanning operations for the current celestial body. It also serves as a gateway to all of the other SCANsat windows.</Text>
+        </Text>
+        <Text Name="Terminator">
+          <Text>Toggle the day/night map overlay.</Text>
+        </Text>
+        <Text Name="Color">
+          <Text>Toggle map color.</Text>
+        </Text>
+        <Text Name="Type">
+          <Text>Toggle between altimetry and biome maps.</Text>
+        </Text>
+        <Text Name="Minimize">
+          <Text>Minimize the vessel info section at the bottom.</Text>
+        </Text>
+        <Text Name="Map">
+          <Text>The map continuously updates and shows the current position of all active SCANsat vessels.</Text>
+        </Text>
+        <Text Name="Windows Buttons">
+          <Text>Open and close different SCANsat windows.</Text>
+        </Text>
+        <Text Name="Current Vessel">
+          <Text>Shows information about the current vessel, even if it does not have a SCANsat sensor.</Text>
+        </Text>
+        <Text Name="Vessel Button">
+          <Text>Double click on any vessel to switch to that vessel.</Text>
+        </Text>
+        <Text Name="Vessel Info">
+          <Text>Shows information about all vessels with active SCANsat sensors orbiting the current celestial body.</Text>
+        </Text>
+        <Text Name="Scanning Percentage">
+          <Text>The scanning completion percentage for all active sensors onboard the vessel.</Text>
+        </Text>
+        <Text Name="Scanning Status">
+          <Text>Scanning status indicators for different sensor types.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Intro">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Intro.prefab</AssetPath>
+      <Title>SCANsat Introduction</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>Introduction to SCANsat</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>What are some of the things we can do with SCANsat?</Text>
+        </Text>
+        <Text Name="More">
+          <Text>And much, much more</Text>
+        </Text>
+        <Text Name="More/Much_More">
+          <Text>Scan for resources, locate ideal landing areas, collect science, track contract waypoints, export map images, discover mysterious anomalies, and more.</Text>
+        </Text>
+        <Text Name="Scanners">
+          <Text>Scan The Surface</Text>
+        </Text>
+        <Text Name="Scanners/Parts">
+          <Text>SCANsat provides several intruments; these are used to map out a planet or moon's surface terrain, biomes, resources, and visual surface.</Text>
+        </Text>
+        <Text Name="Build_Maps">
+          <Text>Build Maps</Text>
+        </Text>
+        <Text Name="Build_Maps/Maps">
+          <Text>Maps can be generated using data from SCANsat instruments; all of which can be collected while the scanning vessels are unloaded.</Text>
+        </Text>
+        <Text Name="Localization">
+          <Text>Localization Support</Text>
+        </Text>
+        <Text Name="Localization/Translations">
+          <Text>SCANsat supports locization for most of its text with translations by:
+Deltathiago98 - Spanish
+Ser and RarogCmex - Russian
+Summerfirefly - Chinese
+h0yer - German
+Orlando - Portuguese
+don-vip - French</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Header">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Header.prefab</AssetPath>
+      <Title>SCANsat</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>SCANsat</Text>
+        </Text>
+        <Text Name="Header/Subhead">
+          <Text>Scientific Committee On Advanced Navigation	</Text>
+        </Text>
+        <Text Name="Byline">
+          <Text>SCANsat By:</Text>
+        </Text>
+        <Text Name="Byline/Authors">
+          <Text>damny(thatfool)
+technogeeky
+DMagic</Text>
+        </Text>
+        <Text Name="SubByline">
+          <Text>Contributors:</Text>
+        </Text>
+        <Text Name="SubByline/Contributors">
+          <Text>Nertea (Parts)
+Mihara (RPM)
+severedSolo (Contracts)
+Milkshakefiend (Legacy Parts)</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Features">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Features.prefab</AssetPath>
+      <Title>Features</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>Other Features
+</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>SCANsat includes many features related to mapping, navigation, and more.</Text>
+        </Text>
+        <Text Name="Study Anomalies">
+          <Text>Anomalies:</Text>
+        </Text>
+        <Text Name="Study Anomalies/Anomalies Text">
+          <Text>Gather detailed information about anomalies with the BTDT scanner after scanning with a high-resolution visual scanner or other orbital anomaly scanner.</Text>
+        </Text>
+        <Text Name="Anomaly Icon">
+          <Text>Anomaly position is indicated by the circle of the question mark.</Text>
+        </Text>
+        <Text Name="Icons">
+          <Text>Toggle anomaly, surface feature, waypoint, and flag icons.</Text>
+        </Text>
+        <Text Name="Info">
+          <Text>Instruments window data readouts; these are dependent on scanning coverage.</Text>
+        </Text>
+        <Text Name="Resource Buttons">
+          <Text>Toggle between different resources if more than one is installed.</Text>
+        </Text>
+        <Text Name="Anomaly Info">
+          <Text>Anomaly and Breaking Ground Surface features window and information.</Text>
+        </Text>
+        <Text Name="BTDT">
+          <Text>Been There, Done That Scanner (BTDT®)</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Colors_Terrain">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Colors_Terrain.prefab</AssetPath>
+      <Title>Terrain Colors</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>Terrain Color Options</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>Choose from various terrain color palettes and adjust numerous settings for each celestial body.</Text>
+        </Text>
+        <Text Name="Color Palettes">
+          <Text>Color Palettes:</Text>
+        </Text>
+        <Text Name="Color Palettes/Color Palettes Text">
+          <Text>Choose from a number of different terrain color palettes; use the drop-down menu to switch between four palette types.</Text>
+        </Text>
+        <Text Name="Terrain Settings">
+          <Text>Terrain Settings:</Text>
+        </Text>
+        <Text Name="Terrain Settings/Terrain Settings Text">
+          <Text>Adjust the minimum and maximum terrain altitude values; these are used to set the end points for the chosen color palette. Most values with a slider can be adjusted using the text input field on the left.</Text>
+        </Text>
+        <Text Name="Clamp Terrain">
+          <Text>Terrain Clamp:</Text>
+        </Text>
+        <Text Name="Clamp Terrain/Clamp Terrain Text">
+          <Text>The Clamp Terrain value is used to separate the chosen palette into two regions; below this altitude only the first two colors of the palette will be used. This is particularly useful on ocean planets.</Text>
+        </Text>
+        <Text Name="Palette Options">
+          <Text>Palette Options:</Text>
+        </Text>
+        <Text Name="Palette Options/Palette Options Text">
+          <Text>Further modify the selected color palette using the various options available.</Text>
+        </Text>
+        <Text Name="Config Save">
+          <Text>Save To Config:</Text>
+        </Text>
+        <Text Name="Config Save/Config Save Text">
+          <Text>From this page, or the resource color page, use the Save Values To Config button to store all selections in a separate file located in the SCANsat/Resources folder. These values will be used as defaults and for any new save files.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Colors_Slope">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Colors_Slope.prefab</AssetPath>
+      <Title>Slope Colors</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>Slope Color Options</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>Adjust slope colors and cutoff values to your likings.</Text>
+        </Text>
+        <Text Name="Slope Color">
+          <Text>Slope Colors:</Text>
+        </Text>
+        <Text Name="Slope Color/Slope Color Text">
+          <Text>SCANsat slope maps use two pairs of colors to display terrain slope. One pair for areas with relatively low slope angles, and another for high slope angles. *</Text>
+        </Text>
+        <Text Name="Slope Cuttoff">
+          <Text>Slope Cutoff:</Text>
+        </Text>
+        <Text Name="Slope Cuttoff/Slope Cuttoff Text">
+          <Text>Adjust the slope cutoff value to alter the slope level where SCANsat switches between the two color pairs; this is particularly useful when using the zoom map.</Text>
+        </Text>
+        <Text Name="Slope color pair note">
+          <Text>* Note:</Text>
+        </Text>
+        <Text Name="Slope color pair note/Note Text">
+          <Text>It is generally best to choose the same color for the middle two color values.</Text>
+        </Text>
+        <Text Name="Slope Zoom Caption">
+          <Text>Demonstrating the difference between a slope cutoff value of 1 on top, and 0.3 on the bottom.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Colors_Resources">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Colors_Resources.prefab</AssetPath>
+      <Title>Resource Colors</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>Resource Color Options</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>Adjust resource color and cutoff values for each planetary resource.</Text>
+        </Text>
+        <Text Name="Resource Color">
+          <Text>Resource Colors:</Text>
+        </Text>
+        <Text Name="Resource Color/Resource Color Text">
+          <Text>SCANsat resource maps use two colors to represent each resource; varying resource concentrations interpolate between these two colors.</Text>
+        </Text>
+        <Text Name="Cutoffs">
+          <Text>Resource Concentration Cutoff Values:</Text>
+        </Text>
+        <Text Name="Cutoffs/Cutoffs Text">
+          <Text>Resources with concentrations below the Min Cutoff will not be displayed; anything above the Max Cutoff will be displayed using the High Color.</Text>
+        </Text>
+        <Text Name="Transparency">
+          <Text>Resource Overlay Transparency:</Text>
+        </Text>
+        <Text Name="Transparency/Transparency Text">
+          <Text>Change the transparency value to adjust how much of the underlying SCANsat map is visible below the resource overlay.</Text>
+        </Text>
+        <Text Name="Apply">
+          <Text>Apply Current Values:</Text>
+        </Text>
+        <Text Name="Apply/Apply Text">
+          <Text>Resource cutoff values are saved separately for each celestial body. Apply values to only the current selection or to all celestial bodies. </Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Colors_Biome">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Colors_Biome.prefab</AssetPath>
+      <Title>Biome Colors</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>Biome Color Options</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>Adjust biome color values or switch to using stock biome map colors.</Text>
+        </Text>
+        <Text Name="Color Picker">
+          <Text>Color Picker:</Text>
+        </Text>
+        <Text Name="Color Picker/Color Picker Text">
+          <Text>Use the HSV color picker on this and other pages to select a new color. Switch between Low and High color selection using the toggle buttons along the bottom. Adjust the hue using the slider along the right. The new selection will be shown above the existing color. RGB color can be manually selected using the text input fields on the left; both 0-1 and 0-255 ranges can be used.</Text>
+        </Text>
+        <Text Name="Biome Options">
+          <Text>Biome Options:</Text>
+        </Text>
+        <Text Name="Biome Options/Biome Options Text">
+          <Text>Switch to using the bright stock biome map colors, toggle the white border between biomes and adjust the level of transparency for the terrain shading drawn below the biome map.</Text>
+        </Text>
+        <Text Name="Biome Colors">
+          <Text>Biome Colors:</Text>
+        </Text>
+        <Text Name="Biome Colors/Biome Colors Text">
+          <Text>SCANsat biome maps assign each biome a color by interpolating between two color end-points. Adjust these end-points using the color picker to generate different color biome maps.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Colors">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Colors.prefab</AssetPath>
+      <Title>SCANsat Color Management</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>SCANsat Color Management</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>SCANsat allows for numerous adjustments to the colors used for all of the included map types; all controlled through the Color Management Page of the Settings Window.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Big_Map">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Big_Map.prefab</AssetPath>
+      <Title>Big Map</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>SCANsat Big Map</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>The SCANsat big map shows celestial bodies in greater detail, offers multiple different map types, can be re-sized, and features several map overlays along with other functions.</Text>
+        </Text>
+        <Text Name="Readout">
+          <Text>Information about the area under the current mouse position.</Text>
+        </Text>
+        <Text Name="Window Buttons">
+          <Text>Open and close different SCANsat windows.</Text>
+        </Text>
+        <Text Name="Toggles">
+          <Text>Various map overlay toggles.</Text>
+        </Text>
+        <Text Name="Map Selection">
+          <Text>Select different map types.</Text>
+        </Text>
+        <Text Name="Projection Selection">
+          <Text>Select different map projections.</Text>
+        </Text>
+        <Text Name="Refresh">
+          <Text>Refresh the map.</Text>
+        </Text>
+        <Text Name="Celestial Body Selection">
+          <Text>Select different celestial bodies.</Text>
+        </Text>
+        <Text Name="Resource Selection">
+          <Text>Select resource for overlay.</Text>
+        </Text>
+        <Text Name="Map Export">
+          <Text>Export the current map to the SCANsat/PluginData folder.</Text>
+        </Text>
+        <Text Name="Resize">
+          <Text>Drag this handle to resize the map.</Text>
+        </Text>
+        <Text Name="Target Text">
+          <Text>Create new waypoints. *</Text>
+        </Text>
+        <Text Name="Waypoint Bar">
+          <Text>Enter custom waypoint names.</Text>
+        </Text>
+        <Text Name="MechJeb note">
+          <Text>* Note:</Text>
+        </Text>
+        <Text Name="MechJeb note/Note Text">
+          <Text>When MechJeb is installed the waypoint button can be used to set the landing guidance site.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Basic">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Basic.prefab</AssetPath>
+      <Title>Basic Scanning</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>Basic Scanning</Text>
+        </Text>
+        <Text Name="Header/SubHead">
+          <Text>How to start scanning, find the right orbit, and build maps. </Text>
+        </Text>
+        <Text Name="Indicators">
+          <Text>Scanning Indicators:</Text>
+        </Text>
+        <Text Name="Indicators/Indicator_sub">
+          <Text>There are numerous indicators available for monitoring scanning activity, these include:</Text>
+        </Text>
+        <Text Name="Indicators/Context">
+          <Text>Right-Click context menus show the current status.</Text>
+        </Text>
+        <Text Name="Indicators/Ground Tracks">
+          <Text>Map view ground track indicators show the area currently being scanned only when the scanner is within the acceptable altitude range (dependent on settings).</Text>
+        </Text>
+        <Text Name="Indicators/VAB Info">
+          <Text>VAB/SPH extra info panels show the scanning parameters for each instrument.</Text>
+        </Text>
+        <Text Name="Indicators/Maps">
+          <Text>The flashing lights on the small map indicate scanner status (green for ideal altitude, flashing orange for below the ideal altitude, solid orange for too high or too low).</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_AltimetryMap">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_AltimetryMap.prefab</AssetPath>
+      <Title>Altimetry Scans</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>Terrain Scanners</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>Generate low and high resolution altimetry data and slope maps.</Text>
+        </Text>
+        <Text Name="Poseidon">
+          <Text>R-3B Radar Altimeter
+</Text>
+        </Text>
+        <Text Name="Poseidon/Poseidon Text">
+          <Text>Low-resolution altimetry.</Text>
+        </Text>
+        <Text Name="Seasat">
+          <Text>R-EO-1 Radar Antenna</Text>
+        </Text>
+        <Text Name="Seasat/Seasat Text">
+          <Text>Low-resolution altimetry.</Text>
+        </Text>
+        <Text Name="Paz">
+          <Text>SAR-X Antenna</Text>
+        </Text>
+        <Text Name="Paz/Paz Text">
+          <Text>High-resolution altimetry.</Text>
+        </Text>
+        <Text Name="Radarsat">
+          <Text>SAR-C Antenna</Text>
+        </Text>
+        <Text Name="Radarsat/Radarsat Text">
+          <Text>High-resolution altimetry.</Text>
+        </Text>
+        <Text Name="Tandem">
+          <Text>SAR-L Antenna</Text>
+        </Text>
+        <Text Name="Tandem/Tandem Text">
+          <Text>High-resolution altimetry, and biome data.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+    <Screen Name="SCANsat_Advanced">
+      <BundleName>scansat_core</BundleName>
+      <AssetPath>Assets/SCANsat/Prefabs/SCANsat_Advanced.prefab</AssetPath>
+      <Title>Advanced Scanning</Title>
+      <Background />
+      <Text>
+        <Text Name="Header">
+          <Text>Advanced Scanning</Text>
+        </Text>
+        <Text Name="Header/Header_Question">
+          <Text>How to optimize your orbit for the fastest scan.</Text>
+        </Text>
+        <Text Name="Orbit Overlay Header">
+          <Text>Orbit Overlays and Equatorial Crossings:</Text>
+        </Text>
+        <Text Name="Orbit Overlay Header/Orbit text">
+          <Text>The big map's orbit overlay provides useful data for determining the best scanning orbit.</Text>
+        </Text>
+        <Text Name="Bad orbit">
+          <Text>Bunched up equatorial crossings indicate a poor orbit.</Text>
+        </Text>
+        <Text Name="Bad orbit/Bad To Good">
+          <Text>Often only a minor burn (&lt;10m/s dV) is required to change a bad orbit into a good orbit, with evenly spaced equatorial crossings.</Text>
+        </Text>
+        <Text Name="Big Map caption">
+          <Text>The orbit overlay* shows your previous (orange) and next (blue) orbit; the hash marks along the equator show where the vessel will cross the equator over the next 100 orbits.</Text>
+        </Text>
+      </Text>
+      <Tooltips />
+    </Screen>
+  </Screens>
+</KSPedia>

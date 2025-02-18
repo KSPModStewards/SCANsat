@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KSPBundleDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" UrlName="scan_icons" Name="scan_icons" CreatedTime="-8587118325852225481">
+  <Author />
+  <Info />
+  <Assets>
+    <Asset Name="ANMarker" Path="Assets/Images/ANMarker.png" Type="Texture2D" Url="Images/ANMarker" AutoLoad="false" />
+    <Asset Name="APMarker" Path="Assets/Images/APMarker.png" Type="Texture2D" Url="Images/APMarker" AutoLoad="false" />
+    <Asset Name="AnomalyIcon" Path="Assets/Images/AnomalyIcon.png" Type="Texture2D" Url="Images/AnomalyIcon" AutoLoad="false" />
+    <Asset Name="AnomalyIconOutline" Path="Assets/Images/AnomalyIconOutline.png" Type="Texture2D" Url="Images/AnomalyIconOutline" AutoLoad="false" />
+    <Asset Name="AsteroidIcon" Path="Assets/Images/AsteroidIcon.png" Type="Texture2D" Url="Images/AsteroidIcon" AutoLoad="false" />
+    <Asset Name="BaseIcon" Path="Assets/Images/BaseIcon.png" Type="Texture2D" Url="Images/BaseIcon" AutoLoad="false" />
+    <Asset Name="DNMarker" Path="Assets/Images/DNMarker.png" Type="Texture2D" Url="Images/DNMarker" AutoLoad="false" />
+    <Asset Name="DebrisIcon" Path="Assets/Images/DebrisIcon.png" Type="Texture2D" Url="Images/DebrisIcon" AutoLoad="false" />
+    <Asset Name="EVAIcon" Path="Assets/Images/EVAIcon.png" Type="Texture2D" Url="Images/EVAIcon" AutoLoad="false" />
+    <Asset Name="EncounterMarker" Path="Assets/Images/EncounterMarker.png" Type="Texture2D" Url="Images/EncounterMarker" AutoLoad="false" />
+    <Asset Name="ExitMarker" Path="Assets/Images/ExitMarker.png" Type="Texture2D" Url="Images/ExitMarker" AutoLoad="false" />
+    <Asset Name="FlagIcon" Path="Assets/Images/FlagIcon.png" Type="Texture2D" Url="Images/FlagIcon" AutoLoad="false" />
+    <Asset Name="KSP_Tooltip" Path="Assets/Images/KSP_Tooltip.png" Type="Texture2D" Url="Images/KSP_Tooltip" AutoLoad="false" />
+    <Asset Name="LanderIcon" Path="Assets/Images/LanderIcon.png" Type="Texture2D" Url="Images/LanderIcon" AutoLoad="false" />
+    <Asset Name="ManeuverMarker" Path="Assets/Images/ManeuverMarker.png" Type="Texture2D" Url="Images/ManeuverMarker" AutoLoad="false" />
+    <Asset Name="MysteryIcon" Path="Assets/Images/MysteryIcon.png" Type="Texture2D" Url="Images/MysteryIcon" AutoLoad="false" />
+    <Asset Name="PEMarker" Path="Assets/Images/PEMarker.png" Type="Texture2D" Url="Images/PEMarker" AutoLoad="false" />
+    <Asset Name="PlaneIcon" Path="Assets/Images/PlaneIcon.png" Type="Texture2D" Url="Images/PlaneIcon" AutoLoad="false" />
+    <Asset Name="PlanetIcon" Path="Assets/Images/PlanetIcon.png" Type="Texture2D" Url="Images/PlanetIcon" AutoLoad="false" />
+    <Asset Name="PodIcon" Path="Assets/Images/PodIcon.png" Type="Texture2D" Url="Images/PodIcon" AutoLoad="false" />
+    <Asset Name="ProbeIcon" Path="Assets/Images/ProbeIcon.png" Type="Texture2D" Url="Images/ProbeIcon" AutoLoad="false" />
+    <Asset Name="RelayIcon" Path="Assets/Images/RelayIcon.png" Type="Texture2D" Url="Images/RelayIcon" AutoLoad="false" />
+    <Asset Name="RoverIcon" Path="Assets/Images/RoverIcon.png" Type="Texture2D" Url="Images/RoverIcon" AutoLoad="false" />
+    <Asset Name="SCAN_MechJebIcon" Path="Assets/Images/SCAN_MechJebIcon.png" Type="Texture2D" Url="Images/SCAN_MechJebIcon" AutoLoad="false" />
+    <Asset Name="SCAN_WayPointIcon_Outline" Path="Assets/Images/SCAN_WayPointIcon_Outline.png" Type="Texture2D" Url="Images/SCAN_WayPointIcon_Outline" AutoLoad="false" />
+    <Asset Name="SCANsat_AppLauncherLarge_Icon" Path="Assets/Images/SCANsat_AppLauncherLarge_Icon.png" Type="Texture2D" Url="Images/SCANsat_AppLauncherLarge_Icon" AutoLoad="false" />
+    <Asset Name="SCANsat_AppLauncherSmall_Icon" Path="Assets/Images/SCANsat_AppLauncherSmall_Icon.png" Type="Texture2D" Url="Images/SCANsat_AppLauncherSmall_Icon" AutoLoad="false" />
+    <Asset Name="StationIcon" Path="Assets/Images/StationIcon.png" Type="Texture2D" Url="Images/StationIcon" AutoLoad="false" />
+  </Assets>
+  <Dependencies />
+</KSPBundleDefinition>

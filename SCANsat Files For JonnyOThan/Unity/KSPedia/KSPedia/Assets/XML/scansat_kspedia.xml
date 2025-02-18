@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KSPedia xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="scansat" CreatedTime="-8586128866822031102">
+  <Categories>
+    <Category Name="scansat">
+      <Title>SCANsat</Title>
+      <TitleScreen />
+      <Screens />
+      <Subcategories>
+        <Subcategory Name="scansat_Intro">
+          <Title>SCANsat Introduction</Title>
+          <TitleScreen />
+          <Screens />
+          <Subcategories />
+        </Subcategory>
+        <Subcategory Name="scansat_maps">
+          <Title>SCANsat Maps</Title>
+          <TitleScreen />
+          <Screens />
+          <Subcategories />
+        </Subcategory>
+        <Subcategory Name="scansat_scanners">
+          <Title>SCANsat Scanners</Title>
+          <TitleScreen />
+          <Screens />
+          <Subcategories />
+        </Subcategory>
+        <Subcategory Name="scansat_resources">
+          <Title>SCANsat Resource</Title>
+          <TitleScreen />
+          <Screens />
+          <Subcategories />
+        </Subcategory>
+        <Subcategory Name="scansat_color">
+          <Title>SCANsat Color Management</Title>
+          <TitleScreen />
+          <Screens />
+          <Subcategories />
+        </Subcategory>
+      </Subcategories>
+    </Category>
+  </Categories>
+  <Screens />
+</KSPedia>

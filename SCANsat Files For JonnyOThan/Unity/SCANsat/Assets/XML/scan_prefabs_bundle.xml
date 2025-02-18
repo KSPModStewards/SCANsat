@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KSPBundleDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" UrlName="scan_prefabs" Name="scan_prefabs" CreatedTime="-8587047506674998924">
+  <Author />
+  <Info />
+  <Assets>
+    <Asset Name="MainMap_Vessel" Path="Assets/Prefabs/MainMap_Vessel.prefab" Type="GameObject" Url="Prefabs/MainMap_Vessel" AutoLoad="false" />
+    <Asset Name="Overlay_Resource" Path="Assets/Prefabs/Overlay_Resource.prefab" Type="GameObject" Url="Prefabs/Overlay_Resource" AutoLoad="false" />
+    <Asset Name="SCAN_Background" Path="Assets/Prefabs/SCAN_Background.prefab" Type="GameObject" Url="Prefabs/SCAN_Background" AutoLoad="false" />
+    <Asset Name="SCAN_BackgroundElement" Path="Assets/Prefabs/SCAN_BackgroundElement.prefab" Type="GameObject" Url="Prefabs/SCAN_BackgroundElement" AutoLoad="false" />
+    <Asset Name="SCAN_BigMap" Path="Assets/Prefabs/SCAN_BigMap.prefab" Type="GameObject" Url="Prefabs/SCAN_BigMap" AutoLoad="false" />
+    <Asset Name="SCAN_ColorBiome" Path="Assets/Prefabs/SCAN_ColorBiome.prefab" Type="GameObject" Url="Prefabs/SCAN_ColorBiome" AutoLoad="false" />
+    <Asset Name="SCAN_ColorControl" Path="Assets/Prefabs/SCAN_ColorControl.prefab" Type="GameObject" Url="Prefabs/SCAN_ColorControl" AutoLoad="false" />
+    <Asset Name="SCAN_ColorResource" Path="Assets/Prefabs/SCAN_ColorResource.prefab" Type="GameObject" Url="Prefabs/SCAN_ColorResource" AutoLoad="false" />
+    <Asset Name="SCAN_ColorSlope" Path="Assets/Prefabs/SCAN_ColorSlope.prefab" Type="GameObject" Url="Prefabs/SCAN_ColorSlope" AutoLoad="false" />
+    <Asset Name="SCAN_ColorTerrain" Path="Assets/Prefabs/SCAN_ColorTerrain.prefab" Type="GameObject" Url="Prefabs/SCAN_ColorTerrain" AutoLoad="false" />
+    <Asset Name="SCAN_Confirmation" Path="Assets/Prefabs/SCAN_Confirmation.prefab" Type="GameObject" Url="Prefabs/SCAN_Confirmation" AutoLoad="false" />
+    <Asset Name="SCAN_Data" Path="Assets/Prefabs/SCAN_Data.prefab" Type="GameObject" Url="Prefabs/SCAN_Data" AutoLoad="false" />
+    <Asset Name="SCAN_DropDown" Path="Assets/Prefabs/SCAN_DropDown.prefab" Type="GameObject" Url="Prefabs/SCAN_DropDown" AutoLoad="false" />
+    <Asset Name="SCAN_DropDownElement" Path="Assets/Prefabs/SCAN_DropDownElement.prefab" Type="GameObject" Url="Prefabs/SCAN_DropDownElement" AutoLoad="false" />
+    <Asset Name="SCAN_General" Path="Assets/Prefabs/SCAN_General.prefab" Type="GameObject" Url="Prefabs/SCAN_General" AutoLoad="false" />
+    <Asset Name="SCAN_Instruments" Path="Assets/Prefabs/SCAN_Instruments.prefab" Type="GameObject" Url="Prefabs/SCAN_Instruments" AutoLoad="false" />
+    <Asset Name="SCAN_MainMap" Path="Assets/Prefabs/SCAN_MainMap.prefab" Type="GameObject" Url="Prefabs/SCAN_MainMap" AutoLoad="false" />
+    <Asset Name="SCAN_MapLabel" Path="Assets/Prefabs/SCAN_MapLabel.prefab" Type="GameObject" Url="Prefabs/SCAN_MapLabel" AutoLoad="false" />
+    <Asset Name="SCAN_Overlay" Path="Assets/Prefabs/SCAN_Overlay.prefab" Type="GameObject" Url="Prefabs/SCAN_Overlay" AutoLoad="false" />
+    <Asset Name="SCAN_PaletteButton" Path="Assets/Prefabs/SCAN_PaletteButton.prefab" Type="GameObject" Url="Prefabs/SCAN_PaletteButton" AutoLoad="false" />
+    <Asset Name="SCAN_Resources" Path="Assets/Prefabs/SCAN_Resources.prefab" Type="GameObject" Url="Prefabs/SCAN_Resources" AutoLoad="false" />
+    <Asset Name="SCAN_Settings" Path="Assets/Prefabs/SCAN_Settings.prefab" Type="GameObject" Url="Prefabs/SCAN_Settings" AutoLoad="false" />
+    <Asset Name="SCAN_Toolbar" Path="Assets/Prefabs/SCAN_Toolbar.prefab" Type="GameObject" Url="Prefabs/SCAN_Toolbar" AutoLoad="false" />
+    <Asset Name="SCAN_Tooltip" Path="Assets/Prefabs/SCAN_Tooltip.prefab" Type="GameObject" Url="Prefabs/SCAN_Tooltip" AutoLoad="false" />
+    <Asset Name="SCAN_ZoomMap" Path="Assets/Prefabs/SCAN_ZoomMap.prefab" Type="GameObject" Url="Prefabs/SCAN_ZoomMap" AutoLoad="false" />
+  </Assets>
+  <Dependencies />
+</KSPBundleDefinition>

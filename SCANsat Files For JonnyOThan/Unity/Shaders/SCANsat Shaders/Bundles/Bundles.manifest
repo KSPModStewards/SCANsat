@@ -1,0 +1,7 @@
+ManifestFileVersion: 0
+CRC: 471280831
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: scan_shaders
+      Dependencies: {}

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KSPBundleDefinition xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" UrlName="scansat" Name="scansat" CreatedTime="-8586152138991777665">
+  <Author />
+  <Info />
+  <Assets>
+    <Asset Name="SCANsat_Advanced" Path="Assets/SCANsat/Prefabs/SCANsat_Advanced.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Advanced" AutoLoad="false" />
+    <Asset Name="SCANsat_AltimetryMap" Path="Assets/SCANsat/Prefabs/SCANsat_AltimetryMap.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_AltimetryMap" AutoLoad="false" />
+    <Asset Name="SCANsat_Basic" Path="Assets/SCANsat/Prefabs/SCANsat_Basic.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Basic" AutoLoad="false" />
+    <Asset Name="SCANsat_Big_Map" Path="Assets/SCANsat/Prefabs/SCANsat_Big_Map.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Big_Map" AutoLoad="false" />
+    <Asset Name="SCANsat_Colors" Path="Assets/SCANsat/Prefabs/SCANsat_Colors.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Colors" AutoLoad="false" />
+    <Asset Name="SCANsat_Colors_Biome" Path="Assets/SCANsat/Prefabs/SCANsat_Colors_Biome.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Colors_Biome" AutoLoad="false" />
+    <Asset Name="SCANsat_Colors_Resources" Path="Assets/SCANsat/Prefabs/SCANsat_Colors_Resources.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Colors_Resources" AutoLoad="false" />
+    <Asset Name="SCANsat_Colors_Slope" Path="Assets/SCANsat/Prefabs/SCANsat_Colors_Slope.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Colors_Slope" AutoLoad="false" />
+    <Asset Name="SCANsat_Colors_Terrain" Path="Assets/SCANsat/Prefabs/SCANsat_Colors_Terrain.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Colors_Terrain" AutoLoad="false" />
+    <Asset Name="SCANsat_Features" Path="Assets/SCANsat/Prefabs/SCANsat_Features.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Features" AutoLoad="false" />
+    <Asset Name="SCANsat_Header" Path="Assets/SCANsat/Prefabs/SCANsat_Header.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Header" AutoLoad="false" />
+    <Asset Name="SCANsat_Intro" Path="Assets/SCANsat/Prefabs/SCANsat_Intro.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Intro" AutoLoad="false" />
+    <Asset Name="SCANsat_Main_Map" Path="Assets/SCANsat/Prefabs/SCANsat_Main_Map.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Main_Map" AutoLoad="false" />
+    <Asset Name="SCANsat_MultiMap" Path="Assets/SCANsat/Prefabs/SCANsat_MultiMap.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_MultiMap" AutoLoad="false" />
+    <Asset Name="SCANsat_Resource_Overlay" Path="Assets/SCANsat/Prefabs/SCANsat_Resource_Overlay.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Resource_Overlay" AutoLoad="false" />
+    <Asset Name="SCANsat_Resource_Settings" Path="Assets/SCANsat/Prefabs/SCANsat_Resource_Settings.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Resource_Settings" AutoLoad="false" />
+    <Asset Name="SCANsat_Resource_Tools" Path="Assets/SCANsat/Prefabs/SCANsat_Resource_Tools.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Resource_Tools" AutoLoad="false" />
+    <Asset Name="SCANsat_ResourceMap" Path="Assets/SCANsat/Prefabs/SCANsat_ResourceMap.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_ResourceMap" AutoLoad="false" />
+    <Asset Name="SCANsat_Resources" Path="Assets/SCANsat/Prefabs/SCANsat_Resources.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Resources" AutoLoad="false" />
+    <Asset Name="SCANsat_RPM" Path="Assets/SCANsat/Prefabs/SCANsat_RPM.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_RPM" AutoLoad="false" />
+    <Asset Name="SCANsat_VisualMap" Path="Assets/SCANsat/Prefabs/SCANsat_VisualMap.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_VisualMap" AutoLoad="false" />
+    <Asset Name="SCANsat_Zoom_Map" Path="Assets/SCANsat/Prefabs/SCANsat_Zoom_Map.prefab" Type="GameObject" Url="SCANsat/Prefabs/SCANsat_Zoom_Map" AutoLoad="false" />
+    <Asset Name="scansat_kspedia" Path="Assets/XML/scansat_kspedia.xml" Type="TextAsset" Url="XML/scansat_kspedia" AutoLoad="false" />
+  </Assets>
+  <Dependencies>
+    <Dependency>squadcore</Dependency>
+  </Dependencies>
+</KSPBundleDefinition>

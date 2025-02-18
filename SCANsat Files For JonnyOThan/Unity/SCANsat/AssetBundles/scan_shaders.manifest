@@ -1,0 +1,20 @@
+ManifestFileVersion: 0
+CRC: 3481520676
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 4462f6c0d4e9a3b4184f3429b891fe9b
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: ce474e4a8b2e728b767e51cbbce77a69
+HashAppended: 0
+ClassTypes:
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 49
+  Script: {instanceID: 0}
+Assets:
+- Assets/Shaders/GrayscaleEffect.shader
+- Assets/Shaders/EdgeDetectX.shader
+- Assets/XML/scan_shaders_bundle.xml
+Dependencies: []

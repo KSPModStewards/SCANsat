@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KSPBundleDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" UrlName="eveshaders" Name="eveshaders" CreatedTime="-8587273608266825226">
+  <Author />
+  <Info />
+  <Assets>
+    <Asset Name="EVE/CloudShadow" Path="Assets/Shaders/CloudShadow.shader" Type="Shader" Url="Shaders/CloudShadow" AutoLoad="false" />
+    <Asset Name="EVE/CloudVolumeParticle" Path="Assets/Shaders/CloudVolumeParticle.shader" Type="Shader" Url="Shaders/CloudVolumeParticle" AutoLoad="false" />
+    <Asset Name="EVE/OceanBack" Path="Assets/Shaders/OceanBack.shader" Type="Shader" Url="Shaders/OceanBack" AutoLoad="false" />
+    <Asset Name="EVE/PlanetShadow" Path="Assets/Shaders/PlanetShadow.shader" Type="Shader" Url="Shaders/PlanetShadow" AutoLoad="false" />
+    <Asset Name="EVE/Atmosphere" Path="Assets/Shaders/SphereAtmosphere.shader" Type="Shader" Url="Shaders/SphereAtmosphere" AutoLoad="false" />
+    <Asset Name="EVE/Cloud" Path="Assets/Shaders/SphereCloud.shader" Type="Shader" Url="Shaders/SphereCloud" AutoLoad="false" />
+    <Asset Name="EVE/Ocean" Path="Assets/Shaders/SphereOcean.shader" Type="Shader" Url="Shaders/SphereOcean" AutoLoad="false" />
+    <Asset Name="EVE/Planet" Path="Assets/Shaders/SpherePlanet.shader" Type="Shader" Url="Shaders/SpherePlanet" AutoLoad="false" />
+    <Asset Name="EVE/PlanetCityLight" Path="Assets/Shaders/SpherePlanetCityLights.shader" Type="Shader" Url="Shaders/SpherePlanetCityLights" AutoLoad="false" />
+    <Asset Name="EVE/PlanetLight" Path="Assets/Shaders/SpherePlanetLighting.shader" Type="Shader" Url="Shaders/SpherePlanetLighting" AutoLoad="false" />
+    <Asset Name="EVE/Terrain" Path="Assets/Shaders/SphereTerrain.shader" Type="Shader" Url="Shaders/SphereTerrain" AutoLoad="false" />
+    <Asset Name="EVE/TerrainCityLight" Path="Assets/Shaders/SphereTerrainCityLights.shader" Type="Shader" Url="Shaders/SphereTerrainCityLights" AutoLoad="false" />
+    <Asset Name="EVE/TerrainLight" Path="Assets/Shaders/SphereTerrainLighting.shader" Type="Shader" Url="Shaders/SphereTerrainLighting" AutoLoad="false" />
+  </Assets>
+  <Dependencies />
+</KSPBundleDefinition>

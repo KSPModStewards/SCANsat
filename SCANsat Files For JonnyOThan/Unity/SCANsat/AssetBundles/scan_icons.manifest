@@ -1,0 +1,51 @@
+ManifestFileVersion: 0
+CRC: 1430937029
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 1367b284e9946b60ed80f7421a2fc771
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 4898002a369603e0e00805f73c3fd8fe
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 49
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+- Class: 687078895
+  Script: {instanceID: 0}
+Assets:
+- Assets/Images/MysteryIcon.png
+- Assets/Images/AnomalyIcon.png
+- Assets/Images/SCAN_TargetIcon.png
+- Assets/Images/ManeuverMarker.png
+- Assets/Images/ExitMarker.png
+- Assets/Images/RoverIcon.png
+- Assets/Images/EVAIcon.png
+- Assets/Images/APMarker.png
+- Assets/Images/SCANsat_AppLauncherSmall_Icon.png
+- Assets/Images/PodIcon.png
+- Assets/Images/PlaneIcon.png
+- Assets/Images/DNMarker.png
+- Assets/Images/AnomalyIconOutline.png
+- Assets/Images/AsteroidIcon.png
+- Assets/Images/DebrisIcon.png
+- Assets/Images/EncounterMarker.png
+- Assets/XML/scan_icons_bundle.xml
+- Assets/Images/FlagIcon.png
+- Assets/Images/PlanetIcon.png
+- Assets/Images/SCAN_MechJebIcon.png
+- Assets/Images/SCAN_WayPointIcon_Outline.png
+- Assets/Images/ANMarker.png
+- Assets/Images/KSP_Tooltip.png
+- Assets/Images/RelayIcon.png
+- Assets/Images/ProbeIcon.png
+- Assets/Images/PEMarker.png
+- Assets/Images/SCANsat_AppLauncherLarge_Icon.png
+- Assets/Images/StationIcon.png
+- Assets/Images/BaseIcon.png
+- Assets/Images/LanderIcon.png
+Dependencies: []
