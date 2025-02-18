@@ -5,6 +5,8 @@ using SCANsat.Unity.HSVPicker.Enum;
 
 namespace SCANsat.Unity.HSVPicker.UI
 {
+	using ColorValues = SCANsat.Unity.HSVPicker.Enum.ColorValues;
+
 	/// <summary>
 	/// Displays one of the color values of aColorPicker
 	/// </summary>

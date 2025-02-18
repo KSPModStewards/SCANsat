@@ -6,6 +6,9 @@ using SCANsat.Unity.HSVPicker.Enum;
 
 namespace SCANsat.Unity.HSVPicker.UI
 {
+	using BoxSlider = SCANsat.Unity.HSVPicker.Utility.BoxSlider;
+	using ColorValues = SCANsat.Unity.HSVPicker.Enum.ColorValues;
+
 	[RequireComponent(typeof(BoxSlider), typeof(RawImage)), ExecuteInEditMode()]
 	public class SVBoxSlider : MonoBehaviour
 	{

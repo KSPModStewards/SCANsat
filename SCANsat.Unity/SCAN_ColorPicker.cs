@@ -19,6 +19,8 @@ using SCANsat.Unity.HSVPicker.UI;
 
 namespace SCANsat.Unity
 {
+	using ColorImage = SCANsat.Unity.HSVPicker.UI.ColorImage;
+
 	public class SCAN_ColorPicker : MonoBehaviour
 	{
 		[SerializeField]

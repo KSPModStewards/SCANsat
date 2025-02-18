@@ -8,6 +8,8 @@ using SCANsat.Unity.HSVPicker.Events;
 
 namespace SCANsat.Unity.HSVPicker.UI
 {
+	using ColorValues = SCANsat.Unity.HSVPicker.Enum.ColorValues;
+
 	public class ColorPicker : MonoBehaviour
 	{
 		private float _hue = 0;
