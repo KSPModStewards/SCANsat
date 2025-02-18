@@ -1,5 +1,5 @@
 
-SCANsat.Unity/SCANsat.Unity.csproj
-.vs/SCANsat/v16/.suo
-.vs/SCANsat/v16/.suo
-SCANsat.Unity/SCANsat.Unity.csproj
+.vs/
+bin/
+obj/
+*.user
