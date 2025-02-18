@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="SCANsat.Unity.props.user" />
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>SCANsat.Unity</RootNamespace>
@@ -6,6 +7,8 @@
     <TargetFramework>net4.8</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="KSPBuildTools" Version="0.0.3" />
+    <Reference Include="$(UnityRoot)/UnityEngine.*">
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
 </Project>
