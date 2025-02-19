@@ -4,3 +4,4 @@ bin/
 obj/
 *.user
 GameData/SCANsat/Plugins/SCAN*
+GameData/SCANsat/PluginData/Settings.cfg
