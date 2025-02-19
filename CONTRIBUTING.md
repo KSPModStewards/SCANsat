@@ -36,6 +36,18 @@ The compiled DLLs should be copied to `GameData/SCANsat/Plugins` automatically.
 These should be excluded from .gitignore and never committed.
 You can then manually copy this directory to your KSP install, or ideally set up a directory junction in your KSP install to point at this directory.
 
+## Notes on HSVPicker
+
+`SCANsat.Unity` contains within it code derived from https://github.com/judah4/HSV-Color-Picker-Unity/.
+This library or something derived from it seems to also have been added to KSP itself at some point.
+This can lead to compilation issues because there are conflicting names depending on the `using` statements in effect.
+All of the types from this library in the SCANsat codebase should be in a SCANsat namespace.
+Disambiguating `using` statements should be used to make sure that SCANsat code is using the version of the types that are contained in its own assembly:
+
+```cs
+using ColorValues = SCANsat.Unity.HSVPicker.Enum.ColorValues;
+```
+
 # Unity Project
 
 SCANsat uses several Unity assetbundles which contain shaders, icons, and UI prefabs.
