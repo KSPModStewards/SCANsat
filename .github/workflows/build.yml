@@ -1,0 +1,22 @@
+name: build
+
+on:
+  push:
+    branches: [ "dev" ]
+    paths:
+      - '**/*.cs'
+      - '**/*.csproj'
+      - '**/*.props'
+  pull_request:
+    paths:
+      - '**/*.cs'
+      - '**/*.csproj'
+      - '**/*.props'
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  build:
+    uses: KSPModdingLibs/KSPBuildTools/.github/workflows/build.yml@main
+    with:
+      use-ckan: true
