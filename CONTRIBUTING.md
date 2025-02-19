@@ -14,19 +14,6 @@ This is used by [KSPBuildTools](https://github.com/kspmoddingLibs/kspbuildTools/
 </Project>
 ```
 
-Create a `SCANsat.Unity.props.user` file in the `SCANsat.Unity` directory using the template below.
-Set the `<UnityRoot>` property to a directory containing Unity libraries.
-You may wish to use the ones in the KSP install, as seen below:
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <UnityRoot>C:\Program Files (x86)\Steam\steamapps\common\KSP Stripped\KSP_x64_Data\Managed</UnityRoot>
-  </PropertyGroup>
-</Project>
-```
-
 Using CKAN, install MechJeb2 in your development instance (because `SCANmechjeb` depends on it).
 
 # Compiling the mod
@@ -38,7 +25,7 @@ You can then manually copy this directory to your KSP install, or ideally set up
 
 ## Notes on HSVPicker
 
-`SCANsat.Unity` contains within it code derived from https://github.com/judah4/HSV-Color-Picker-Unity/.
+`SCANsat.Unity` contains code derived from https://github.com/judah4/HSV-Color-Picker-Unity/.
 This library or something derived from it seems to also have been added to KSP itself at some point.
 This can lead to compilation issues because there are conflicting names depending on the `using` statements in effect.
 All of the types from this library in the SCANsat codebase should be in a SCANsat namespace.
@@ -62,10 +49,6 @@ Copy the 4 that have a `.scan` file extension into `GameData/SCANsat/Resources`.
 # Future work, bugs, caveats, etc
 
 I do not currently know how to compile the KSPedia bundles, and it looks like there are some missing image files.
-
-The `SCANsat.Unity` project needs to be included in the Unity project, so it cannot depend on KSP's Assembly-CSharp like KSPBuildTools does by default.
-This is why it needs special configuration steps (and now that I think about it, it's probably not automatically getting copied to the GameData folder).
-We may need to modify KSPBuildTools to support this better: https://github.com/KSPModdingLibs/KSPBuildTools/issues/44
 
 The Unity project in general is a bit of a mess.  There are a lot of assetbundles defined but I have no idea what they're for.  They don't seem to be used by the mod.
 

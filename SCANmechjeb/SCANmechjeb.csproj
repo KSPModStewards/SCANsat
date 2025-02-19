@@ -14,7 +14,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="KSPBuildTools" Version="0.0.3" />
+    <PackageReference Include="KSPBuildTools" Version="0.0.3-alpha.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SCANsat\SCANsat.csproj" />

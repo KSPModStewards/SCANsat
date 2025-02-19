@@ -6,7 +6,7 @@
     <TargetFramework>net4.8</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="KSPBuildTools" Version="0.0.3" />
+    <PackageReference Include="KSPBuildTools" Version="0.0.3-alpha.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SCANsat.Unity\SCANsat.Unity.csproj" />
