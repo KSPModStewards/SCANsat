@@ -1,5 +1,12 @@
 # SCANsat Changelog
 
+## Unreleased
+
+- Added Chinese localization (thanks @AmazingWood)
+- Fixed usages of .material in favor of .sharedMaterial (thanks @Gameslinx)
+- Fixed some incorrect .cfg syntax (thanks @HebaruSan)
+
+
 ## 20.4 - 2020-9-9
 
 - Hotfix to prevent planetary overlay window from opening when it shouldn't
