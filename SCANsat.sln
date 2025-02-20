@@ -3,16 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCANsat", "SCANsat\SCANsat.csproj", "{3AE13948-477D-4375-8AB4-B45664966D9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SCANsat", "SCANsat\SCANsat.csproj", "{3AE13948-477D-4375-8AB4-B45664966D9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCANmechjeb", "SCANmechjeb\SCANmechjeb.csproj", "{A2B942AF-3AB2-4A9F-9211-FFC47364128D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SCANmechjeb", "SCANmechjeb\SCANmechjeb.csproj", "{A2B942AF-3AB2-4A9F-9211-FFC47364128D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCANsat.Unity", "SCANsat.Unity\SCANsat.Unity.csproj", "{4ED5E40D-273A-4643-9009-04C1DD02F3E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SCANsat.Unity", "SCANsat.Unity\SCANsat.Unity.csproj", "{4ED5E40D-273A-4643-9009-04C1DD02F3E2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{63914E47-3B9A-4298-BAA4-362B47D8F105}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		CHANGELOG.md = CHANGELOG.md
+		CONTRIBUTING.md = CONTRIBUTING.md
+		LICENSE.txt = LICENSE.txt
 		README.md = README.md
+		SCANsat.props = SCANsat.props
 		SCANsat.props.user = SCANsat.props.user
+		SCANsat.version.props = SCANsat.version.props
 	EndProjectSection
 EndProject
 Global

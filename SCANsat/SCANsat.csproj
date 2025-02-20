@@ -5,6 +5,10 @@
     <AssemblyName>SCANsat</AssemblyName>
     <TargetFramework>net4.8</TargetFramework>
   </PropertyGroup>
+  <PropertyGroup>
+    <GenerateKSPAssemblyAttribute>true</GenerateKSPAssemblyAttribute>
+    <GenerateKSPAssemblyDependencyAttributes>true</GenerateKSPAssemblyDependencyAttributes>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="KSPBuildTools" Version="0.0.3-alpha.4" />
   </ItemGroup>
