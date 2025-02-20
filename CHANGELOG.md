@@ -5,6 +5,7 @@
 - Added Chinese localization (thanks @AmazingWood)
 - Fixed usages of .material in favor of .sharedMaterial (thanks @Gameslinx)
 - Fixed some incorrect .cfg syntax (thanks @HebaruSan)
+- Improved Russian localization (thanks @Sooll3)
 
 
 ## 20.4 - 2020-9-9
