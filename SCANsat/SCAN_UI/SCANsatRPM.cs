@@ -203,7 +203,7 @@ namespace SCANsat.SCAN_UI
 				}
 				screenWidth = screen.width;
 				screenHeight = screen.height;
-				iconMaterial = new Material(Shader.Find("KSP/Alpha/Unlit Transparent"));
+				iconMaterial = new Material(Shader.Find("KSP/Alpha/Cutoff"));
 
 				screenSpace = new Rect(0, 0, screenWidth, screenHeight);
 
@@ -602,12 +602,10 @@ namespace SCANsat.SCAN_UI
 
 		private void ChangeMapMode(bool up)
 		{
+			int mapTypeCount = SCANmapType.mapTypeNames.Length;
 			mapMode += up ? 1 : -1;
+			mapMode = (mapMode + mapTypeCount) % mapTypeCount;
 
-			if (mapMode > 2)
-				mapMode = 0;
-			if (mapMode < 0)
-				mapMode = 2;
 			if (satModuleFound)
 				persist.RPMMode = mapMode;
 			RedrawMap();
