@@ -33,7 +33,7 @@ namespace SCANsat.Unity.Interfaces
 
 		bool IsVisible { get; set; }
 
-        bool Rebuilding { get; }
+		bool Rebuilding { get; }
 
 		bool VesselLock { get; set; }
 
@@ -77,9 +77,9 @@ namespace SCANsat.Unity.Interfaces
 
 		int WindowState { get; set; }
 
-        int MapRefresh { get; set; }
+		int MapRefresh { get; set; }
 
-        float Scale { get; }
+		float Scale { get; }
 
 		Sprite WaypointSprite { get; }
 
@@ -109,9 +109,9 @@ namespace SCANsat.Unity.Interfaces
 
 		Dictionary<string, MapLabelInfo> AnomalyInfoList { get; }
 
-        IList<MapLabelInfo> ROCInfoList { get; }
+		IList<MapLabelInfo> ROCInfoList { get; }
 
-        Dictionary<int, MapLabelInfo> WaypointInfoList { get; }
+		Dictionary<int, MapLabelInfo> WaypointInfoList { get; }
 
 		KeyValuePair<Guid, MapLabelInfo> VesselInfo { get; }
 

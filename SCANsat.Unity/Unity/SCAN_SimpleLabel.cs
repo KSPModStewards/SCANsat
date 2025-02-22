@@ -26,7 +26,9 @@ namespace SCANsat.Unity.Unity
 		public void Setup(SimpleLabelInfo label)
 		{
 			if (label == null)
+			{
 				return;
+			}
 
 			info = label;
 
@@ -49,7 +51,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateIcon(SimpleLabelInfo label)
 		{
 			if (icon == null || rect == null || label == null)
+			{
 				return;
+			}
 
 			if (gameObject.activeSelf && !label.show)
 			{
@@ -57,10 +61,14 @@ namespace SCANsat.Unity.Unity
 				return;
 			}
 			else if (!gameObject.activeSelf && label.show)
+			{
 				gameObject.SetActive(true);
+			}
 
 			if (icon.color != label.color)
+			{
 				icon.color = label.color;
+			}
 
 			rect.anchoredPosition = label.pos;
 		}

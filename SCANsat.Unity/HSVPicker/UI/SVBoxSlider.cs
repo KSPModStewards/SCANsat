@@ -39,34 +39,46 @@ namespace SCANsat.Unity.HSVPicker.UI
 		private void OnEnable()
 		{
 			if (Application.isPlaying)
-            {
-                if (picker != null)
-                    picker.onHSVChanged.AddListener(HSVChanged);
-                if (slider != null)
-                    slider.onValueChanged.AddListener(SliderChanged);
-            }
-        }
+			{
+				if (picker != null)
+				{
+					picker.onHSVChanged.AddListener(HSVChanged);
+				}
+
+				if (slider != null)
+				{
+					slider.onValueChanged.AddListener(SliderChanged);
+				}
+			}
+		}
 
 		private void OnDisable()
 		{
 			if (picker != null)
+			{
 				picker.onHSVChanged.RemoveListener(HSVChanged);
-            if (slider != null)
-                slider.onValueChanged.RemoveListener(SliderChanged);
-        }
+			}
+
+			if (slider != null)
+			{
+				slider.onValueChanged.RemoveListener(SliderChanged);
+			}
+		}
 
 		private void OnDestroy()
 		{
 			if (image.texture != null)
+			{
 				DestroyImmediate(image.texture);
+			}
 		}
 
 #if UNITY_EDITOR
-    private void OnValidate()
-    {
-        image = GetComponent<RawImage>();
-        RegenerateSVTexture();
-    }
+	private void OnValidate()
+	{
+		image = GetComponent<RawImage>();
+		RegenerateSVTexture();
+	}
 #endif
 
 		private void SliderChanged(float saturation, float value)
@@ -105,7 +117,9 @@ namespace SCANsat.Unity.HSVPicker.UI
 			double h = picker != null ? picker.H * 360 : 0;
 
 			if (image.texture != null)
+			{
 				DestroyImmediate(image.texture);
+			}
 
 			Texture2D texture = new Texture2D(100, 100);
 			texture.hideFlags = HideFlags.DontSave;

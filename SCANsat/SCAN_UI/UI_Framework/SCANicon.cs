@@ -45,7 +45,7 @@ namespace SCANsat.SCAN_UI.UI_Framework
 
 			SCANuiUtil.drawMapIconGL(pos_icon, SCANmainMenuLoader.OrbitIconsMap, c, iconMat, shadow, outline, grid_pos, true);
 		}
-		
+
 		public enum OrbitIcon : int
 		{
 			Pe = 0,
@@ -106,7 +106,7 @@ namespace SCANsat.SCAN_UI.UI_Framework
 				default:
 					return OrbitIcon.Mystery;
 			}
-		}	
+		}
 	}
 }
 

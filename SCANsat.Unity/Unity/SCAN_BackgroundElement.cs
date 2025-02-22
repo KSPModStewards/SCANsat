@@ -38,16 +38,22 @@ namespace SCANsat.Unity.Unity
 		public void Setup(string body, bool active, ISCAN_Settings settings)
 		{
 			if (settings == null)
+			{
 				return;
+			}
 
 			bodyName = body;
 			settingsInterface = settings;
 
 			if (m_BodyToggle != null)
+			{
 				m_BodyToggle.isOn = active;
+			}
 
 			if (m_BodyText != null)
+			{
 				m_BodyText.OnTextUpdate.Invoke(string.Format("{0} (0%)", body));
+			}
 
 			loaded = true;
 		}
@@ -55,7 +61,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateText(double amount)
 		{
 			if (m_BodyText == null)
+			{
 				return;
+			}
 
 			m_BodyText.OnTextUpdate.Invoke(string.Format("{0} ({1})", bodyName, amount.ToString("P0")));
 		}
@@ -63,7 +71,9 @@ namespace SCANsat.Unity.Unity
 		public void ToggleBody(bool isOn)
 		{
 			if (!loaded || settingsInterface == null)
+			{
 				return;
+			}
 
 			settingsInterface.ToggleBody(bodyName);
 		}

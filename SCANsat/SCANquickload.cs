@@ -21,14 +21,17 @@ using System.Collections.Generic;
 
 [KSPAddon(KSPAddon.Startup.MainMenu, false)]
 
-public class Debug_AutoLoadPersistentSaveOnStartup : MonoBehaviour {
+public class Debug_AutoLoadPersistentSaveOnStartup : MonoBehaviour
+{
 
 	public static bool first = true;
-	public static int  vId = 0;
+	public static int vId = 0;
 
-	public void Start () {
+	public void Start()
+	{
 		return;
-		if (first) {
+		if (first)
+		{
 			first = false;
 			HighLogic.SaveFolder = "Testing_Off";
 			HighLogic.CurrentGame = GamePersistence.LoadGame("persistent", HighLogic.SaveFolder, true, false);
@@ -38,28 +41,31 @@ public class Debug_AutoLoadPersistentSaveOnStartup : MonoBehaviour {
 				List<ProtoVessel> allVessels = HighLogic.CurrentGame.flightState.protoVessels;
 				int suitableVessel = 0;
 
-				for (vId = 0; vId < allVessels.Count; vId++) {
-					switch (allVessels [vId].vesselType) {
-						case VesselType.SpaceObject: 	continue;  // asteroids
-						case VesselType.Unknown: 	continue;  // asteroids in facepaint
+				for (vId = 0; vId < allVessels.Count; vId++)
+				{
+					switch (allVessels[vId].vesselType)
+					{
+						case VesselType.SpaceObject: continue;  // asteroids
+						case VesselType.Unknown: continue;  // asteroids in facepaint
 						case VesselType.EVA: continue;  //Don't spawn rescue Kerbals
-						default:					suitableVessel = vId;
-												break; // this one will do
-                         }
+						default:
+							suitableVessel = vId;
+							break; // this one will do
+					}
 					/* If you want a more stringent filter than
-                      *   "vessel is not inert ball of space dirt", then you
-                      *   will want to do it here.
-                      */
-                    }
+					  *   "vessel is not inert ball of space dirt", then you
+					  *   will want to do it here.
+					  */
+				}
 				GamePersistence.UpdateScenarioModules(HighLogic.CurrentGame);
 				//HighLogic.CurrentGame.startScene = GameScenes.SPACECENTER;
 				//HighLogic.CurrentGame.Start();
 				string save = GamePersistence.SaveGame(HighLogic.CurrentGame, "persistent", HighLogic.SaveFolder, SaveMode.OVERWRITE);
 				FlightDriver.StartAndFocusVessel(save, suitableVessel);
 				CheatOptions.InfinitePropellant = true;
-               }
-          }
-     }
+			}
+		}
+	}
 }
 
 #endif

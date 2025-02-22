@@ -32,11 +32,17 @@ namespace SCANsat.SCAN_UI.UI_Framework
 		internal static string getResourceAbundance(CelestialBody Body, double lat, double lon, bool fuzzy, SCANresourceGlobal resource)
 		{
 			if (fuzzy)
+			{
 				return resourceLabel(true, lat, lon, resource, Body);
+			}
 			else if (narrowBandInOrbit(Body, lat, resource))
-                return resourceLabel(false, lat, lon, resource, Body);
+			{
+				return resourceLabel(false, lat, lon, resource, Body);
+			}
 			else
-                return resourceLabel(true, lat, lon, resource, Body);
+			{
+				return resourceLabel(true, lat, lon, resource, Body);
+			}
 		}
 
 		internal static bool narrowBandInOrbit(CelestialBody b, double lat, SCANresourceGlobal resource)
@@ -44,30 +50,42 @@ namespace SCANsat.SCAN_UI.UI_Framework
 			if (SCAN_Settings_Config.Instance.RequireNarrowBand)
 			{
 				if (resource == null)
+				{
 					return false;
+				}
 
 				bool scanner = false;
 
 				foreach (Vessel vessel in FlightGlobals.Vessels)
 				{
 					if (vessel.protoVessel.protoPartSnapshots.Count <= 1)
+					{
 						continue;
+					}
 
-                    VesselType vType = vessel.vesselType;
+					VesselType vType = vessel.vesselType;
 
-					if (vType == VesselType.Debris || vType == VesselType.Unknown 
-                        || vType == VesselType.EVA || vType == VesselType.Flag 
-                        || vType == VesselType.DeployedScienceController || vType == VesselType.DeployedSciencePart)
+					if (vType == VesselType.Debris || vType == VesselType.Unknown
+						|| vType == VesselType.EVA || vType == VesselType.Flag
+						|| vType == VesselType.DeployedScienceController || vType == VesselType.DeployedSciencePart)
+					{
 						continue;
+					}
 
 					if (vessel.mainBody != b)
+					{
 						continue;
+					}
 
 					if ((vessel.loaded ? vessel.situation : vessel.protoVessel.situation) != Vessel.Situations.ORBITING)
+					{
 						continue;
+					}
 
 					if ((inc(vessel.orbit.inclination) + 5) < Math.Abs(lat))
+					{
 						continue;
+					}
 
 					if (SCAN_Settings_Config.Instance.DisableStockResource)
 					{
@@ -75,151 +93,195 @@ namespace SCANsat.SCAN_UI.UI_Framework
 									   where pref.modules.Any(a => a.moduleName == "SCANsat")
 									   select pref;
 
-                        if (scanners.Count() > 0)
-                        {
-                            foreach (var p in scanners)
-                            {
-                                if (p.partInfo == null)
-                                    continue;
+						if (scanners.Count() > 0)
+						{
+							foreach (var p in scanners)
+							{
+								if (p.partInfo == null)
+								{
+									continue;
+								}
 
-                                ConfigNode node = p.partInfo.partConfig;
+								ConfigNode node = p.partInfo.partConfig;
 
-                                if (node == null)
-                                    continue;
+								if (node == null)
+								{
+									continue;
+								}
 
-                                var moduleNodes = from nodes in node.GetNodes("MODULE")
-                                                  where nodes.GetValue("name") == "SCANsat"
-                                                  select nodes;
+								var moduleNodes = from nodes in node.GetNodes("MODULE")
+												  where nodes.GetValue("name") == "SCANsat"
+												  select nodes;
 
-                                foreach (ConfigNode moduleNode in moduleNodes)
-                                {
-                                    if (moduleNode == null)
-                                        continue;
+								foreach (ConfigNode moduleNode in moduleNodes)
+								{
+									if (moduleNode == null)
+									{
+										continue;
+									}
 
-                                    if (!moduleNode.HasValue("sensorType"))
-                                        continue;
+									if (!moduleNode.HasValue("sensorType"))
+									{
+										continue;
+									}
 
-                                    string type = moduleNode.GetValue("sensorType");
+									string type = moduleNode.GetValue("sensorType");
 
-                                    int sType = 0;
+									int sType = 0;
 
-                                    if (!int.TryParse(type, out sType))
-                                        continue;
+									if (!int.TryParse(type, out sType))
+									{
+										continue;
+									}
 
-                                    if (((SCANtype)sType & SCANtype.ResourceHiRes) == SCANtype.Nothing)
-                                        continue;
+									if (((SCANtype)sType & SCANtype.ResourceHiRes) == SCANtype.Nothing)
+									{
+										continue;
+									}
 
-                                    if (moduleNode.HasValue("max_alt") && !vessel.Landed)
-                                    {
-                                        string alt = moduleNode.GetValue("max_alt");
+									if (moduleNode.HasValue("max_alt") && !vessel.Landed)
+									{
+										string alt = moduleNode.GetValue("max_alt");
 
-                                        float f = 0;
+										float f = 0;
 
-                                        if (!float.TryParse(alt, out f))
-                                            continue;
+										if (!float.TryParse(alt, out f))
+										{
+											continue;
+										}
 
-                                        if (f < vessel.altitude)
-                                        {
-                                            scanner = false;
-                                            continue;
-                                        }
-                                    }
+										if (f < vessel.altitude)
+										{
+											scanner = false;
+											continue;
+										}
+									}
 
-                                    scanner = true;
-                                    break;
-                                }
-                                if (scanner)
-                                    break;
-                            }
-                            if (scanner)
-                                break;
-                        }
+									scanner = true;
+									break;
+								}
+								if (scanner)
+								{
+									break;
+								}
+							}
+							if (scanner)
+							{
+								break;
+							}
+						}
 
-                        scanners = from pref in vessel.protoVessel.protoPartSnapshots
-                                       where pref.modules.Any(a => a.moduleName == "ModuleSCANresourceScanner")
-                                       select pref;
+						scanners = from pref in vessel.protoVessel.protoPartSnapshots
+								   where pref.modules.Any(a => a.moduleName == "ModuleSCANresourceScanner")
+								   select pref;
 
-                        if (scanners.Count() > 0)
-                        {
-                            foreach (var p in scanners)
-                            {
-                                if (p.partInfo == null)
-                                    continue;
+						if (scanners.Count() > 0)
+						{
+							foreach (var p in scanners)
+							{
+								if (p.partInfo == null)
+								{
+									continue;
+								}
 
-                                ConfigNode node = p.partInfo.partConfig;
+								ConfigNode node = p.partInfo.partConfig;
 
-                                if (node == null)
-                                    continue;
+								if (node == null)
+								{
+									continue;
+								}
 
-                                var moduleNodes = from nodes in node.GetNodes("MODULE")
-                                                  where nodes.GetValue("name") == "ModuleSCANresourceScanner"
-                                                  select nodes;
+								var moduleNodes = from nodes in node.GetNodes("MODULE")
+												  where nodes.GetValue("name") == "ModuleSCANresourceScanner"
+												  select nodes;
 
-                                foreach (ConfigNode moduleNode in moduleNodes)
-                                {
-                                    if (moduleNode == null)
-                                        continue;
+								foreach (ConfigNode moduleNode in moduleNodes)
+								{
+									if (moduleNode == null)
+									{
+										continue;
+									}
 
-                                    if (!moduleNode.HasValue("sensorType"))
-                                        continue;
+									if (!moduleNode.HasValue("sensorType"))
+									{
+										continue;
+									}
 
-                                    string type = moduleNode.GetValue("sensorType");
+									string type = moduleNode.GetValue("sensorType");
 
-                                    int sType = 0;
+									int sType = 0;
 
-                                    if (!int.TryParse(type, out sType))
-                                        continue;
+									if (!int.TryParse(type, out sType))
+									{
+										continue;
+									}
 
-                                    if (((SCANtype)sType & SCANtype.ResourceHiRes) == SCANtype.Nothing)
-                                        continue;
+									if (((SCANtype)sType & SCANtype.ResourceHiRes) == SCANtype.Nothing)
+									{
+										continue;
+									}
 
-                                    if (moduleNode.HasValue("max_alt") && !vessel.Landed)
-                                    {
-                                        string alt = moduleNode.GetValue("max_alt");
+									if (moduleNode.HasValue("max_alt") && !vessel.Landed)
+									{
+										string alt = moduleNode.GetValue("max_alt");
 
-                                        float f = 0;
+										float f = 0;
 
-                                        if (!float.TryParse(alt, out f))
-                                            continue;
+										if (!float.TryParse(alt, out f))
+										{
+											continue;
+										}
 
-                                        if (f < vessel.altitude)
-                                        {
-                                            scanner = false;
-                                            continue;
-                                        }
-                                    }
+										if (f < vessel.altitude)
+										{
+											scanner = false;
+											continue;
+										}
+									}
 
-                                    scanner = true;
-                                    break;
-                                }
-                                if (scanner)
-                                    break;
-                            }
-                            if (scanner)
-                                break;
-                        }
-                    }
+									scanner = true;
+									break;
+								}
+								if (scanner)
+								{
+									break;
+								}
+							}
+							if (scanner)
+							{
+								break;
+							}
+						}
+					}
 					else
 					{
 						if (vessel.altitude > 1000000)
+						{
 							continue;
+						}
 
 						var scanners = from pref in vessel.protoVessel.protoPartSnapshots
 									   where pref.modules.Any(a => a.moduleName == "ModuleKerbNetAccess")
 									   select pref;
 
 						if (scanners.Count() == 0)
+						{
 							continue;
+						}
 
 						foreach (var p in scanners)
 						{
 							if (p.partInfo == null)
+							{
 								continue;
+							}
 
 							ConfigNode node = p.partInfo.partConfig;
 
 							if (node == null)
+							{
 								continue;
+							}
 
 							var moduleNodes = from nodes in node.GetNodes("MODULE")
 											  where nodes.GetValue("name") == "ModuleKerbNetAccess"
@@ -228,37 +290,51 @@ namespace SCANsat.SCAN_UI.UI_Framework
 							foreach (ConfigNode moduleNode in moduleNodes)
 							{
 								if (!moduleNode.HasNode("DISPLAY_MODES"))
+								{
 									continue;
+								}
 
 								ConfigNode displayMode = moduleNode.GetNode("DISPLAY_MODES");
 
 								if (!displayMode.HasValue("Mode"))
+								{
 									continue;
+								}
 
 								foreach (string mode in displayMode.GetValues("Mode"))
 								{
 									string[] subMode = mode.Split(',');
 
 									if (subMode[0].Trim() != "Resources")
+									{
 										continue;
+									}
 
 									scanner = true;
 									break;
 								}
 
 								if (scanner)
+								{
 									break;
+								}
 							}
 							if (scanner)
+							{
 								break;
+							}
 						}
 						if (scanner)
+						{
 							break;
+						}
 					}
 				}
 
 				if (!scanner)
+				{
 					return false;
+				}
 			}
 
 			return true;
@@ -267,9 +343,13 @@ namespace SCANsat.SCAN_UI.UI_Framework
 		internal static string resourceLabel(bool fuzz, double lat, double lon, SCANresourceGlobal resource, CelestialBody b)
 		{
 			if (fuzz)
+			{
 				return string.Format("{0}: {1}", resource.DisplayName, LoResourceGroup(SCANUtil.ResourceOverlay(lat, lon, resource.Name, b, SCAN_Settings_Config.Instance.BiomeLock)));
+			}
 			else
+			{
 				return string.Format("{0}: {1}", resource.DisplayName, SCANUtil.ResourceOverlay(lat, lon, resource.Name, b, SCAN_Settings_Config.Instance.BiomeLock).ToString("P2"));
+			}
 		}
 
 		internal static string LoResourceGroup(float abundance)
@@ -281,7 +361,9 @@ namespace SCANsat.SCAN_UI.UI_Framework
 				return string.Format("{0}-{1}%", abundance.ToString("F0"), (abundance + 5).ToString("F0"));
 			}
 			else
+			{
 				return "0%";
+			}
 		}
 
 		private static double inc(double d)
@@ -289,7 +371,9 @@ namespace SCANsat.SCAN_UI.UI_Framework
 			d = Math.Abs(d);
 
 			if (d > 90)
+			{
 				d = 180 - d;
+			}
 
 			return d;
 		}
@@ -302,108 +386,120 @@ namespace SCANsat.SCAN_UI.UI_Framework
 			}
 			else
 			{
-                return string.Format("{0}m", (((int)SCANUtil.getElevation(d.Body, Lon, Lat) / 500) * 500).ToString());
+				return string.Format("{0}m", (((int)SCANUtil.getElevation(d.Body, Lon, Lat) / 500) * 500).ToString());
 			}
 		}
 
-        internal static void getMouseOverElevation(StringBuilder sb, double Lon, double Lat, SCANdata d, int precision, bool high)
-        {
-
-            if (high)
-            {
-                sb.Append(SCANUtil.getElevation(d.Body, Lon, Lat).ToString(string.Format("N{0}", precision.ToString())));
-                sb.Append("m");
-            }
-            else
-            {
-                sb.Append((((int)SCANUtil.getElevation(d.Body, Lon, Lat) / 500) * 500).ToString());
-                sb.Append("m");
-            }
-        }
-
-        private const char WEST = 'W';
-        private const char EAST = 'E';
-        private const char SOUTH = 'S';
-        private const char NORTH = 'N';
-        private const char HOURS = '°';
-        private const string MINUTES = "'";
-        private const string SECONDS = "\"";
-
-        /* UI: conversions to and from DMS */
-        /* FIXME: These do not belong here. And they are only used once! */
-        private static string toDMS(double thing, char neg, char pos, int prec)
+		internal static void getMouseOverElevation(StringBuilder sb, double Lon, double Lat, SCANdata d, int precision, bool high)
 		{
-            StringBuilder sb = SCANStringBuilderCache.Acquire();
+
+			if (high)
+			{
+				sb.Append(SCANUtil.getElevation(d.Body, Lon, Lat).ToString(string.Format("N{0}", precision.ToString())));
+				sb.Append("m");
+			}
+			else
+			{
+				sb.Append((((int)SCANUtil.getElevation(d.Body, Lon, Lat) / 500) * 500).ToString());
+				sb.Append("m");
+			}
+		}
+
+		private const char WEST = 'W';
+		private const char EAST = 'E';
+		private const char SOUTH = 'S';
+		private const char NORTH = 'N';
+		private const char HOURS = '°';
+		private const string MINUTES = "'";
+		private const string SECONDS = "\"";
+
+		/* UI: conversions to and from DMS */
+		/* FIXME: These do not belong here. And they are only used once! */
+		private static string toDMS(double thing, char neg, char pos, int prec)
+		{
+			StringBuilder sb = SCANStringBuilderCache.Acquire();
 
 			if (thing >= 0)
+			{
 				neg = pos;
+			}
 
 			thing = Math.Abs(thing);
 
-            sb.Append(Math.Floor(thing).ToString());
-            sb.Append(HOURS);
-            thing = (thing - Math.Floor(thing)) * 60;
+			sb.Append(Math.Floor(thing).ToString());
+			sb.Append(HOURS);
+			thing = (thing - Math.Floor(thing)) * 60;
 
-            sb.Append(Math.Floor(thing).ToString());
-            sb.Append(MINUTES);
-            thing = (thing - Math.Floor(thing)) * 60;
+			sb.Append(Math.Floor(thing).ToString());
+			sb.Append(MINUTES);
+			thing = (thing - Math.Floor(thing)) * 60;
 
-            sb.Append(thing.ToString(string.Format("F{0}", prec.ToString())));
-            sb.Append(SECONDS);
+			sb.Append(thing.ToString(string.Format("F{0}", prec.ToString())));
+			sb.Append(SECONDS);
 
-            sb.Append(neg);
+			sb.Append(neg);
 
-            return sb.SCANToStringAndRelease();
+			return sb.SCANToStringAndRelease();
 		}
 
-        private static void toDMS(StringBuilder sb, double thing, char neg, char pos)
-        {
-            if (thing >= 0)
-                neg = pos;
+		private static void toDMS(StringBuilder sb, double thing, char neg, char pos)
+		{
+			if (thing >= 0)
+			{
+				neg = pos;
+			}
 
-            thing = Math.Abs(thing);
+			thing = Math.Abs(thing);
 
-            sb.Append(Math.Floor(thing).ToString());
-            sb.Append(HOURS);
-            thing = (thing - Math.Floor(thing)) * 60;
+			sb.Append(Math.Floor(thing).ToString());
+			sb.Append(HOURS);
+			thing = (thing - Math.Floor(thing)) * 60;
 
-            sb.Append(Math.Floor(thing).ToString());
-            sb.Append(MINUTES);
-            thing = (thing - Math.Floor(thing)) * 60;
+			sb.Append(Math.Floor(thing).ToString());
+			sb.Append(MINUTES);
+			thing = (thing - Math.Floor(thing)) * 60;
 
-            sb.Append(thing.ToString("F2"));
-            sb.Append(SECONDS);
+			sb.Append(thing.ToString("F2"));
+			sb.Append(SECONDS);
 
-            sb.Append(neg);
-        }
+			sb.Append(neg);
+		}
 
-        internal static string toDMS(double lat, double lon, int precision = 2)
+		internal static string toDMS(double lat, double lon, int precision = 2)
 		{
 			return string.Format("{0} {1}", toDMS(lat, SOUTH, NORTH, precision), toDMS(lon, WEST, EAST, precision));
 		}
 
-        internal static void toDMS(StringBuilder sb, double lat, double lon)
-        {
-            toDMS(sb, lat, SOUTH, NORTH);
-            sb.Append(" ");
-            toDMS(sb, lon, WEST, EAST);
-        }
+		internal static void toDMS(StringBuilder sb, double lat, double lon)
+		{
+			toDMS(sb, lat, SOUTH, NORTH);
+			sb.Append(" ");
+			toDMS(sb, lon, WEST, EAST);
+		}
 
-        internal static string distanceString(double dist, double cutoff, double cutoff2 = double.MaxValue)
+		internal static string distanceString(double dist, double cutoff, double cutoff2 = double.MaxValue)
 		{
 			if (dist < cutoff)
+			{
 				return string.Format("{0}m", dist.ToString("N1"));
+			}
 			else if (dist < cutoff2)
+			{
 				return string.Format("{0}km", (dist / 1000d).ToString("N2"));
+			}
 			else
+			{
 				return string.Format("{0}km", (dist / 1000d).ToString("N0"));
+			}
 		}
 
 		//Reset window positions;
 		internal static void resetMainMapPos()
 		{
 			if (SCAN_UI_MainMap.Instance == null)
+			{
 				return;
+			}
 
 			SCAN_UI_MainMap.Instance.ResetPosition();
 		}
@@ -411,7 +507,9 @@ namespace SCANsat.SCAN_UI.UI_Framework
 		internal static void resetInstUIPos()
 		{
 			if (SCAN_UI_Instruments.Instance == null)
+			{
 				return;
+			}
 
 			SCAN_UI_Instruments.Instance.ResetPosition();
 		}
@@ -419,7 +517,9 @@ namespace SCANsat.SCAN_UI.UI_Framework
 		internal static void resetBigMapPos()
 		{
 			if (SCAN_UI_BigMap.Instance == null)
+			{
 				return;
+			}
 
 			SCAN_UI_BigMap.Instance.ResetPosition();
 		}
@@ -427,7 +527,9 @@ namespace SCANsat.SCAN_UI.UI_Framework
 		internal static void resetOverlayControllerPos()
 		{
 			if (SCAN_UI_Overlay.Instance == null)
+			{
 				return;
+			}
 
 			SCAN_UI_Overlay.Instance.ResetPosition();
 		}
@@ -435,7 +537,9 @@ namespace SCANsat.SCAN_UI.UI_Framework
 		internal static void resetZoomMapPos()
 		{
 			if (SCAN_UI_ZoomMap.Instance == null)
+			{
 				return;
+			}
 
 			SCAN_UI_ZoomMap.Instance.ResetPosition();
 		}
@@ -504,17 +608,22 @@ namespace SCANsat.SCAN_UI.UI_Framework
 			Vector3d up = body.GetSurfaceNVector(latitude, longitude);
 			var height = SCANUtil.getElevation(body, longitude, latitude);
 			if (height < body.Radius)
+			{
 				height = body.Radius;
+			}
+
 			Vector3d center = body.position + height * up;
 
 			if (occluded(center, body))
+			{
 				return;
+			}
 
 			Vector3d north = Vector3d.Exclude(up, body.transform.up).normalized;
 
 			radius = body.Radius / 15;
 
-			GLTriangleMap(new Vector3d[3] { center, center + radius * (QuaternionD.AngleAxis(rotation - 55, up) * north), center + radius * (QuaternionD.AngleAxis(rotation -35, up) * north) }, c);
+			GLTriangleMap(new Vector3d[3] { center, center + radius * (QuaternionD.AngleAxis(rotation - 55, up) * north), center + radius * (QuaternionD.AngleAxis(rotation - 35, up) * north) }, c);
 
 			GLTriangleMap(new Vector3d[3] { center, center + radius * (QuaternionD.AngleAxis(rotation + 55, up) * north), center + radius * (QuaternionD.AngleAxis(rotation + 35, up) * north) }, c);
 
@@ -531,11 +640,15 @@ namespace SCANsat.SCAN_UI.UI_Framework
 			Vector3d center = v.transform.position;
 
 			if (occluded(center, body))
+			{
 				return;
+			}
 
 			var height = SCANUtil.getElevation(body, lon, lat);
 			if (height < body.Radius)
+			{
 				height = body.Radius;
+			}
 
 			Vector3d up = body.GetSurfaceNVector(lat, lon);
 
@@ -547,23 +660,29 @@ namespace SCANsat.SCAN_UI.UI_Framework
 			Vector3d left = srfCenter + width * vesselPerp;
 			Vector3d right = srfCenter - width * vesselPerp;
 
-			GLTriangleMap(new Vector3d[3] { center, left , right }, c);
+			GLTriangleMap(new Vector3d[3] { center, left, right }, c);
 		}
 
 		private static bool occluded(Vector3d pos, CelestialBody body)
 		{
 			if (Vector3d.Distance(pos, body.position) < body.Radius - 100)
+			{
 				return true;
+			}
 
 			Renderer scaledR = body.scaledBody.GetComponent<Renderer>();
 
 			if (!scaledR.isVisible)
+			{
 				return true;
+			}
 
 			Vector3d camPos = ScaledSpace.ScaledToLocalSpace(PlanetariumCamera.Camera.transform.position);
 
 			if (Vector3d.Angle(camPos - pos, body.position - pos) > 90)
+			{
 				return false;
+			}
 
 			double bodyDistance = Vector3d.Distance(camPos, body.position);
 			double separationAngle = Vector3d.Angle(pos - camPos, body.position - camPos);
@@ -577,7 +696,10 @@ namespace SCANsat.SCAN_UI.UI_Framework
 		{
 			GL.PushMatrix();
 			if (mat == null)
+			{
 				mat = new Material(Shader.Find("Legacy Shaders/Particles/Additive"));
+			}
+
 			mat.SetPass(0);
 			GL.LoadOrtho();
 			GL.Begin(GL.TRIANGLES);
@@ -602,12 +724,19 @@ namespace SCANsat.SCAN_UI.UI_Framework
 		private static double fixLon(double Lon)
 		{
 			if (Lon <= 180)
+			{
 				Lon = 180 - Lon;
+			}
 			else
+			{
 				Lon = (Lon - 180) * -1;
+			}
+
 			Lon -= 90;
 			if (Lon < -180)
+			{
 				Lon += 360;
+			}
 
 			return Lon;
 		}
@@ -619,7 +748,9 @@ namespace SCANsat.SCAN_UI.UI_Framework
 			Lon = (Lon - 180) * -1;
 
 			if (Lon < 0)
+			{
 				Lon += 360;
+			}
 
 			Lon -= 180;
 
@@ -691,7 +822,7 @@ namespace SCANsat.SCAN_UI.UI_Framework
 
 			System.Random r = new System.Random(ResourceScenario.Instance.gameSettings.Seed);
 
-			for (int j = 0; j < height;  j += stepScale)
+			for (int j = 0; j < height; j += stepScale)
 			{
 				double lat = (j / scale) - 90;
 				for (int i = 0; i < width; i += stepScale)
@@ -729,7 +860,9 @@ namespace SCANsat.SCAN_UI.UI_Framework
 		internal static Texture2D drawBiomeMap(ref Texture2D map, ref Color32[] pix, SCANdata data, float transparency, int height = 256, bool useStock = false, bool whiteBorder = false)
 		{
 			if (!useStock && !whiteBorder)
+			{
 				return drawBiomeMap(ref map, ref pix, data, height);
+			}
 
 			int width = height * 2;
 			float scale = (width * 1f) / 360f;
@@ -780,7 +913,9 @@ namespace SCANsat.SCAN_UI.UI_Framework
 		private static Texture2D drawBiomeMap(ref Texture2D m, ref Color32[] p, SCANdata d, int h)
 		{
 			if (d.Body.BiomeMap == null)
+			{
 				return null;
+			}
 
 			if (m == null || m.height != h)
 			{
@@ -814,9 +949,13 @@ namespace SCANsat.SCAN_UI.UI_Framework
 					//	p[j * m.width + i] = palette.Clear;
 
 					if (SCANUtil.isCovered(lon, lat, d, SCANtype.Biome))
+					{
 						p[i] = (Color32)SCANUtil.getBiomeCached(d.Body, lon, lat).mapColor;
+					}
 					else
+					{
 						p[i] = palette.Clear;
+					}
 				}
 
 				m.SetPixels32(0, j, m.width, 1, p);
@@ -858,7 +997,9 @@ namespace SCANsat.SCAN_UI.UI_Framework
 					if (SCANUtil.isCovered(lon, lat, data, SCANtype.Altimetry))
 					{
 						if (SCANUtil.isCovered(lon, lat, data, SCANtype.AltimetryHiRes))
+						{
 							c = palette.heightToColor(values[i, j], true, data.TerrainConfig);
+						}
 						else
 						{
 							int ilon = SCANUtil.icLON(unFixLon(lon));
@@ -871,7 +1012,9 @@ namespace SCANsat.SCAN_UI.UI_Framework
 						c = palette.lerp(c, palette.Clear, 0.1f);
 					}
 					else
+					{
 						c = palette.Clear;
+					}
 
 					pix[j * width + i] = c;
 				}
@@ -931,7 +1074,9 @@ namespace SCANsat.SCAN_UI.UI_Framework
 							for (int a = 0; a < 5; a++)
 							{
 								if (e[a] < 0)
+								{
 									e[a] = 0;
+								}
 							}
 						}
 
@@ -942,30 +1087,44 @@ namespace SCANsat.SCAN_UI.UI_Framework
 							float slopeNormal = slope / 30;
 
 							if (slopeNormal > 1)
+							{
 								slopeNormal = 1;
+							}
 
 							if (slopeNormal < 0.6f)
+							{
 								c = palette.lerp(SCANcontroller.controller.lowSlopeColorOne32, SCANcontroller.controller.highSlopeColorOne32, slopeNormal);
+							}
 							else
+							{
 								c = palette.lerp(SCANcontroller.controller.lowSlopeColorTwo32, SCANcontroller.controller.highSlopeColorTwo32, slopeNormal);
+							}
 						}
 						else
 						{
 							float slopeRoundNormal = (float)(Math.Round(slope / 5) * 5) / 30;
 
 							if (slopeRoundNormal > 1)
+							{
 								slopeRoundNormal = 1;
+							}
 
 							if (slopeRoundNormal < 0.6f)
+							{
 								c = palette.lerp(SCANcontroller.controller.lowSlopeColorOne32, SCANcontroller.controller.highSlopeColorOne32, slopeRoundNormal);
+							}
 							else
+							{
 								c = palette.lerp(SCANcontroller.controller.lowSlopeColorTwo32, SCANcontroller.controller.highSlopeColorTwo32, slopeRoundNormal);
+							}
 						}
 
 						c = palette.lerp(c, palette.Clear, 0.1f);
 					}
 					else
+					{
 						c = palette.Clear;
+					}
 
 					pix[j * width + i] = c;
 				}
@@ -981,7 +1140,7 @@ namespace SCANsat.SCAN_UI.UI_Framework
 		{
 			int width = height * 2;
 			float scale = height / 180f;
-			
+
 			values = new float[width, height];
 
 			for (int i = 0; i < 360; i++)
@@ -1011,7 +1170,10 @@ namespace SCANsat.SCAN_UI.UI_Framework
 			else if (y > height)
 			{
 				while (y > 180)
+				{
 					y -= 180;
+				}
+
 				y = 180 - Math.Abs(y);
 				x -= (width / 2);
 			}
@@ -1026,7 +1188,7 @@ namespace SCANsat.SCAN_UI.UI_Framework
 		{
 			if (map.Map == null || pix == null || map.Map.height != height)
 			{
-				map.Map= new Texture2D(width, height, TextureFormat.ARGB32, false);
+				map.Map = new Texture2D(width, height, TextureFormat.ARGB32, false);
 				pix = new Color32[width * height];
 				values = new float[width, height];
 			}
@@ -1057,9 +1219,13 @@ namespace SCANsat.SCAN_UI.UI_Framework
 				for (int j = 0; j < height; j++)
 				{
 					if (map.UseCustomRange)
+					{
 						pix[j * width + i] = palette.heightToColor(values[i, j], true, data.TerrainConfig, map.CustomMin, map.CustomMax, map.CustomRange, true);
+					}
 					else
+					{
 						pix[j * width + i] = palette.heightToColor(values[i, j], true, data.TerrainConfig);
+					}
 				}
 			}
 
@@ -1176,31 +1342,42 @@ namespace SCANsat.SCAN_UI.UI_Framework
 		private static float getLerp(System.Random rand, int l)
 		{
 			if (l == 0)
+			{
 				return 0.5f;
-			
+			}
+
 			return (float)l / 100f + (float)rand.Next(100 - (l / 2)) / 100f;
 		}
 
 		private static void interpolate(Color32[] c, int height, int width, int x, int y, int step, System.Random r)
 		{
-			for (int j = y; j < height + y; j+= 2 * step)
+			for (int j = y; j < height + y; j += 2 * step)
 			{
 				int ypos1 = j - step;
 				if (ypos1 < 0)
+				{
 					ypos1 = 0;
+				}
+
 				int ypos2 = j + step;
 				if (ypos2 >= height)
+				{
 					ypos2 = height - 1;
+				}
 
 				for (int i = x; i < width + x; i += 2 * step)
 				{
 					int xpos1 = i - step;
 					if (xpos1 < 0)
+					{
 						xpos1 = 0;
+					}
 
 					int xpos2 = i + step;
 					if (xpos2 >= width)
+					{
 						xpos2 = width - 1;
+					}
 
 					Color32 avgX = Color.clear;
 					Color32 avgY = Color.clear;
@@ -1231,10 +1408,15 @@ namespace SCANsat.SCAN_UI.UI_Framework
 			{
 				int ypos1 = j - step;
 				if (ypos1 < 0)
+				{
 					ypos1 = 0;
+				}
+
 				int ypos2 = j + step;
 				if (ypos2 >= height)
+				{
 					ypos2 = height - 1;
+				}
 
 				for (int i = x; i < width + x; i += 2 * step)
 				{
@@ -1242,17 +1424,25 @@ namespace SCANsat.SCAN_UI.UI_Framework
 					if (xpos1 < 0)
 					{
 						if (hardEdges)
+						{
 							xpos1 = 0;
+						}
 						else
+						{
 							xpos1 += width;
+						}
 					}
 					int xpos2 = i + step;
 					if (xpos2 >= width)
 					{
 						if (hardEdges)
+						{
 							xpos2 = width - 1;
+						}
 						else
+						{
 							xpos2 -= width;
+						}
 					}
 
 					float avgX = 0;
@@ -1260,7 +1450,9 @@ namespace SCANsat.SCAN_UI.UI_Framework
 
 					float lerp = 0.5f;
 					if (softEdges)
+					{
 						lerp = getLerp(r, step * 2);
+					}
 
 					if (x == y)
 					{
@@ -1288,10 +1480,14 @@ namespace SCANsat.SCAN_UI.UI_Framework
 				if (Abundance >= Resource.CurrentBody.MinValue)
 				{
 					if (Abundance > Resource.CurrentBody.MaxValue)
+					{
 						Abundance = Resource.CurrentBody.MaxValue;
+					}
 				}
 				else
+				{
 					Abundance = 0;
+				}
 			}
 			else if (SCANUtil.isCovered(Lon, Lat, Data, SCANtype.ResourceLoRes))
 			{
@@ -1299,18 +1495,28 @@ namespace SCANsat.SCAN_UI.UI_Framework
 				if (Abundance >= Resource.CurrentBody.MinValue)
 				{
 					if (Abundance > Resource.CurrentBody.MaxValue)
+					{
 						Abundance = Resource.CurrentBody.MaxValue;
+					}
 				}
 				else
+				{
 					Abundance = 0;
+				}
 			}
 			else
+			{
 				return BaseColor;
+			}
 
 			if (Abundance == 0)
+			{
 				return palette.lerp(BaseColor, palette.grey, 0.3f);
+			}
 			else
+			{
 				return palette.lerp(palette.lerp(Resource.MinColor, Resource.MaxColor, (Abundance - Resource.CurrentBody.MinValue) / (Resource.CurrentBody.MaxValue - Resource.CurrentBody.MinValue)), BaseColor, Resource.Transparency / 100f);
+			}
 		}
 
 		internal static Color32 resourceToColor32(Color32 BaseColor, SCANresourceGlobal Resource, float MinRange, float MaxRange, float Abundance, SCANdata Data, double Lon, double Lat, float Transparency = 0.3f)
@@ -1320,10 +1526,14 @@ namespace SCANsat.SCAN_UI.UI_Framework
 				if (Abundance >= MinRange)
 				{
 					if (Abundance > MaxRange)
+					{
 						Abundance = MaxRange;
+					}
 				}
 				else
+				{
 					Abundance = 0;
+				}
 			}
 			else if (SCANUtil.isCovered(Lon, Lat, Data, SCANtype.ResourceLoRes))
 			{
@@ -1334,19 +1544,29 @@ namespace SCANsat.SCAN_UI.UI_Framework
 					if (Abundance >= MinRange)
 					{
 						if (Abundance > MaxRange)
+						{
 							Abundance = MaxRange;
+						}
 					}
 					else
+					{
 						Abundance = 0;
+					}
 				}
 			}
 			else
+			{
 				return BaseColor;
+			}
 
 			if (Abundance == 0)
+			{
 				return palette.lerp(BaseColor, palette.Grey, Transparency);
+			}
 			else
+			{
 				return palette.lerp(palette.lerp(Resource.MinColor32, Resource.MaxColor32, (Abundance - MinRange) / (MaxRange - MinRange)), BaseColor, Resource.Transparency / 100f);
+			}
 		}
 
 		#endregion

@@ -66,15 +66,15 @@ namespace SCANsat.SCAN_Unity
 		private static Sprite _planetIcon;
 		private static Sprite _mysteryIcon;
 		private static Sprite _flagIcon;
-        private static Sprite _scienceControllerIcon;
-        private static Sprite _apMarker;
+		private static Sprite _scienceControllerIcon;
+		private static Sprite _apMarker;
 		private static Sprite _peMarker;
 		private static Sprite _maneuverMarker;
 		private static Sprite _encounterMarker;
 		private static Sprite _exitMarker;
 		private static Sprite _anomalyIcon;
-        private static Sprite _rocIcon;
-        private static Sprite _waypointIcon;
+		private static Sprite _rocIcon;
+		private static Sprite _waypointIcon;
 
 		private static Sprite _clearSprite;
 		private static Sprite _toggleNormal;
@@ -252,19 +252,19 @@ namespace SCANsat.SCAN_Unity
 			get { return _anomalyIcon; }
 		}
 
-        public static Sprite ROCIcon
-        {
-            get { return _rocIcon; }
-        }
+		public static Sprite ROCIcon
+		{
+			get { return _rocIcon; }
+		}
 
-        public static Sprite WaypointIcon
+		public static Sprite WaypointIcon
 		{
 			get { return _waypointIcon; }
 		}
 
 		public static Sprite VesselIcon(VesselType type)
 		{
-			switch(type)
+			switch (type)
 			{
 				case VesselType.Base:
 					return _baseIcon;
@@ -292,9 +292,9 @@ namespace SCANsat.SCAN_Unity
 					return _stationIcon;
 				case VesselType.Unknown:
 					return _mysteryIcon;
-                case VesselType.DeployedScienceController:
-                case VesselType.DeployedSciencePart:
-                    return _scienceControllerIcon;
+				case VesselType.DeployedScienceController:
+				case VesselType.DeployedSciencePart:
+					return _scienceControllerIcon;
 				default:
 					return _mysteryIcon;
 			}
@@ -317,13 +317,15 @@ namespace SCANsat.SCAN_Unity
 
 		public static Shader EdgeDetectShader
 		{
-			get {return _edgeDetectShader;}
+			get { return _edgeDetectShader; }
 		}
 
 		public static void ResetUIStyle()
 		{
 			if (loadedPrefabs != null)
+			{
 				processUIPrefabs();
+			}
 		}
 
 		private static string path;
@@ -346,32 +348,50 @@ namespace SCANsat.SCAN_Unity
 		private IEnumerator loadResources()
 		{
 			while (ApplicationLauncher.Instance == null)
+			{
 				yield return null;
+			}
 
 			while (SCAN_Settings_Config.Instance == null)
+			{
 				yield return null;
+			}
 
 			if (!shadersLoaded)
+			{
 				loadShaders();
+			}
 
 			if (!spritesLoaded)
+			{
 				loadTextures();
+			}
 
 			if (!skinLoaded)
+			{
 				loadUnitySkin();
+			}
 
 			if (!iconsLoaded)
+			{
 				loadIcons();
+			}
 
 			if (!prefabsLoaded)
+			{
 				loadPrefabBundle();
-			
+			}
+
 			palette.CurrentPalettes = palette.SetCurrentPalettesType(SCANPaletteKind.Diverging);
 
 			if (shadersLoaded && spritesLoaded && skinLoaded && iconsLoaded && prefabsLoaded)
+			{
 				SCANUtil.SCANlog("All SCANsat asset bundles loaded");
+			}
 			else
+			{
 				SCANUtil.SCANlog("Error in loading SCANsat asset bundles\nSome UI elements may be non-functional");
+			}
 
 			loaded = true;
 		}
@@ -381,19 +401,25 @@ namespace SCANsat.SCAN_Unity
 			AssetBundle shaders = AssetBundle.LoadFromFile(path + shadersAssetName);
 
 			if (shaders == null)
+			{
 				return;
+			}
 
 			Shader[] loadedShaders = shaders.LoadAllAssets<Shader>();
 
 			if (loadedShaders == null)
+			{
 				return;
+			}
 
 			for (int i = loadedShaders.Length - 1; i >= 0; i--)
 			{
 				Shader s = loadedShaders[i];
 
-                if (s.name == "Hidden/EdgeDetectColors")
-                    _edgeDetectShader = s;
+				if (s.name == "Hidden/EdgeDetectColors")
+				{
+					_edgeDetectShader = s;
+				}
 			}
 
 			SCANUtil.SCANlog("Shader asset bundle loaded; using platform bundle: {0}", shadersAssetName);
@@ -421,55 +447,81 @@ namespace SCANsat.SCAN_Unity
 				UnityEngine.GUISkin skin = HighLogic.Skin;
 
 				if (skin == null)
+				{
 					return;
+				}
 
-                if (skin.toggle.normal.background != null)
-                {
-                    if (skin.toggle.normal.background.width > 33 && skin.toggle.normal.background.height > 33)
-                        _toggleNormal = Sprite.Create(skin.toggle.normal.background, new Rect(16, 16, skin.toggle.normal.background.width - 32, skin.toggle.normal.background.height - 32), new Vector2(0.5f, 0.5f));
-                    else
-                        _toggleNormal = Sprite.Create(skin.toggle.normal.background, new Rect(0, 0, skin.toggle.normal.background.width, skin.toggle.normal.background.height), new Vector2(0.5f, 0.5f));
-                }
+				if (skin.toggle.normal.background != null)
+				{
+					if (skin.toggle.normal.background.width > 33 && skin.toggle.normal.background.height > 33)
+					{
+						_toggleNormal = Sprite.Create(skin.toggle.normal.background, new Rect(16, 16, skin.toggle.normal.background.width - 32, skin.toggle.normal.background.height - 32), new Vector2(0.5f, 0.5f));
+					}
+					else
+					{
+						_toggleNormal = Sprite.Create(skin.toggle.normal.background, new Rect(0, 0, skin.toggle.normal.background.width, skin.toggle.normal.background.height), new Vector2(0.5f, 0.5f));
+					}
+				}
 
-                if (skin.toggle.hover.background != null)
-                {
-                    if (skin.toggle.hover.background.width > 33 && skin.toggle.hover.background.height > 33)
-                        _toggleHover = Sprite.Create(skin.toggle.hover.background, new Rect(16, 16, skin.toggle.hover.background.width - 32, skin.toggle.hover.background.height - 32), new Vector2(0.5f, 0.5f));
-                    else
-                        _toggleHover = Sprite.Create(skin.toggle.hover.background, new Rect(0, 0, skin.toggle.hover.background.width, skin.toggle.hover.background.height), new Vector2(0.5f, 0.5f));
-                }
+				if (skin.toggle.hover.background != null)
+				{
+					if (skin.toggle.hover.background.width > 33 && skin.toggle.hover.background.height > 33)
+					{
+						_toggleHover = Sprite.Create(skin.toggle.hover.background, new Rect(16, 16, skin.toggle.hover.background.width - 32, skin.toggle.hover.background.height - 32), new Vector2(0.5f, 0.5f));
+					}
+					else
+					{
+						_toggleHover = Sprite.Create(skin.toggle.hover.background, new Rect(0, 0, skin.toggle.hover.background.width, skin.toggle.hover.background.height), new Vector2(0.5f, 0.5f));
+					}
+				}
 
-                if (skin.toggle.active.background != null)
-                {
-                    if (skin.toggle.active.background.width > 33 && skin.toggle.active.background.height > 33)
-                        _toggleActive = Sprite.Create(skin.toggle.active.background, new Rect(16, 16, skin.toggle.active.background.width - 32, skin.toggle.active.background.height - 32), new Vector2(0.5f, 0.5f));
-                    else
-                        _toggleActive = Sprite.Create(skin.toggle.active.background, new Rect(0, 0, skin.toggle.active.background.width, skin.toggle.active.background.height), new Vector2(0.5f, 0.5f));
-                }
+				if (skin.toggle.active.background != null)
+				{
+					if (skin.toggle.active.background.width > 33 && skin.toggle.active.background.height > 33)
+					{
+						_toggleActive = Sprite.Create(skin.toggle.active.background, new Rect(16, 16, skin.toggle.active.background.width - 32, skin.toggle.active.background.height - 32), new Vector2(0.5f, 0.5f));
+					}
+					else
+					{
+						_toggleActive = Sprite.Create(skin.toggle.active.background, new Rect(0, 0, skin.toggle.active.background.width, skin.toggle.active.background.height), new Vector2(0.5f, 0.5f));
+					}
+				}
 
-                if (skin.toggle.onNormal.background != null)
-                {
-                    if (skin.toggle.onNormal.background.width > 33 && skin.toggle.onNormal.background.height > 33)
-                        _toggleOn = Sprite.Create(skin.toggle.onNormal.background, new Rect(16, 16, skin.toggle.onNormal.background.width - 32, skin.toggle.onNormal.background.height - 32), new Vector2(0.5f, 0.5f));
-                    else
-                        _toggleOn = Sprite.Create(skin.toggle.onNormal.background, new Rect(0, 0, skin.toggle.onNormal.background.width, skin.toggle.onNormal.background.height), new Vector2(0.5f, 0.5f));
-                }
+				if (skin.toggle.onNormal.background != null)
+				{
+					if (skin.toggle.onNormal.background.width > 33 && skin.toggle.onNormal.background.height > 33)
+					{
+						_toggleOn = Sprite.Create(skin.toggle.onNormal.background, new Rect(16, 16, skin.toggle.onNormal.background.width - 32, skin.toggle.onNormal.background.height - 32), new Vector2(0.5f, 0.5f));
+					}
+					else
+					{
+						_toggleOn = Sprite.Create(skin.toggle.onNormal.background, new Rect(0, 0, skin.toggle.onNormal.background.width, skin.toggle.onNormal.background.height), new Vector2(0.5f, 0.5f));
+					}
+				}
 
-                if (skin.toggle.onHover.background != null)
-                {
-                    if (skin.toggle.onHover.background.width > 33 && skin.toggle.onHover.background.height > 33)
-                        _toggleOnHover = Sprite.Create(skin.toggle.onHover.background, new Rect(16, 16, skin.toggle.onHover.background.width - 32, skin.toggle.onHover.background.height - 32), new Vector2(0.5f, 0.5f));
-                    else
-                        _toggleOnHover = Sprite.Create(skin.toggle.onHover.background, new Rect(0, 0, skin.toggle.onHover.background.width, skin.toggle.onHover.background.height), new Vector2(0.5f, 0.5f));
-                }
+				if (skin.toggle.onHover.background != null)
+				{
+					if (skin.toggle.onHover.background.width > 33 && skin.toggle.onHover.background.height > 33)
+					{
+						_toggleOnHover = Sprite.Create(skin.toggle.onHover.background, new Rect(16, 16, skin.toggle.onHover.background.width - 32, skin.toggle.onHover.background.height - 32), new Vector2(0.5f, 0.5f));
+					}
+					else
+					{
+						_toggleOnHover = Sprite.Create(skin.toggle.onHover.background, new Rect(0, 0, skin.toggle.onHover.background.width, skin.toggle.onHover.background.height), new Vector2(0.5f, 0.5f));
+					}
+				}
 
-                if (skin.toggle.onActive.background != null)
-                {
-                    if (skin.toggle.onActive.background.width > 33 && skin.toggle.onActive.background.height > 33)
-                        _toggleOnActive = Sprite.Create(skin.toggle.onActive.background, new Rect(16, 16, skin.toggle.onActive.background.width - 32, skin.toggle.onActive.background.height - 32), new Vector2(0.5f, 0.5f));
-                    else
-                        _toggleOnActive = Sprite.Create(skin.toggle.onActive.background, new Rect(0, 0, skin.toggle.onActive.background.width, skin.toggle.onActive.background.height), new Vector2(0.5f, 0.5f));
-                }
+				if (skin.toggle.onActive.background != null)
+				{
+					if (skin.toggle.onActive.background.width > 33 && skin.toggle.onActive.background.height > 33)
+					{
+						_toggleOnActive = Sprite.Create(skin.toggle.onActive.background, new Rect(16, 16, skin.toggle.onActive.background.width - 32, skin.toggle.onActive.background.height - 32), new Vector2(0.5f, 0.5f));
+					}
+					else
+					{
+						_toggleOnActive = Sprite.Create(skin.toggle.onActive.background, new Rect(0, 0, skin.toggle.onActive.background.width, skin.toggle.onActive.background.height), new Vector2(0.5f, 0.5f));
+					}
+				}
 
 				toggleLoaded = true;
 			}
@@ -488,14 +540,18 @@ namespace SCANsat.SCAN_Unity
 					Image background = ApplicationLauncher.Instance.listItemPrefab.GetComponent<Image>();
 
 					if (background != null)
+					{
 						_appBackground = background.sprite;
+					}
 
 					appLoaded = true;
 				}
 			}
 
 			if (clearLoaded && toggleLoaded && appLoaded)
+			{
 				spritesLoaded = true;
+			}
 		}
 
 		private static void loadUnitySkin()
@@ -507,69 +563,125 @@ namespace SCANsat.SCAN_Unity
 			AssetBundle skin = AssetBundle.LoadFromFile(path + unitySkinAssetName);
 
 			if (skin == null)
+			{
 				return;
+			}
 
 			Sprite[] skinSprites = skin.LoadAllAssets<Sprite>();
 
 			if (skinSprites == null)
+			{
 				return;
+			}
 
 			for (int i = skinSprites.Length - 1; i >= 0; i--)
 			{
 				Sprite s = skinSprites[i];
 
 				if (s.name == "window")
+				{
 					_unitySkinDef.window.normal.background = s;
+				}
 				else if (s.name == "box")
+				{
 					_unitySkinDef.box.normal.background = s;
+				}
 				else if (s.name == "button")
+				{
 					_unitySkinDef.button.normal.background = s;
+				}
 				else if (s.name == "button hover")
+				{
 					_unitySkinDef.button.highlight.background = s;
+				}
 				else if (s.name == "button on")
+				{
 					_unitySkinDef.button.active.background = s;
+				}
 				else if (s.name == "toggle_border")
+				{
 					_unitySkinDef.toggle.normal.background = s;
+				}
 				else if (s.name == "SCAN_Toggle_Hover_Border")
+				{
 					_unitySkinDef.toggle.highlight.background = s;
+				}
 				else if (s.name == "toggle active_border")
+				{
 					_unitySkinDef.toggle.active.background = s;
+				}
 				else if (s.name == "SCAN_Toggle_Border")
+				{
 					_unitySkinDef.toggle.disabled.background = s;
+				}
 				else if (s.name == "SCAN_Toggle_On_Hover_Border")
+				{
 					_unityToggleOnHover = s;
+				}
 				else if (s.name == "textfield")
+				{
 					_unitySkinDef.textField.normal.background = s;
+				}
 				else if (s.name == "textfield hover")
+				{
 					_unitySkinDef.textField.highlight.background = s;
+				}
 				else if (s.name == "textfield on")
+				{
 					_unitySkinDef.textField.active.background = s;
+				}
 				else if (s.name == "horizontal scrollbar")
+				{
 					_unitySkinDef.horizontalScrollbar.normal.background = s;
+				}
 				else if (s.name == "horizontal scrollbar thumb")
+				{
 					_unitySkinDef.horizontalScrollbarThumb.normal.background = s;
+				}
 				else if (s.name == "vertical scrollbar")
+				{
 					_unitySkinDef.verticalScrollbar.normal.background = s;
+				}
 				else if (s.name == "vertical scrollbar thumb")
+				{
 					_unitySkinDef.verticalScrollbarThumb.normal.background = s;
+				}
 				else if (s.name == "horizontalslider")
+				{
 					_unitySkinDef.horizontalSlider.normal.background = s;
+				}
 				else if (s.name == "slider thumb")
+				{
 					_unitySkinDef.horizontalSliderThumb.normal.background = s;
+				}
 				else if (s.name == "slider thumb hover")
+				{
 					_unitySkinDef.horizontalSliderThumb.highlight.background = s;
+				}
 				else if (s.name == "slider thumb active")
+				{
 					_unitySkinDef.horizontalSliderThumb.active.background = s;
+				}
 				else if (s.name == "verticalslider")
+				{
 					_unitySkinDef.verticalSlider.normal.background = s;
+				}
 				else if (s.name == "slider thumb")
+				{
 					_unitySkinDef.verticalSliderThumb.normal.background = s;
+				}
 				else if (s.name == "slider thumb hover")
+				{
 					_unitySkinDef.verticalSliderThumb.highlight.background = s;
+				}
 				else if (s.name == "slider thumb active")
+				{
 					_unitySkinDef.verticalSliderThumb.active.background = s;
+				}
 				else if (s.name == "tooltip")
+				{
 					_unityTooltipBackground = s;
+				}
 			}
 
 			SCANUtil.SCANlog("Unity skin asset bundle loaded");
@@ -579,7 +691,7 @@ namespace SCANsat.SCAN_Unity
 			skinLoaded = true;
 		}
 
-		private static void SkinInit (UISkinDef skin)
+		private static void SkinInit(UISkinDef skin)
 		{
 			skin.window = new UIStyle();
 			skin.box = new UIStyle();
@@ -626,71 +738,129 @@ namespace SCANsat.SCAN_Unity
 			AssetBundle icons = AssetBundle.LoadFromFile(path + iconAssetName);
 
 			if (icons == null)
+			{
 				return;
+			}
 
 			Sprite[] iconSprites = icons.LoadAllAssets<Sprite>();
 
 			if (iconSprites == null)
+			{
 				return;
+			}
 
 			for (int i = iconSprites.Length - 1; i >= 0; i--)
 			{
 				Sprite s = iconSprites[i];
 
 				if (s.name == "PodIcon")
+				{
 					_podIcon = s;
+				}
 				else if (s.name == "PlaneIcon")
+				{
 					_planeIcon = s;
+				}
 				else if (s.name == "ProbeIcon")
+				{
 					_probeIcon = s;
+				}
 				else if (s.name == "DebrisIcon")
+				{
 					_debrisIcon = s;
+				}
 				else if (s.name == "StationIcon")
+				{
 					_stationIcon = s;
+				}
 				else if (s.name == "LanderIcon")
+				{
 					_landerIcon = s;
+				}
 				else if (s.name == "RoverIcon")
+				{
 					_roverIcon = s;
+				}
 				else if (s.name == "RelayIcon")
+				{
 					_relayIcon = s;
+				}
 				else if (s.name == "AsteroidIcon")
+				{
 					_asteroidIcon = s;
+				}
 				else if (s.name == "EVAIcon")
+				{
 					_evaIcon = s;
+				}
 				else if (s.name == "BaseIcon")
+				{
 					_baseIcon = s;
+				}
 				else if (s.name == "PlanetIcon")
+				{
 					_planetIcon = s;
+				}
 				else if (s.name == "MysteryIcon")
+				{
 					_mysteryIcon = s;
+				}
 				else if (s.name == "FlagIcon")
+				{
 					_flagIcon = s;
-                else if (s.name == "DeployedScienceIcon")
-                    _scienceControllerIcon = s;
-                else if (s.name == "APMarker")
+				}
+				else if (s.name == "DeployedScienceIcon")
+				{
+					_scienceControllerIcon = s;
+				}
+				else if (s.name == "APMarker")
+				{
 					_apMarker = s;
+				}
 				else if (s.name == "PEMarker")
+				{
 					_peMarker = s;
+				}
 				else if (s.name == "ManeuverMarker")
+				{
 					_maneuverMarker = s;
+				}
 				else if (s.name == "EncounterMarker")
+				{
 					_encounterMarker = s;
+				}
 				else if (s.name == "ExitMarker")
+				{
 					_exitMarker = s;
+				}
 				else if (s.name == "AnomalyIconOutline")
+				{
 					_anomalyIcon = s;
-                else if (s.name == "SCAN_TargetIcon")
-                    _rocIcon = s;
-                else if (s.name == "SCAN_WayPointIcon_Outline")
+				}
+				else if (s.name == "SCAN_TargetIcon")
+				{
+					_rocIcon = s;
+				}
+				else if (s.name == "SCAN_WayPointIcon_Outline")
+				{
 					_waypointIcon = s;
+				}
 				else if (s.name == "SCANsat_AppLauncherSmall_Icon")
+				{
 					_smallMapAppIcon = s;
+				}
 				else if (s.name == "SCANsat_AppLauncherLarge_Icon")
+				{
 					_bigMapAppIcon = s;
+				}
 				else if (s.name == "SCAN_MechJebIcon")
+				{
 					_mechJebIcon = s;
+				}
 				else if (s.name == "KSP_Tooltip")
+				{
 					_kspTooltipBackground = s;
+				}
 			}
 
 			SCANUtil.SCANlog("Icon asset bundle loaded");
@@ -703,26 +873,40 @@ namespace SCANsat.SCAN_Unity
 			AssetBundle prefabs = AssetBundle.LoadFromFile(path + prefabAssetName);
 
 			if (prefabs == null)
+			{
 				return;
+			}
 
 			loadedPrefabs = prefabs.LoadAllAssets<GameObject>();
 
 			if (loadedPrefabs == null)
+			{
 				return;
+			}
 
 			if (!tmpProcessed)
+			{
 				processTMPPrefabs();
+			}
 
 			if (!tooltipsProcessed && _tooltipPrefab != null)
+			{
 				processTooltips();
+			}
 
 			if (!prefabsProcessed)
+			{
 				processUIPrefabs();
+			}
 
 			if (tmpProcessed && tooltipsProcessed && prefabsProcessed)
+			{
 				SCANUtil.SCANlog("UI prefab bundle loaded and processed");
+			}
 			else
+			{
 				SCANUtil.SCANlog("Error in processing UI prefab bundle\nSome UI elements may be affected or non-functional");
+			}
 
 			//prefabs.Unload(false);
 
@@ -736,28 +920,46 @@ namespace SCANsat.SCAN_Unity
 				GameObject o = loadedPrefabs[i];
 
 				if (o.name == "SCAN_MainMap")
+				{
 					_mainMapPrefab = o;
+				}
 				else if (o.name == "SCAN_BigMap")
+				{
 					_bigMapPrefab = o;
+				}
 				else if (o.name == "SCAN_ZoomMap")
+				{
 					_zoomMapPrefab = o;
+				}
 				else if (o.name == "SCAN_Instruments")
+				{
 					_instrumentsPrefab = o;
+				}
 				else if (o.name == "SCAN_Overlay")
+				{
 					_overlayPrefab = o;
+				}
 				else if (o.name == "SCAN_Settings")
+				{
 					_settingsPrefab = o;
+				}
 				else if (o.name == "SCAN_Toolbar")
+				{
 					_toolbarPrefab = o;
+				}
 				else if (o.name == "SCAN_Tooltip")
+				{
 					_tooltipPrefab = o;
+				}
 
 				if (o != null)
 				{
 					processTMP(o);
 
 					if (!tmpInputProcessed)
+					{
 						processInputFields(o);
+					}
 				}
 			}
 
@@ -770,14 +972,18 @@ namespace SCANsat.SCAN_Unity
 			TextHandler[] handlers = obj.GetComponentsInChildren<TextHandler>(true);
 
 			if (handlers == null)
+			{
 				return;
+			}
 
 			for (int i = 0; i < handlers.Length; i++)
 			{
 				TextHandler handler = handlers[i];
 
 				if (handler.LocalizedText)
+				{
 					handler.SetLocalText(GetStringWithName(handler.LocalizeName));
+				}
 
 				TMProFromText(handler);
 			}
@@ -786,12 +992,16 @@ namespace SCANsat.SCAN_Unity
 		private static void TMProFromText(TextHandler handler)
 		{
 			if (handler == null)
+			{
 				return;
+			}
 
 			Text text = handler.GetComponent<Text>();
 
 			if (text == null)
+			{
 				return;
+			}
 
 			string t = text.text;
 			Color c = text.color;
@@ -827,10 +1037,12 @@ namespace SCANsat.SCAN_Unity
 				tmp.outlineWidth = handler.OutlineWidth;
 			}
 			else
+			{
 				tmp.fontSharedMaterial = Resources.Load("Fonts/Materials/Calibri Dropshadow", typeof(Material)) as Material;
-			
+			}
+
 			tmp.enableWordWrapping = true;
-			
+
 			tmp.isOverlay = false;
 			tmp.richText = true;
 		}
@@ -840,21 +1052,29 @@ namespace SCANsat.SCAN_Unity
 			InputHandler[] handlers = obj.GetComponentsInChildren<InputHandler>(true);
 
 			if (handlers == null)
+			{
 				return;
+			}
 
 			for (int i = 0; i < handlers.Length; i++)
+			{
 				TMPInputFromInput(handlers[i]);
+			}
 		}
 
 		private static void TMPInputFromInput(InputHandler handler)
 		{
 			if (handler == null)
+			{
 				return;
+			}
 
 			InputField input = handler.GetComponent<InputField>();
 
 			if (input == null)
+			{
 				return;
+			}
 
 			int limit = input.characterLimit;
 			TMP_InputField.ContentType content = GetTMPContentType(input.contentType);
@@ -868,7 +1088,9 @@ namespace SCANsat.SCAN_Unity
 			SCAN_TextMeshPro textComponent = handler.GetComponentsInChildren<SCAN_TextMeshPro>()[1];
 
 			if (viewport == null || placholder == null || textComponent == null)
+			{
 				return;
+			}
 
 			MonoBehaviour.DestroyImmediate(input);
 
@@ -892,7 +1114,7 @@ namespace SCANsat.SCAN_Unity
 
 		private static TMP_InputField.ContentType GetTMPContentType(InputField.ContentType type)
 		{
-			switch(type)
+			switch (type)
 			{
 				case InputField.ContentType.Alphanumeric:
 					return TMP_InputField.ContentType.Alphanumeric;
@@ -918,7 +1140,7 @@ namespace SCANsat.SCAN_Unity
 					return TMP_InputField.ContentType.Standard;
 			}
 		}
-		
+
 		private static void processTooltips()
 		{
 			for (int i = loadedPrefabs.Length - 1; i >= 0; i--)
@@ -928,10 +1150,14 @@ namespace SCANsat.SCAN_Unity
 				TooltipHandler[] handlers = o.GetComponentsInChildren<TooltipHandler>(true);
 
 				if (handlers == null)
+				{
 					return;
+				}
 
 				for (int j = 0; j < handlers.Length; j++)
+				{
 					processTooltip(handlers[j]);
+				}
 			}
 
 			tooltipsProcessed = true;
@@ -940,7 +1166,9 @@ namespace SCANsat.SCAN_Unity
 		private static void processTooltip(TooltipHandler handler)
 		{
 			if (handler == null)
+			{
 				return;
+			}
 
 			handler.Prefab = _tooltipPrefab;
 			handler.TooltipText = GetStringWithName(handler.TooltipName);
@@ -962,17 +1190,23 @@ namespace SCANsat.SCAN_Unity
 				TooltipHandler[] handlers = o.GetComponentsInChildren<TooltipHandler>(true);
 
 				if (handlers == null)
+				{
 					return;
+				}
 
 				for (int j = 0; j < handlers.Length; j++)
+				{
 					toggleTooltip(handlers[j], isOn);
+				}
 			}
 		}
 
 		private static void toggleTooltip(TooltipHandler handler, bool isOn)
 		{
 			if (handler == null)
+			{
 				return;
+			}
 
 			handler.IsActive = isOn && !handler.HelpTip;
 		}
@@ -984,7 +1218,9 @@ namespace SCANsat.SCAN_Unity
 				GameObject o = loadedPrefabs[i];
 
 				if (o != null)
+				{
 					processUIComponents(o);
+				}
 			}
 
 			prefabsProcessed = true;
@@ -995,16 +1231,22 @@ namespace SCANsat.SCAN_Unity
 			SCAN_Style[] styles = obj.GetComponentsInChildren<SCAN_Style>(true);
 
 			if (styles == null)
+			{
 				return;
+			}
 
 			for (int i = 0; i < styles.Length; i++)
+			{
 				processComponents(styles[i]);
+			}
 		}
 
 		private static void processComponents(SCAN_Style style)
 		{
 			if (style == null)
+			{
 				return;
+			}
 
 			UISkinDef skin = UISkinManager.defaultSkin;
 
@@ -1013,10 +1255,14 @@ namespace SCANsat.SCAN_Unity
 			bool stock = SCAN_Settings_Config.Instance == null || SCAN_Settings_Config.Instance.StockUIStyle || _unitySkinDef == null;
 
 			if (!stock)
+			{
 				skin = _unitySkinDef;
+			}
 
 			if (skin == null)
+			{
 				return;
+			}
 
 			switch (style.StlyeType)
 			{
@@ -1043,9 +1289,14 @@ namespace SCANsat.SCAN_Unity
 					break;
 				case SCAN_Style.StyleTypes.Toggle:
 					if (stock)
+					{
 						style.setToggle(_toggleNormal, _toggleHover, _toggleActive, _toggleActive, _toggleOn, _toggleOnHover);
+					}
 					else
+					{
 						style.setToggle(skin.toggle.normal.background, skin.toggle.highlight.background, skin.toggle.active.background, skin.toggle.active.background, skin.toggle.disabled.background, _unityToggleOnHover);
+					}
+
 					break;
 				case SCAN_Style.StyleTypes.ToggleButton:
 					style.setToggleButton(skin.button.normal.background, skin.button.highlight.background, skin.button.active.background, skin.button.active.background, skin.button.active.background);

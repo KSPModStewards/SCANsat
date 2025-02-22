@@ -52,39 +52,55 @@ namespace SCANsat.Unity.Unity
 		private void Update()
 		{
 			if (settings == null)
+			{
 				return;
+			}
 
 			if (settings.LockInput)
 			{
 				if (m_MapWidthInputHandler != null && !m_MapWidthInputHandler.IsFocused)
+				{
 					settings.LockInput = false;
+				}
 			}
 		}
 
 		public void setup(ISCAN_Settings set)
 		{
 			if (set == null)
+			{
 				return;
+			}
 
 			settings = set;
 
 			if (m_GreyScaleToggle != null)
+			{
 				m_GreyScaleToggle.isOn = set.GreyScale;
+			}
 
 			if (m_CSVExportToggle != null)
+			{
 				m_CSVExportToggle.isOn = set.ExportCSV;
+			}
 
 			if (m_MapWidth != null)
+			{
 				m_MapWidth.OnTextUpdate.Invoke("Map Width: " + set.MapWidth.ToString());
+			}
 
 			if (!set.ShowStockReset)
 			{
 				if (m_ResetStockResource != null)
+				{
 					m_ResetStockResource.SetActive(false);
+				}
 			}
 
 			if (!set.ShowMapFill && m_MapFill != null)
+			{
 				m_MapFill.SetActive(false);
+			}
 
 			SetButtonText();
 
@@ -94,25 +110,37 @@ namespace SCANsat.Unity.Unity
 		public void SetButtonText()
 		{
 			if (settings == null)
+			{
 				return;
+			}
 
 			if (m_ResetCurrentText != null)
+			{
 				m_ResetCurrentText.OnTextUpdate.Invoke("Reset Map of " + settings.CurrentBody);
+			}
 
 			if (m_ResetCurrentStockText != null)
+			{
 				m_ResetCurrentStockText.OnTextUpdate.Invoke("Reset stock resource data for " + settings.CurrentBody);
+			}
 
 			if (m_FillCurrentText != null)
+			{
 				m_FillCurrentText.OnTextUpdate.Invoke("Fill map of " + settings.CurrentBody);
+			}
 
 			if (m_TypeText != null)
+			{
 				m_TypeText.OnTextUpdate.Invoke(settings.CurrentMapData);
+			}
 		}
 
 		public void GreyScale(bool isOn)
 		{
 			if (!loaded || settings == null)
+			{
 				return;
+			}
 
 			settings.GreyScale = isOn;
 		}
@@ -120,7 +148,9 @@ namespace SCANsat.Unity.Unity
 		public void ExportCSV(bool isOn)
 		{
 			if (!loaded || settings == null)
+			{
 				return;
+			}
 
 			settings.ExportCSV = isOn;
 		}
@@ -128,7 +158,9 @@ namespace SCANsat.Unity.Unity
 		public void SetMapWidth()
 		{
 			if (settings == null || m_MapWidthInputHandler == null)
+			{
 				return;
+			}
 
 			settings.LockInput = false;
 
@@ -137,29 +169,41 @@ namespace SCANsat.Unity.Unity
 			if (int.TryParse(m_MapWidthInputHandler.Text, out width))
 			{
 				if (width % 2 != 0)
+				{
 					width += 1;
+				}
 
 				if (width > 8192)
+				{
 					width = 8192;
+				}
 				else if (width < 560)
+				{
 					width = 560;
+				}
 
 				m_MapWidthInputHandler.OnTextUpdate.Invoke(width.ToString());
 
 				settings.MapWidth = width;
 
 				if (m_MapWidth != null)
+				{
 					m_MapWidth.OnTextUpdate.Invoke("Map Width: " + width.ToString());
+				}
 			}
 		}
 
 		public void OnInputClick(BaseEventData eventData)
 		{
 			if (!(eventData is PointerEventData) || settings == null)
+			{
 				return;
+			}
 
 			if (((PointerEventData)eventData).button != PointerEventData.InputButton.Left)
+			{
 				return;
+			}
 
 			settings.LockInput = true;
 		}
@@ -167,7 +211,9 @@ namespace SCANsat.Unity.Unity
 		public override void OnPointerDown(PointerEventData eventData)
 		{
 			if (SCAN_Settings.Instance == null)
+			{
 				return;
+			}
 
 			if (SCAN_Settings.Instance.DropDown != null)
 			{
@@ -201,7 +247,9 @@ namespace SCANsat.Unity.Unity
 		private void PopupPopup(string message, UnityAction callback)
 		{
 			if (SCAN_Settings.Instance == null)
+			{
 				return;
+			}
 
 			if (SCAN_Settings.Instance.WarningPopup != null)
 			{
@@ -210,12 +258,16 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (SCAN_Settings.Instance.PopupPrefab == null)
+			{
 				return;
+			}
 
 			SCAN_Settings.Instance.WarningPopup = Instantiate(SCAN_Settings.Instance.PopupPrefab).GetComponent<SCAN_Popup>();
 
 			if (SCAN_Settings.Instance.WarningPopup == null)
+			{
 				return;
+			}
 
 			SCAN_Settings.Instance.WarningPopup.transform.SetParent(transform, false);
 
@@ -227,7 +279,9 @@ namespace SCANsat.Unity.Unity
 		public void ResetCurrentMap()
 		{
 			if (settings != null)
+			{
 				PopupPopup(settings.DataResetCurrent, ConfirmResetCurrentMap);
+			}
 		}
 
 		private void ConfirmResetCurrentMap()
@@ -236,7 +290,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_Settings.Instance.WarningPopup = null;
 
 			if (settings == null)
+			{
 				return;
+			}
 
 			settings.ResetCurrent();
 		}
@@ -244,7 +300,9 @@ namespace SCANsat.Unity.Unity
 		public void ResetAllMaps()
 		{
 			if (settings != null)
+			{
 				PopupPopup(settings.DataResetAll, ConfirmResetAllMaps);
+			}
 		}
 
 		private void ConfirmResetAllMaps()
@@ -253,7 +311,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_Settings.Instance.WarningPopup = null;
 
 			if (settings == null)
+			{
 				return;
+			}
 
 			settings.ResetAll();
 		}
@@ -261,7 +321,9 @@ namespace SCANsat.Unity.Unity
 		public void ResetStockResourceCurrent()
 		{
 			if (settings != null)
+			{
 				PopupPopup(settings.StockResourceResetCurrent, ConfirmResetStockResourceCurrent);
+			}
 		}
 
 		private void ConfirmResetStockResourceCurrent()
@@ -270,7 +332,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_Settings.Instance.WarningPopup = null;
 
 			if (settings == null)
+			{
 				return;
+			}
 
 			settings.ResetStockResourceCurrent();
 		}
@@ -278,7 +342,9 @@ namespace SCANsat.Unity.Unity
 		public void ResetStockResourceAll()
 		{
 			if (settings != null)
+			{
 				PopupPopup(settings.StockResourceResetAll, ConfirmResetStockResourceAll);
+			}
 		}
 
 		private void ConfirmResetStockResourceAll()
@@ -287,7 +353,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_Settings.Instance.WarningPopup = null;
 
 			if (settings == null)
+			{
 				return;
+			}
 
 			settings.ResetStockResourceAll();
 		}
@@ -301,15 +369,21 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (m_MapTypeOption == null || SCAN_Settings.Instance.DropDownPrefab == null || settings == null)
+			{
 				return;
+			}
 
 			SCAN_Settings.Instance.DropDown = Instantiate(SCAN_Settings.Instance.DropDownPrefab).GetComponent<SCAN_DropDown>();
 
 			if (SCAN_Settings.Instance.DropDown == null)
+			{
 				return;
+			}
 
 			SCAN_Settings.Instance.DropDown.transform.SetParent(m_MapTypeOption, false);
 
@@ -321,13 +395,17 @@ namespace SCANsat.Unity.Unity
 		public void MapTypeOption(string scanType)
 		{
 			if (m_TypeText != null)
+			{
 				m_TypeText.OnTextUpdate.Invoke(scanType);
+			}
 
 			SCAN_Settings.Instance.DropDown.FadeOut(true);
 			SCAN_Settings.Instance.DropDown = null;
 
 			if (settings == null)
+			{
 				return;
+			}
 
 			settings.CurrentMapData = scanType;
 		}
@@ -335,7 +413,9 @@ namespace SCANsat.Unity.Unity
 		public void FillCurrentMap()
 		{
 			if (settings != null)
+			{
 				PopupPopup(settings.WarningMapFillCurrent, ConfirmFillCurrentMap);
+			}
 		}
 
 		public void ConfirmFillCurrentMap()
@@ -344,7 +424,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_Settings.Instance.WarningPopup = null;
 
 			if (settings == null)
+			{
 				return;
+			}
 
 			settings.FillCurrent();
 		}
@@ -352,7 +434,9 @@ namespace SCANsat.Unity.Unity
 		public void FillAllMaps()
 		{
 			if (settings != null)
+			{
 				PopupPopup(settings.WarningMapFillAll, ConfirmFillAllMaps);
+			}
 		}
 
 		public void ConfirmFillAllMaps()
@@ -361,7 +445,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_Settings.Instance.WarningPopup = null;
 
 			if (settings == null)
+			{
 				return;
+			}
 
 			settings.FillAll();
 		}

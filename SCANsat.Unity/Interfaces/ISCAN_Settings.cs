@@ -87,7 +87,7 @@ namespace SCANsat.Unity.Interfaces
 
 		bool MechJebAvailable { get; }
 
-        bool DaylightCheck { get; set; }
+		bool DaylightCheck { get; set; }
 
 		bool BiomeLock { get; set; }
 
@@ -141,7 +141,7 @@ namespace SCANsat.Unity.Interfaces
 
 		void Update();
 
-        void OpenKSPedia(bool isOn);
+		void OpenKSPedia(bool isOn);
 
 		void ToggleBody(string bodyName);
 

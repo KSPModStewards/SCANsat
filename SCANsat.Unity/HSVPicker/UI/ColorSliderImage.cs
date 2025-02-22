@@ -56,15 +56,17 @@ namespace SCANsat.Unity.HSVPicker.UI
 		private void OnDestroy()
 		{
 			if (image.texture != null)
+			{
 				DestroyImmediate(image.texture);
+			}
 		}
 
 #if UNITY_EDITOR
-    private void OnValidate()
-    {
-        image = GetComponent<RawImage>();
-        RegenerateTexture();
-    }
+	private void OnValidate()
+	{
+		image = GetComponent<RawImage>();
+		RegenerateTexture();
+	}
 #endif
 
 		private void ColorChanged(Color newColor)
@@ -137,9 +139,13 @@ namespace SCANsat.Unity.HSVPicker.UI
 					throw new System.NotImplementedException("");
 			}
 			if (vertical)
+			{
 				texture = new Texture2D(1, size);
+			}
 			else
+			{
 				texture = new Texture2D(size, 1);
+			}
 
 			texture.hideFlags = HideFlags.DontSave;
 			colors = new Color32[size];
@@ -195,7 +201,10 @@ namespace SCANsat.Unity.HSVPicker.UI
 			texture.Apply();
 
 			if (image.texture != null)
+			{
 				DestroyImmediate(image.texture);
+			}
+
 			image.texture = texture;
 
 			switch (direction)

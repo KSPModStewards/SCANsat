@@ -47,11 +47,11 @@ namespace SCANsat.Unity.Unity
 		private TextHandler m_MultiText = null;
 		[SerializeField]
 		private TextHandler m_M700Text = null;
-        [SerializeField]
-        private TextHandler m_VisLoText = null;
-        [SerializeField]
-        private TextHandler m_VisHiText = null;
-        [SerializeField]
+		[SerializeField]
+		private TextHandler m_VisLoText = null;
+		[SerializeField]
+		private TextHandler m_VisHiText = null;
+		[SerializeField]
 		private TextHandler m_OreText = null;
 		[SerializeField]
 		private TextHandler m_PercentageText = null;
@@ -85,12 +85,16 @@ namespace SCANsat.Unity.Unity
 		private void Update()
 		{
 			if (mapInterface == null || !mapInterface.IsVisible)
+			{
 				return;
+			}
 
 			mapInterface.Update();
 
 			if (generating)
+			{
 				SetGeneratingText(mapInterface.MapGenerating);
+			}
 
 			if (!mapInterface.Minimized)
 			{
@@ -113,24 +117,36 @@ namespace SCANsat.Unity.Unity
 		public void setMap(ISCAN_MainMap map)
 		{
 			if (map == null)
+			{
 				return;
+			}
 
 			mapInterface = map;
 
 			if (m_Version != null)
+			{
 				m_Version.OnTextUpdate.Invoke(map.Version);
+			}
 
 			if (m_ColorToggle != null)
+			{
 				m_ColorToggle.isOn = map.Color;
+			}
 
 			if (m_TerminatorToggle != null)
+			{
 				m_TerminatorToggle.isOn = map.TerminatorToggle;
+			}
 
 			if (m_TypeToggle != null)
+			{
 				m_TypeToggle.isOn = map.MapType;
+			}
 
 			if (m_MinimizeToggle != null)
+			{
 				m_MinimizeToggle.isOn = map.Minimized;
+			}
 
 			//if (m_M700Text != null && !map.ResourcesOn)
 			//	m_M700Text.gameObject.SetActive(false);
@@ -145,12 +161,16 @@ namespace SCANsat.Unity.Unity
 			SetPosition(map.Position);
 
 			if (!map.MapType)
+			{
 				SetGeneratingText(map.MapGenerating);
+			}
 
 			ProcessTooltips();
 
 			if (m_VesselTransform != null)
+			{
 				m_VesselTransform.gameObject.SetActive(!map.Minimized);
+			}
 
 			FadeIn();
 
@@ -176,40 +196,56 @@ namespace SCANsat.Unity.Unity
 		public void Close()
 		{
 			if (mapInterface != null)
+			{
 				mapInterface.IsVisible = false;
+			}
 		}
 
 		private void SetGeneratingText(bool isOn)
 		{
 			if (m_GeneratingText == null)
+			{
 				return;
+			}
 
 			generating = isOn;
 
 			if (isOn && !m_GeneratingText.activeSelf)
+			{
 				m_GeneratingText.SetActive(true);
+			}
 			else if (!isOn && m_GeneratingText.activeSelf)
+			{
 				m_GeneratingText.SetActive(false);
+			}
 		}
 
 		public void ProcessTooltips()
 		{
 			if (mapInterface == null)
+			{
 				return;
+			}
 
 			TooltipHandler[] handlers = gameObject.GetComponentsInChildren<TooltipHandler>(true);
 
 			if (handlers == null)
+			{
 				return;
+			}
 
 			for (int j = 0; j < handlers.Length; j++)
+			{
 				ProcessTooltip(handlers[j], mapInterface.TooltipsOn, mapInterface.TooltipCanvas, mapInterface.Scale);
+			}
 		}
 
 		private void ProcessTooltip(TooltipHandler handler, bool isOn, Canvas c, float scale)
 		{
 			if (handler == null)
+			{
 				return;
+			}
 
 			handler.IsActive = isOn && !handler.HelpTip;
 			handler._Canvas = c;
@@ -224,7 +260,9 @@ namespace SCANsat.Unity.Unity
 		public void SetPosition(Vector2 pos)
 		{
 			if (rect == null)
+			{
 				return;
+			}
 
 			rect.anchoredPosition = new Vector3(pos.x, pos.y, 0);
 		}
@@ -232,7 +270,9 @@ namespace SCANsat.Unity.Unity
 		public void RefreshVesselTypes()
 		{
 			if (mapInterface == null)
+			{
 				return;
+			}
 
 			for (int i = mapLabels.Count - 1; i >= 0; i--)
 			{
@@ -264,16 +304,22 @@ namespace SCANsat.Unity.Unity
 			mapLabels.Clear();
 
 			if (mapInterface != null)
+			{
 				CreateVessels(mapInterface.VesselInfoList);
+			}
 		}
 
 		private void CreateVessels(Dictionary<Guid, MapLabelInfo> vessels)
 		{
 			if (vessels == null)
+			{
 				return;
+			}
 
 			if (mapInterface == null || m_VesselPrefab == null || m_MapPrefab == null || m_VesselTransform == null || m_MainMap == null)
+			{
 				return;
+			}
 
 			for (int i = 0; i < vessels.Count; i++)
 			{
@@ -282,7 +328,9 @@ namespace SCANsat.Unity.Unity
 				MapLabelInfo label;
 
 				if (!vessels.TryGetValue(id, out label))
+				{
 					continue;
+				}
 
 				CreateVessel(id, label);
 
@@ -295,7 +343,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_VesselInfo vInfo = Instantiate(m_VesselPrefab).GetComponent<SCAN_VesselInfo>();
 
 			if (vInfo == null)
+			{
 				return;
+			}
 
 			vInfo.transform.SetParent(m_VesselTransform, false);
 
@@ -309,7 +359,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_MapLabel mapLabel = Instantiate(m_MapPrefab).GetComponent<SCAN_MapLabel>();
 
 			if (mapLabel == null)
+			{
 				return;
+			}
 
 			mapLabel.transform.SetParent(m_MainMap.transform, false);
 
@@ -326,7 +378,9 @@ namespace SCANsat.Unity.Unity
 		public void OnBeginDrag(PointerEventData eventData)
 		{
 			if (rect == null)
+			{
 				return;
+			}
 
 			mouseStart = eventData.position;
 			windowStart = rect.position;
@@ -335,12 +389,16 @@ namespace SCANsat.Unity.Unity
 		public void OnDrag(PointerEventData eventData)
 		{
 			if (rect == null)
+			{
 				return;
+			}
 
 			rect.position = windowStart + (Vector3)(eventData.position - mouseStart);
-			
+
 			if (mapInterface == null)
+			{
 				return;
+			}
 
 			mapInterface.ClampToScreen(rect);
 		}
@@ -348,7 +406,9 @@ namespace SCANsat.Unity.Unity
 		public void OnEndDrag(PointerEventData eventData)
 		{
 			if (rect == null || mapInterface == null)
+			{
 				return;
+			}
 
 			mapInterface.Position = new Vector2(rect.anchoredPosition.x, rect.anchoredPosition.y);
 		}
@@ -356,7 +416,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateLoColor(Color c)
 		{
 			if (m_LoText == null)
+			{
 				return;
+			}
 
 			m_LoText.OnColorUpdate.Invoke(c);
 		}
@@ -364,7 +426,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateHiColor(Color c)
 		{
 			if (m_HiText == null)
+			{
 				return;
+			}
 
 			m_HiText.OnColorUpdate.Invoke(c);
 		}
@@ -372,7 +436,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateMultiColor(Color c)
 		{
 			if (m_MultiText == null)
+			{
 				return;
+			}
 
 			m_MultiText.OnColorUpdate.Invoke(c);
 		}
@@ -380,31 +446,39 @@ namespace SCANsat.Unity.Unity
 		public void UpdateM700Color(Color c)
 		{
 			if (m_M700Text == null)
+			{
 				return;
+			}
 
 			m_M700Text.OnColorUpdate.Invoke(c);
 		}
 
-        public void UpdateVisLoColor(Color c)
-        {
-            if (m_VisLoText == null)
-                return;
+		public void UpdateVisLoColor(Color c)
+		{
+			if (m_VisLoText == null)
+			{
+				return;
+			}
 
-            m_VisLoText.OnColorUpdate.Invoke(c);
-        }
+			m_VisLoText.OnColorUpdate.Invoke(c);
+		}
 
-        public void UpdateVisHiColor(Color c)
-        {
-            if (m_VisHiText == null)
-                return;
+		public void UpdateVisHiColor(Color c)
+		{
+			if (m_VisHiText == null)
+			{
+				return;
+			}
 
-            m_VisHiText.OnColorUpdate.Invoke(c);
-        }
+			m_VisHiText.OnColorUpdate.Invoke(c);
+		}
 
-        public void UpdateOreColor(Color c)
+		public void UpdateOreColor(Color c)
 		{
 			if (m_OreText == null)
+			{
 				return;
+			}
 
 			m_OreText.OnColorUpdate.Invoke(c);
 		}
@@ -412,7 +486,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdatePercentage(string text)
 		{
 			if (m_PercentageText == null)
+			{
 				return;
+			}
 
 			m_PercentageText.OnTextUpdate.Invoke(text);
 		}
@@ -420,7 +496,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateMapTexture(Texture2D map)
 		{
 			if (m_MainMap == null)
+			{
 				return;
+			}
 
 			m_MainMap.texture = map;
 		}
@@ -428,7 +506,9 @@ namespace SCANsat.Unity.Unity
 		public void ToggleColor(bool isOn)
 		{
 			if (!loaded || mapInterface == null)
+			{
 				return;
+			}
 
 			mapInterface.Color = isOn;
 		}
@@ -436,7 +516,9 @@ namespace SCANsat.Unity.Unity
 		public void ToggleTerminator(bool isOn)
 		{
 			if (!loaded || mapInterface == null)
+			{
 				return;
+			}
 
 			mapInterface.TerminatorToggle = isOn;
 		}
@@ -444,10 +526,14 @@ namespace SCANsat.Unity.Unity
 		public void ToggleType(bool isOn)
 		{
 			if (m_TypeLabel != null)
+			{
 				m_TypeLabel.OnTextUpdate.Invoke(isOn ? "Biome" : "Terrain");
+			}
 
 			if (!loaded || mapInterface == null)
+			{
 				return;
+			}
 
 			mapInterface.MapType = isOn;
 		}
@@ -455,21 +541,29 @@ namespace SCANsat.Unity.Unity
 		public void ToggleSize(bool isOn)
 		{
 			if (m_MinimizeText != null)
+			{
 				m_MinimizeText.OnTextUpdate.Invoke(isOn ? "+" : "-");
+			}
 
 			if (!loaded || mapInterface == null)
+			{
 				return;
+			}
 
 			mapInterface.Minimized = isOn;
 
 			if (m_VesselTransform != null)
+			{
 				m_VesselTransform.gameObject.SetActive(!isOn);
+			}
 		}
 
 		public void OpenBigMap()
 		{
 			if (mapInterface == null)
+			{
 				return;
+			}
 
 			mapInterface.OpenBigMap();
 		}
@@ -477,7 +571,9 @@ namespace SCANsat.Unity.Unity
 		public void OpenInstruments()
 		{
 			if (mapInterface == null)
+			{
 				return;
+			}
 
 			mapInterface.OpenInstruments();
 		}
@@ -485,7 +581,9 @@ namespace SCANsat.Unity.Unity
 		public void OpenSettings()
 		{
 			if (mapInterface == null)
+			{
 				return;
+			}
 
 			mapInterface.OpenSettings();
 		}
@@ -493,7 +591,9 @@ namespace SCANsat.Unity.Unity
 		public void OpenZoomMap()
 		{
 			if (mapInterface == null)
+			{
 				return;
+			}
 
 			mapInterface.OpenZoomMap();
 		}
@@ -501,7 +601,9 @@ namespace SCANsat.Unity.Unity
 		public void OpenOverlay()
 		{
 			if (mapInterface == null)
+			{
 				return;
+			}
 
 			mapInterface.OpenOverlay();
 		}

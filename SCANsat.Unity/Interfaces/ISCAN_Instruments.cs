@@ -32,9 +32,9 @@ namespace SCANsat.Unity.Interfaces
 
 		bool ResourceButtons { get; }
 
-        bool AnomalyButtons { get; }
+		bool AnomalyButtons { get; }
 
-        bool MouseAnomaly { get; set; }
+		bool MouseAnomaly { get; set; }
 
 		bool TooltipsOn { get; }
 
@@ -52,8 +52,8 @@ namespace SCANsat.Unity.Interfaces
 
 		void PreviousResource();
 
-        void NextAnomaly();
-        
-        void Update();
+		void NextAnomaly();
+
+		void Update();
 	}
 }

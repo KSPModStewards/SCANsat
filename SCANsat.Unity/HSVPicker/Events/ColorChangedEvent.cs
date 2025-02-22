@@ -7,6 +7,6 @@ namespace SCANsat.Unity.HSVPicker.Events
 	[Serializable]
 	public class ColorChangedEvent : UnityEvent<Color>
 	{
-		
+
 	}
 }

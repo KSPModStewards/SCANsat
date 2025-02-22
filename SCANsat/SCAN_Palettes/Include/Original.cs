@@ -91,56 +91,58 @@ namespace SCANsat.SCAN_Platform.Palettes.ColorBrewer.Include
 		 * 10. Manually fixup the very last }, so that it has a return after it. :(
 		 */
 
-		public static void Main () {
+		public static void Main()
+		{
 			string input = fromText();
 
 			var nx = RegexOptions.IgnorePatternWhitespace | RegexOptions.ExplicitCapture;
 			var mn = RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace;
 
-			var one		= new Regex(@"(?<begin>[\(\)\,])(?<twodigit>\d\d)(?<end>[\(\)\,])",nx);
-			var two		= new Regex(@"(?<begin>[\(\)\,])(?<onedigit>\d)(?<end>[\(\)\,])",nx);
-			var three	= new Regex(@"(?<begin>[\s]+)(?<onedigit>\d)(?<end>[:])",nx);
-			var four	= new Regex(@"(?<indent>\s+) (?<size>\d+)(?<op>\:)\ (?<open>\[)(?<arr>[^\[.]+) (?<close>\])(?<delim>,)",nx);
-			var five	= new Regex(@"'rgb \( (?<r>\d+), (?<g>\d+), (?<b>\d+) \)'",nx);
-			var six		= new Regex(@"^(?<pre>\s+)(?<name>[\w]+):\s+\{(?<post>\s+)",mn);
-			var sevenA	= new Regex(@"'(?<key>\w+)'(?<delim>:)(?<space>\ )(?<value>[^\n].+)",nx);
-			var sevenB	= new Regex(@"\[(?<d>\d)\]",nx);
-			var sevenC	= new Regex(@"(?<indent>\s+)('properties':\ {(?<n>\n)(?<stuff>[^}]+)})",nx);
-			var eight	= new Regex(@"^var colorbrewer = {(?<n>\s+)");
-			var nine	= new Regex(@"(?<indent>\s+)(?<cap>},)(?<n>\n)",nx);
+			var one = new Regex(@"(?<begin>[\(\)\,])(?<twodigit>\d\d)(?<end>[\(\)\,])", nx);
+			var two = new Regex(@"(?<begin>[\(\)\,])(?<onedigit>\d)(?<end>[\(\)\,])", nx);
+			var three = new Regex(@"(?<begin>[\s]+)(?<onedigit>\d)(?<end>[:])", nx);
+			var four = new Regex(@"(?<indent>\s+) (?<size>\d+)(?<op>\:)\ (?<open>\[)(?<arr>[^\[.]+) (?<close>\])(?<delim>,)", nx);
+			var five = new Regex(@"'rgb \( (?<r>\d+), (?<g>\d+), (?<b>\d+) \)'", nx);
+			var six = new Regex(@"^(?<pre>\s+)(?<name>[\w]+):\s+\{(?<post>\s+)", mn);
+			var sevenA = new Regex(@"'(?<key>\w+)'(?<delim>:)(?<space>\ )(?<value>[^\n].+)", nx);
+			var sevenB = new Regex(@"\[(?<d>\d)\]", nx);
+			var sevenC = new Regex(@"(?<indent>\s+)('properties':\ {(?<n>\n)(?<stuff>[^}]+)})", nx);
+			var eight = new Regex(@"^var colorbrewer = {(?<n>\s+)");
+			var nine = new Regex(@"(?<indent>\s+)(?<cap>},)(?<n>\n)", nx);
 
-			var after1	= one.Replace(input		,@"${begin}0${twodigit}${end}");
-			var after1a	= one.Replace(after1	,@"${begin}0${twodigit}${end}");
-			var after2	= two.Replace(after1a	,@"${begin}00${onedigit}${end}");
-			var after3	= three.Replace(after2	,@"${begin}0${onedigit}${end}");
-			var after4	= four.Replace(after3	,@"${indent} case ${size}: c = new[] {${arr}}; break;");
-			var after5	= five.Replace(after4	,@"RGB(${r},${g},${b})");
-			var after6	= six.Replace(after5	,@"${pre}public static Palette ${name} (int size) {${post}Color32[] c;${post}switch (size) {${post}");
-			var after7a	= sevenA.Replace(after6	,@"var @${key} = ${value};");
-			var after7b	= sevenB.Replace(after7a,@"[${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}]");
-			var after7c	= sevenC.Replace(after7b,@"${indent} default: goto case 03;${indent}}${n}${stuff}");
-			var after8	= eight.Replace(after7c	,@"${n}");
-			var after9 	= nine.Replace(after8	,@"${indent}return new Palette(c, @type, (Palette.Is) @blind[size-3], (Palette.Is) @print[size-3], (Palette.Is) @xerox[size-3], (Palette.Is) @panel[size-3]);${indent}}${n}");
+			var after1 = one.Replace(input, @"${begin}0${twodigit}${end}");
+			var after1a = one.Replace(after1, @"${begin}0${twodigit}${end}");
+			var after2 = two.Replace(after1a, @"${begin}00${onedigit}${end}");
+			var after3 = three.Replace(after2, @"${begin}0${onedigit}${end}");
+			var after4 = four.Replace(after3, @"${indent} case ${size}: c = new[] {${arr}}; break;");
+			var after5 = five.Replace(after4, @"RGB(${r},${g},${b})");
+			var after6 = six.Replace(after5, @"${pre}public static Palette ${name} (int size) {${post}Color32[] c;${post}switch (size) {${post}");
+			var after7a = sevenA.Replace(after6, @"var @${key} = ${value};");
+			var after7b = sevenB.Replace(after7a, @"[${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}, ${d}]");
+			var after7c = sevenC.Replace(after7b, @"${indent} default: goto case 03;${indent}}${n}${stuff}");
+			var after8 = eight.Replace(after7c, @"${n}");
+			var after9 = nine.Replace(after8, @"${indent}return new Palette(c, @type, (Palette.Is) @blind[size-3], (Palette.Is) @print[size-3], (Palette.Is) @xerox[size-3], (Palette.Is) @panel[size-3]);${indent}}${n}");
 
 
-			IDictionary<string,string> map = new Dictionary<string,string>() {
-				{"'div'",	"Palette.Kind.Diverging"},
-				{"'seq'",	"Palette.Kind.Sequential"},
-				{"'qual'",	"Palette.Kind.Qualitative"},
-				{"= [",		"= new[] {"},
-				{"],;",		"};"},
-				{"];",		"};"},
-				{",;",		";"},
-				{"copy",	"xerox"},
-				{"screen",	"panel"},
+			IDictionary<string, string> map = new Dictionary<string, string>() {
+				{"'div'",   "Palette.Kind.Diverging"},
+				{"'seq'",   "Palette.Kind.Sequential"},
+				{"'qual'",  "Palette.Kind.Qualitative"},
+				{"= [",     "= new[] {"},
+				{"],;",     "};"},
+				{"];",      "};"},
+				{",;",      ";"},
+				{"copy",    "xerox"},
+				{"screen",  "panel"},
 			};
-			var mapRegex = new Regex(String.Join ("|", (string[])map.Keys.Select (k => Regex.Escape (k))));
-			var afterMap = mapRegex.Replace(after9, m => map [m.Value]);
+			var mapRegex = new Regex(String.Join("|", (string[])map.Keys.Select(k => Regex.Escape(k))));
+			var afterMap = mapRegex.Replace(after9, m => map[m.Value]);
 			Console.WriteLine(afterMap);
 		}
-	
-		public static string fromText() {
-			return 
+
+		public static string fromText()
+		{
+			return
 @"var colorbrewer = {
     /*** Diverging ***/
     Spectral: {
@@ -725,7 +727,8 @@ namespace SCANsat.SCAN_Platform.Palettes.ColorBrewer.Include
         'screen': [1, 1, 2, 0, 0, 0, 0]
       }
     }
-";}
+";
+		}
 	}
 }
 

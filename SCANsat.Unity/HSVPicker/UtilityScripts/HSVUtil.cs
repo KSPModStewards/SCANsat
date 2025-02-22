@@ -26,24 +26,38 @@ namespace SCANsat.Unity.HSVPicker.Utility
 			delta = v - min;
 
 			if (v == 0.0)
+			{
 				s = 0;
+			}
 			else
+			{
 				s = delta / v;
+			}
 
 			if (s == 0)
+			{
 				h = 360;
+			}
 			else
 			{
 				if (r == v)
+				{
 					h = (g - b) / delta;
+				}
 				else if (g == v)
+				{
 					h = 2 + (b - r) / delta;
+				}
 				else if (b == v)
+				{
 					h = 4 + (r - g) / delta;
+				}
 
 				h *= 60;
 				if (h <= 0.0)
+				{
 					h += 360;
+				}
 			}
 
 			HsvColor hsvColor = new HsvColor();
@@ -75,9 +89,13 @@ namespace SCANsat.Unity.HSVPicker.Utility
 
 
 				if (h == 360)
+				{
 					h = 0;
+				}
 				else
+				{
 					h = h / 60;
+				}
 
 				i = (int)(h);
 				f = h - i;

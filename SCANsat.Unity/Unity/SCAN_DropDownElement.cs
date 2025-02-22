@@ -31,7 +31,9 @@ namespace SCANsat.Unity.Unity
 		public void Setup(string element, bool current, SCAN_DropDown parent, ScrollRect scroll, int size, int max)
 		{
 			if (parent == null)
+			{
 				return;
+			}
 
 			dropdown = parent;
 			title = element;
@@ -39,14 +41,22 @@ namespace SCANsat.Unity.Unity
 			if (m_ElementTitle != null)
 			{
 				if (scroll != null)
+				{
 					m_ElementTitle.SetScroller(scroll);
+				}
 
-                if (element.Length > max + 8)
-                    size -= 6;
-                else if (element.Length > max + 4)
-                    size -= 4;
-                else if (element.Length > max)
-                    size -= 2;
+				if (element.Length > max + 8)
+				{
+					size -= 6;
+				}
+				else if (element.Length > max + 4)
+				{
+					size -= 4;
+				}
+				else if (element.Length > max)
+				{
+					size -= 2;
+				}
 
 				m_ElementTitle.OnTextUpdate.Invoke(string.Format("<size={0}>{1}", size, element));
 

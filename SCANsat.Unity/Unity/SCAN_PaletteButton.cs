@@ -28,7 +28,9 @@ namespace SCANsat.Unity.Unity
 		public void setup(Texture2D tex, string palette, SCAN_ColorAltimetry c)
 		{
 			if (m_Palette == null || c == null)
+			{
 				return;
+			}
 
 			m_Palette.texture = tex;
 			paletteName = palette;
@@ -38,7 +40,9 @@ namespace SCANsat.Unity.Unity
 		public void Select()
 		{
 			if (color == null)
+			{
 				return;
+			}
 
 			color.SetPalette(paletteName);
 		}

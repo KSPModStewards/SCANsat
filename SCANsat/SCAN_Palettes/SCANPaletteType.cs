@@ -25,7 +25,7 @@ namespace SCANsat.SCAN_Palettes
 		private string name;
 		[Persistent]
 		private List<SCANPaletteGroup> PaletteGroups = new List<SCANPaletteGroup>();
-		
+
 		private DictionaryValueList<string, SCANPaletteGroup> MasterPaletteGroupList = new DictionaryValueList<string, SCANPaletteGroup>();
 
 		private SCANPaletteKind _kind;
@@ -123,7 +123,9 @@ namespace SCANsat.SCAN_Palettes
 			}
 
 			for (int i = 0; i < PaletteGroups.Count; i++)
+			{
 				PaletteGroups[i].SaveDefaultPalettes();
+			}
 
 			OnDecodeFromConfigNode();
 		}
@@ -136,14 +138,18 @@ namespace SCANsat.SCAN_Palettes
 		public SCANPaletteGroup GetPaletteGroup(string name)
 		{
 			if (name == "Default" || name == "default")
+			{
 				return SCAN_Palette_Config.DefaultPalette;
+			}
 
 			for (int i = MasterPaletteGroupList.Count - 1; i >= 0; i--)
 			{
 				SCANPaletteGroup group = MasterPaletteGroupList.At(i);
 
 				if (group.PaletteName != name)
+				{
 					continue;
+				}
 
 				return group;
 			}
@@ -166,7 +172,9 @@ namespace SCANsat.SCAN_Palettes
 		public SCANPaletteGroup GetFirstGroup()
 		{
 			if (MasterPaletteGroupList.Count > 0)
+			{
 				return MasterPaletteGroupList.At(0);
+			}
 
 			return null;
 		}
@@ -182,7 +190,9 @@ namespace SCANsat.SCAN_Palettes
 				SCANPalette palette = group.GetPalette(length);
 
 				if (palette != null)
+				{
 					palettes.Add(palette);
+				}
 			}
 
 			return palettes;
@@ -205,21 +215,33 @@ namespace SCANsat.SCAN_Palettes
 					_swatchLength = length;
 
 					if (paletteSize == 11)
+					{
 						m = 121;
+					}
 					else if (paletteSize == 18)
+					{
 						m = 126;
+					}
 					else if (paletteSize == 9)
+					{
 						m = 117;
+					}
 					else if (paletteSize == 7)
+					{
 						m = 119;
+					}
 					else if (paletteSize == 34)
+					{
 						m = 136;
+					}
 					else if (m % paletteSize != 0)
 					{
 						int s = 115;
 
 						while (s % paletteSize != 0)
+						{
 							s++;
+						}
 
 						m = s;
 					}
@@ -232,7 +254,9 @@ namespace SCANsat.SCAN_Palettes
 					for (int j = 0; j < m; j++)
 					{
 						if (j % sW == 0)
+						{
 							k++;
+						}
 
 						pix[j] = palette.ColorsArray[k - 1];
 					}
@@ -244,7 +268,9 @@ namespace SCANsat.SCAN_Palettes
 				return _paletteSwatch;
 			}
 			else
+			{
 				return _paletteSwatch;
+			}
 		}
 
 		public override void OnDecodeFromConfigNode()
@@ -266,10 +292,14 @@ namespace SCANsat.SCAN_Palettes
 					SCANPaletteGroup p = PaletteGroups[i];
 
 					if (p == null)
+					{
 						continue;
+					}
 
 					if (!MasterPaletteGroupList.Contains(p.PaletteName))
+					{
 						MasterPaletteGroupList.Add(p.PaletteName, p);
+					}
 
 					p.Kind = _kind;
 
@@ -279,7 +309,9 @@ namespace SCANsat.SCAN_Palettes
 				if (_kind == SCANPaletteKind.Fixed)
 				{
 					if (!MasterPaletteGroupList.Contains("Default"))
+					{
 						MasterPaletteGroupList.Add("Default", SCAN_Palette_Config.DefaultPalette);
+					}
 				}
 			}
 			catch (Exception e)

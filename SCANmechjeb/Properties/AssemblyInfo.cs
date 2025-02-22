@@ -20,4 +20,4 @@ using System.Runtime.InteropServices;
 
 //  ideally this should get generated from KSPBuildTools
 // https://github.com/KSPModdingLibs/KSPBuildTools/issues/46
-[assembly: KSPAssemblyDependency ("SCANsat", 21, 0)]
+[assembly: KSPAssemblyDependency("SCANsat", 21, 0)]

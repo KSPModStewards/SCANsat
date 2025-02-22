@@ -53,10 +53,12 @@ namespace SCANsat
 
 			loaded = true;
 
-            PopulateCosLookupArray();
+			PopulateCosLookupArray();
 
 			if (orbitIconsMap == null)
+			{
 				getOrbitIcons();
+			}
 
 			findAssemblies(Assemblies);
 			FinePrintStationaryWaypoint = SCANreflection.FinePrintStationaryWaypointReflection();
@@ -64,11 +66,13 @@ namespace SCANsat
 			SCANconfigLoader.configLoader();
 		}
 
-        private void PopulateCosLookupArray()
-        {
-            for (int i = 0; i < 180; i++)
-                SCANUtil.cosLookUp[i] = Math.Cos((i - 90) * 0.0174532924);
-        }
+		private void PopulateCosLookupArray()
+		{
+			for (int i = 0; i < 180; i++)
+			{
+				SCANUtil.cosLookUp[i] = Math.Cos((i - 90) * 0.0174532924);
+			}
+		}
 
 		private void getOrbitIcons()
 		{
@@ -90,15 +94,17 @@ namespace SCANsat
 				var assembly = AssemblyLoader.loadedAssemblies.FirstOrDefault(a => a.assembly.GetName().Name == name);
 				if (assembly != null)
 				{
-                    AssemblyLog alog = new AssemblyLog(assembly);
+					AssemblyLog alog = new AssemblyLog(assembly);
 					assemblyList.Add(alog);
-                    if (alog.name == "ModuleManager")
-                        MMLoaded = true;
-                    else if (alog.name == "Kopernicus")
-                    {
-                        KopernicusLoaded = true;
-                        //SCANreflection.LoadKopernicusReflection();
-                    }
+					if (alog.name == "ModuleManager")
+					{
+						MMLoaded = true;
+					}
+					else if (alog.name == "Kopernicus")
+					{
+						KopernicusLoaded = true;
+						//SCANreflection.LoadKopernicusReflection();
+					}
 				}
 			}
 			if (assemblyList.Count > 0)
@@ -107,15 +113,15 @@ namespace SCANsat
 				debugWriter();
 			}
 
-            //foreach(AssemblyLoader.LoadedAssembly ass in AssemblyLoader.loadedAssemblies)
-            //{
-            //    AssemblyLog asslog = new AssemblyLog(ass);
+			//foreach(AssemblyLoader.LoadedAssembly ass in AssemblyLoader.loadedAssemblies)
+			//{
+			//    AssemblyLog asslog = new AssemblyLog(ass);
 
-            //    print(string.Format("[SCANsat] Assembly: {0} found; Version: {1}; File Version: {2}; Info Version: {3}; Location: {4}"
-            //        , asslog.name, asslog.version, asslog.fileVersion, asslog.infoVersion, asslog.location));
+			//    print(string.Format("[SCANsat] Assembly: {0} found; Version: {1}; File Version: {2}; Info Version: {3}; Location: {4}"
+			//        , asslog.name, asslog.version, asslog.fileVersion, asslog.infoVersion, asslog.location));
 
-            //}
-        }
+			//}
+		}
 
 		private void debugWriter()
 		{

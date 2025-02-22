@@ -76,31 +76,31 @@ namespace SCANsat
 		public bool TrueGreyScale = false;
 		[Persistent]
 		public bool ExportCSV = false;
-        [Persistent]
-        public float UnscannedTransparency = 0.4f;
-        [Persistent]
-        public float BackgroundTransparency = 0.4f;
-        [Persistent]
+		[Persistent]
+		public float UnscannedTransparency = 0.4f;
+		[Persistent]
+		public float BackgroundTransparency = 0.4f;
+		[Persistent]
 		public float BiomeTransparency = 0.4f;
-        [Persistent]
-        public bool MapVignette = false;
-        [Persistent]
+		[Persistent]
+		public bool MapVignette = false;
+		[Persistent]
 		public bool BigMapBiomeBorder = true;
 		[Persistent]
 		public bool BigMapStockBiomes = true;
 		[Persistent]
 		public bool ZoomMapBiomeBorder = true;
-        [Persistent]
-        public bool SmallMapBiomeBorder = false;
+		[Persistent]
+		public bool SmallMapBiomeBorder = false;
 		[Persistent]
 		public bool SmallMapStockBiomes = true;
-        [Persistent]
-        public bool DaylightCheck = true;
-        [Persistent]
-        public Color MapBackgroundColor = palette.grey;
-        [Persistent]
-        public Color UnscannedColor = palette.grey;
-        [Persistent]
+		[Persistent]
+		public bool DaylightCheck = true;
+		[Persistent]
+		public Color MapBackgroundColor = palette.grey;
+		[Persistent]
+		public Color UnscannedColor = palette.grey;
+		[Persistent]
 		public Color LowBiomeColor = palette.xkcd_CamoGreen;
 		[Persistent]
 		public Color HighBiomeColor = palette.xkcd_Marigold;
@@ -114,25 +114,25 @@ namespace SCANsat
 		public Color TopLowSlopeColor = palette.xkcd_Lemon;
 		[Persistent]
 		public Color TopHighSlopeColor = palette.xkcd_OrangeRed;
-        [Persistent]
-        public Color32 LoResAltimetryTrackColor = palette.cb_blue * new Vector4(1, 1, 1, 0.4f);
-        [Persistent]
-        public Color32 HiResAltimetryTrackColor = palette.cb_reddishPurple * new Vector4(1, 1, 1, 0.4f);
-        [Persistent]
-        public Color32 BiomeTrackColor = palette.cb_yellow * new Vector4(1, 1, 1, 0.4f);
-        [Persistent]
-        public Color32 AnomalyTrackColor = palette.cb_orange * new Vector4(1, 1, 1, 0.4f);
-        [Persistent]
-        public Color32 AnomalyDetailTrackColor = palette.xkcd_DarkGreenAlpha;
-        [Persistent]
-        public Color32 LoResVisualTrackColor = palette.xkcd_DarkGreenAlpha;
-        [Persistent]
-        public Color32 HiResVisualTrackColor = palette.xkcd_DarkGreenAlpha;
-        [Persistent]
-        public Color32 FuzzyResourceTrackColor = palette.cb_bluishGreen * new Vector4(1, 1, 1, 0.4f);
-        [Persistent]
-        public Color32 HiResResourceTrackColor = palette.xkcd_DarkGreenAlpha;
-        [Persistent]
+		[Persistent]
+		public Color32 LoResAltimetryTrackColor = palette.cb_blue * new Vector4(1, 1, 1, 0.4f);
+		[Persistent]
+		public Color32 HiResAltimetryTrackColor = palette.cb_reddishPurple * new Vector4(1, 1, 1, 0.4f);
+		[Persistent]
+		public Color32 BiomeTrackColor = palette.cb_yellow * new Vector4(1, 1, 1, 0.4f);
+		[Persistent]
+		public Color32 AnomalyTrackColor = palette.cb_orange * new Vector4(1, 1, 1, 0.4f);
+		[Persistent]
+		public Color32 AnomalyDetailTrackColor = palette.xkcd_DarkGreenAlpha;
+		[Persistent]
+		public Color32 LoResVisualTrackColor = palette.xkcd_DarkGreenAlpha;
+		[Persistent]
+		public Color32 HiResVisualTrackColor = palette.xkcd_DarkGreenAlpha;
+		[Persistent]
+		public Color32 FuzzyResourceTrackColor = palette.cb_bluishGreen * new Vector4(1, 1, 1, 0.4f);
+		[Persistent]
+		public Color32 HiResResourceTrackColor = palette.xkcd_DarkGreenAlpha;
+		[Persistent]
 		public bool CheatMapFill = false;
 		[Persistent]
 		public int BigMapWidth = 720;
@@ -180,11 +180,15 @@ namespace SCANsat
 			fullPath = Path.Combine(KSPUtil.ApplicationRootPath, filePath).Replace("\\", "/");
 
 			if (Load())
+			{
 				SCANUtil.SCANlog("Settings file loaded");
+			}
 			else
 			{
 				if (Save())
+				{
 					SCANUtil.SCANlog("Settings file generated at:\n{0}", filePath);
+				}
 			}
 
 			GameEvents.onGameStateSaved.Add(GameSaved);
@@ -193,7 +197,9 @@ namespace SCANsat
 		private void GameSaved(Game g)
 		{
 			if (HighLogic.CurrentGame == g)
+			{
 				Save();
+			}
 		}
 
 		public bool Load()

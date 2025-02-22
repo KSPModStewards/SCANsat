@@ -36,11 +36,13 @@ namespace SCANsat.Unity.HSVPicker.UI
 		private void InputChanged(string input)
 		{
 			if (string.IsNullOrEmpty(input))
+			{
 				return;
+			}
 
 			float original = 0;
 
-			switch(type)
+			switch (type)
 			{
 				case ColorValues.R:
 					original = hsvpicker.R;
@@ -56,12 +58,18 @@ namespace SCANsat.Unity.HSVPicker.UI
 			float f = original;
 
 			if (!float.TryParse(input, out f))
+			{
 				return;
+			}
 
 			if (f < 0)
+			{
 				return;
+			}
 			else if (input.StartsWith("1."))
+			{
 				f = 1;
+			}
 			else if (f >= 1 && f <= 255)
 			{
 				f = Mathf.RoundToInt(f);
@@ -69,7 +77,9 @@ namespace SCANsat.Unity.HSVPicker.UI
 				f /= 255;
 			}
 			else if (f > 255)
+			{
 				return;
+			}
 
 			hsvpicker.AssignColor(type, f);
 		}

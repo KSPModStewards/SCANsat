@@ -10,7 +10,7 @@
  * Copyright (c)2014 (Your Name Here) <your email here>; see LICENSE.txt for licensing details.
  */
 #endregion
- 
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -88,44 +88,56 @@ namespace SCANsat.Unity.Unity
 		private Toggle m_ReverseToggle = null;
 		[SerializeField]
 		private Toggle m_DiscreteToggle = null;
-		
+
 		private bool loaded;
 
 		private ISCAN_Color colorInterface;
 		private ISCAN_Settings settingsInterface;
 
 		private List<SCAN_PaletteButton> paletteButtons = new List<SCAN_PaletteButton>();
-		
+
 		private void Awake()
 		{
 			if (m_MinInputField != null)
+			{
 				m_MinInputField.OnValueChange.AddListener(new UnityAction<string>(OnMinInputChange));
+			}
 
 			if (m_MaxInputField != null)
+			{
 				m_MaxInputField.OnValueChange.AddListener(new UnityAction<string>(OnMaxInputChange));
+			}
 
 			if (m_ClampInputField != null)
+			{
 				m_ClampInputField.OnValueChange.AddListener(new UnityAction<string>(OnClampInputChange));
+			}
 		}
 
 		private void Update()
 		{
 			if (settingsInterface == null)
+			{
 				return;
+			}
 
 			if (settingsInterface.LockInput)
 			{
 				if (m_MinInputField != null && !m_MinInputField.IsFocused
 					&& m_MaxInputField != null && !m_MaxInputField.IsFocused
 					&& m_ClampInputField != null && !m_ClampInputField.IsFocused)
+				{
 					settingsInterface.LockInput = false;
+				}
 			}
 		}
-	
+
 		public void SetTerrain(ISCAN_Color color, ISCAN_Settings settings)
 		{
 			if (color == null || settings == null)
+			{
 				return;
+			}
 
 			colorInterface = color;
 			settingsInterface = settings;
@@ -138,38 +150,58 @@ namespace SCANsat.Unity.Unity
 		private void SetUI()
 		{
 			if (colorInterface == null)
+			{
 				return;
+			}
 
 			SetMinSlider();
 
 			SetMaxSlider();
 
 			if (m_MinSlider != null)
+			{
 				m_MinSlider.value = colorInterface.TerrainCurrentMin;
+			}
 
 			if (m_MaxSlider != null)
+			{
 				m_MaxSlider.value = colorInterface.TerrainCurrentMax;
+			}
 
 			if (colorInterface.TerrainClampOn && m_ClampSlider != null)
+			{
 				m_ClampSlider.value = colorInterface.TerrainClamp;
+			}
 
 			if (m_ClampToggle != null)
+			{
 				m_ClampToggle.isOn = colorInterface.TerrainClampOn;
+			}
 
 			if (m_ReverseToggle != null)
+			{
 				m_ReverseToggle.isOn = colorInterface.TerrainReverse;
+			}
 
 			if (m_DiscreteToggle != null)
+			{
 				m_DiscreteToggle.isOn = colorInterface.TerrainDiscrete;
+			}
 
 			if (m_PaletteName != null)
+			{
 				m_PaletteName.OnTextUpdate.Invoke(colorInterface.TerrainPaletteStyle);
+			}
 
 			if (m_PlanetName != null)
+			{
 				m_PlanetName.OnTextUpdate.Invoke(colorInterface.TerrainPlanet);
+			}
 
 			if (m_PaletteName != null)
+			{
 				m_PaletteName.OnTextUpdate.Invoke(colorInterface.TerrainPaletteStyle);
+			}
 
 			CreatePalettes(colorInterface.TerrainPalettes);
 
@@ -183,10 +215,14 @@ namespace SCANsat.Unity.Unity
 		public void OnInputClick(BaseEventData eventData)
 		{
 			if (!(eventData is PointerEventData) || settingsInterface == null)
+			{
 				return;
+			}
 
 			if (((PointerEventData)eventData).button != PointerEventData.InputButton.Left)
+			{
 				return;
+			}
 
 			settingsInterface.LockInput = true;
 		}
@@ -194,7 +230,9 @@ namespace SCANsat.Unity.Unity
 		public override void OnPointerDown(PointerEventData eventData)
 		{
 			if (SCAN_Settings.Instance == null)
+			{
 				return;
+			}
 
 			if (SCAN_Settings.Instance.DropDown != null)
 			{
@@ -206,9 +244,11 @@ namespace SCANsat.Unity.Unity
 					{
 						SCAN_Settings.Instance.DropDown.FadeOut();
 						SCAN_Settings.Instance.DropDown = null;
-						
+
 						if (m_DropDownToggles != null)
+						{
 							m_DropDownToggles.SetAllTogglesOff();
+						}
 					}
 				}
 			}
@@ -237,15 +277,21 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (m_PaletteSelection == null || SCAN_Settings.Instance.DropDownPrefab == null || colorInterface == null)
+			{
 				return;
+			}
 
 			SCAN_Settings.Instance.DropDown = Instantiate(SCAN_Settings.Instance.DropDownPrefab).GetComponent<SCAN_DropDown>();
 
 			if (SCAN_Settings.Instance.DropDown == null)
+			{
 				return;
+			}
 
 			SCAN_Settings.Instance.DropDown.transform.SetParent(m_PaletteSelection, false);
 
@@ -257,16 +303,22 @@ namespace SCANsat.Unity.Unity
 		public void PaletteStyle(string style)
 		{
 			if (m_PaletteName != null)
+			{
 				m_PaletteName.OnTextUpdate.Invoke(style);
+			}
 
 			SCAN_Settings.Instance.DropDown.FadeOut(true);
 			SCAN_Settings.Instance.DropDown = null;
 
 			if (m_DropDownToggles != null)
+			{
 				m_DropDownToggles.SetAllTogglesOff();
+			}
 
 			if (colorInterface == null)
+			{
 				return;
+			}
 
 			colorInterface.TerrainPaletteStyle = style;
 
@@ -295,7 +347,9 @@ namespace SCANsat.Unity.Unity
 		private void CreatePalettes(IList<KeyValuePair<string, Texture2D>> palettes)
 		{
 			if (colorInterface == null || m_PaletteGrid == null || m_PalettePrefab == null || palettes == null)
+			{
 				return;
+			}
 
 			for (int i = 0; i < palettes.Count; i++)
 			{
@@ -310,7 +364,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_PaletteButton button = Instantiate(m_PalettePrefab).GetComponent<SCAN_PaletteButton>();
 
 			if (button == null)
+			{
 				return;
+			}
 
 			button.transform.SetParent(m_PaletteGrid, false);
 
@@ -322,7 +378,9 @@ namespace SCANsat.Unity.Unity
 		public void SetPalette(string palette)
 		{
 			if (string.IsNullOrEmpty(palette) || colorInterface == null)
+			{
 				return;
+			}
 
 			colorInterface.TerrainPalette = palette;
 
@@ -334,13 +392,19 @@ namespace SCANsat.Unity.Unity
 		private void SetPalettePreviews()
 		{
 			if (colorInterface == null)
+			{
 				return;
+			}
 
 			if (m_PaletteOld != null)
+			{
 				m_PaletteOld.texture = colorInterface.TerrainPaletteOld;
+			}
 
 			if (m_PalettePreview != null)
+			{
 				m_PalettePreview.texture = colorInterface.TerrainPaletteNew;
+			}
 		}
 
 		public void PlanetDropDown(bool isOn)
@@ -352,15 +416,21 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (m_PlanetSelection == null || SCAN_Settings.Instance.DropDownPrefab == null || colorInterface == null)
+			{
 				return;
+			}
 
 			SCAN_Settings.Instance.DropDown = Instantiate(SCAN_Settings.Instance.DropDownPrefab).GetComponent<SCAN_DropDown>();
 
 			if (SCAN_Settings.Instance.DropDown == null)
+			{
 				return;
+			}
 
 			SCAN_Settings.Instance.DropDown.transform.SetParent(m_PlanetSelection, false);
 
@@ -375,10 +445,14 @@ namespace SCANsat.Unity.Unity
 			SCAN_Settings.Instance.DropDown = null;
 
 			if (m_DropDownToggles != null)
+			{
 				m_DropDownToggles.SetAllTogglesOff();
+			}
 
 			if (colorInterface == null)
+			{
 				return;
+			}
 
 			colorInterface.TerrainPlanet = planet;
 
@@ -392,81 +466,115 @@ namespace SCANsat.Unity.Unity
 		public void OnMinChange(float value)
 		{
 			if (colorInterface == null)
+			{
 				return;
+			}
 
 			float max = (((int)(colorInterface.TerrainCurrentMax * 100)) / 100) - 200;
 
 			if (value > max)
+			{
 				value = max;
+			}
 			else if (value < colorInterface.TerrainGlobalMin)
+			{
 				value = colorInterface.TerrainGlobalMin;
+			}
 
 			colorInterface.TerrainCurrentMin = value;
 
 			SetMaxSlider();
 
 			if (m_MinText != null)
+			{
 				m_MinText.OnTextUpdate.Invoke(string.Format("Min: {0}m", value.ToString("N0")));
+			}
 
 			if (colorInterface.TerrainClampOn)
+			{
 				SetClamp();
+			}
 		}
 
 		public void OnMinInputChange(string input)
 		{
 			if (m_MinSlider == null)
+			{
 				return;
+			}
 
 			float min = SCAN_ColorControl.ParseInput(input, m_MinSlider.value, m_MinSlider.minValue, m_MinSlider.maxValue, 0);
 
 			if (min != m_MinSlider.value)
+			{
 				m_MinSlider.value = min;
+			}
 		}
 
 		public void OnMaxChange(float value)
 		{
 			if (colorInterface == null)
+			{
 				return;
+			}
 
 			float min = (((int)(colorInterface.TerrainCurrentMin * 100)) / 100) + 200;
 
 			if (value < min)
+			{
 				value = min;
+			}
 			else if (value > colorInterface.TerrainGlobalMax)
+			{
 				value = colorInterface.TerrainGlobalMax;
+			}
 
 			colorInterface.TerrainCurrentMax = value;
 
 			SetMinSlider();
 
 			if (m_MaxText != null)
+			{
 				m_MaxText.OnTextUpdate.Invoke(string.Format("Max: {0}m", value.ToString("N0")));
+			}
 
 			if (colorInterface.TerrainClampOn)
+			{
 				SetClamp();
+			}
 		}
 
 		public void OnMaxInputChange(string input)
 		{
 			if (m_MaxSlider == null)
+			{
 				return;
+			}
 
 			float max = SCAN_ColorControl.ParseInput(input, m_MaxSlider.value, m_MaxSlider.minValue, m_MaxSlider.maxValue, 0);
 
 			if (max != m_MaxSlider.value)
+			{
 				m_MaxSlider.value = max;
+			}
 		}
 
 		public void OnClampChange(float value)
 		{
 			if (colorInterface == null)
+			{
 				return;
+			}
 
 			if (m_ClampText != null)
+			{
 				m_ClampText.OnTextUpdate.Invoke(string.Format("Clamp: {0}m", value.ToString("N0")));
+			}
 
 			if (!loaded)
+			{
 				return;
+			}
 
 			colorInterface.TerrainClamp = value;
 		}
@@ -474,24 +582,34 @@ namespace SCANsat.Unity.Unity
 		public void OnClampInputChange(string input)
 		{
 			if (m_ClampSlider == null)
+			{
 				return;
+			}
 
 			float clamp = SCAN_ColorControl.ParseInput(input, m_ClampSlider.value, m_ClampSlider.minValue, m_ClampSlider.maxValue, 0);
 
 			if (clamp != m_ClampSlider.value)
+			{
 				m_ClampSlider.value = clamp;
+			}
 		}
 
 		public void ClampToggle(bool isOn)
 		{
 			if (m_ClampObject != null)
+			{
 				m_ClampObject.SetActive(isOn);
+			}
 
 			if (isOn)
+			{
 				SetClamp();
+			}
 
 			if (!loaded || colorInterface == null)
+			{
 				return;
+			}
 
 			colorInterface.TerrainClampOn = isOn;
 
@@ -501,7 +619,9 @@ namespace SCANsat.Unity.Unity
 		private void SetMinSlider()
 		{
 			if (colorInterface == null || m_MinSlider == null)
+			{
 				return;
+			}
 
 			float min = (((int)(colorInterface.TerrainGlobalMin * 100)) / 100);
 
@@ -511,16 +631,22 @@ namespace SCANsat.Unity.Unity
 			m_MinSlider.maxValue = max;
 
 			if (m_MinSliderLabelOne != null)
+			{
 				m_MinSliderLabelOne.OnTextUpdate.Invoke(string.Format("|\n{0}m", min.ToString("N0")));
+			}
 
 			if (m_MinSliderLabelTwo != null)
+			{
 				m_MinSliderLabelTwo.OnTextUpdate.Invoke(string.Format("|\n{0}m", max.ToString("N0")));
+			}
 		}
 
 		private void SetMaxSlider()
 		{
 			if (colorInterface == null || m_MaxSlider == null)
+			{
 				return;
+			}
 
 			float min = (((int)(colorInterface.TerrainCurrentMin * 100)) / 100) + 200;
 
@@ -530,16 +656,22 @@ namespace SCANsat.Unity.Unity
 			m_MaxSlider.maxValue = max;
 
 			if (m_MaxSliderLabelOne != null)
+			{
 				m_MaxSliderLabelOne.OnTextUpdate.Invoke(string.Format("|\n{0}m", min.ToString("N0")));
+			}
 
 			if (m_MaxSliderLabelTwo != null)
+			{
 				m_MaxSliderLabelTwo.OnTextUpdate.Invoke(string.Format("|\n{0}m", max.ToString("N0")));
+			}
 		}
 
 		private void SetClamp()
 		{
 			if (colorInterface == null || m_ClampSlider == null)
+			{
 				return;
+			}
 
 			float min = (((int)(colorInterface.TerrainCurrentMin * 100)) / 100) + 100;
 
@@ -549,17 +681,25 @@ namespace SCANsat.Unity.Unity
 			m_ClampSlider.maxValue = max;
 
 			if (m_ClampSliderLabelOne != null)
+			{
 				m_ClampSliderLabelOne.OnTextUpdate.Invoke(string.Format("|\n{0}m", min.ToString("N0")));
+			}
 
 			if (m_ClampSliderLabelTwo != null)
+			{
 				m_ClampSliderLabelTwo.OnTextUpdate.Invoke(string.Format("|\n{0}m", max.ToString("N0")));
+			}
 
 			float clamp = colorInterface.TerrainClamp;
 
 			if (clamp <= min)
+			{
 				clamp = min;
+			}
 			else if (clamp >= max)
+			{
 				clamp = max;
+			}
 
 			m_ClampSlider.value = clamp;
 		}
@@ -567,13 +707,19 @@ namespace SCANsat.Unity.Unity
 		private void SetSizeSlider()
 		{
 			if (colorInterface == null || m_SizeSlider == null)
+			{
 				return;
+			}
 
 			if (m_SizeObject != null)
+			{
 				m_SizeObject.SetActive(colorInterface.TerrainHasSize);
+			}
 
 			if (!colorInterface.TerrainHasSize)
+			{
 				return;
+			}
 
 			int min = colorInterface.TerrainSizeMin;
 			int max = colorInterface.TerrainSizeMax;
@@ -582,17 +728,25 @@ namespace SCANsat.Unity.Unity
 			m_SizeSlider.maxValue = max;
 
 			if (m_SizeSliderLabelOne != null)
+			{
 				m_SizeSliderLabelOne.OnTextUpdate.Invoke(string.Format("|\n{0}", min));
+			}
 
 			if (m_SizeSliderLabelTwo != null)
+			{
 				m_SizeSliderLabelTwo.OnTextUpdate.Invoke(string.Format("|\n{0}", max));
+			}
 
 			int size = colorInterface.TerrainSize;
 
 			if (size < min)
+			{
 				size = min;
+			}
 			else if (size > max)
+			{
 				size = max;
+			}
 
 			m_SizeSlider.value = size;
 		}
@@ -600,13 +754,17 @@ namespace SCANsat.Unity.Unity
 		public void OnSizeChange(float value)
 		{
 			if (m_SizeText != null)
+			{
 				m_SizeText.OnTextUpdate.Invoke(string.Format("Size: {0}", ((int)value).ToString()));
+			}
 
 			if (!loaded || colorInterface == null)
+			{
 				return;
+			}
 
 			colorInterface.TerrainSize = (int)value;
-			
+
 			ClearPalettes();
 
 			CreatePalettes(colorInterface.TerrainPalettes);
@@ -619,7 +777,9 @@ namespace SCANsat.Unity.Unity
 		public void ReverseToggle(bool isOn)
 		{
 			if (!loaded || colorInterface == null)
+			{
 				return;
+			}
 
 			colorInterface.TerrainReverse = isOn;
 
@@ -629,7 +789,9 @@ namespace SCANsat.Unity.Unity
 		public void DiscreteToggle(bool isOn)
 		{
 			if (!loaded || colorInterface == null)
+			{
 				return;
+			}
 
 			colorInterface.TerrainDiscrete = isOn;
 
@@ -639,10 +801,14 @@ namespace SCANsat.Unity.Unity
 		public void Apply()
 		{
 			if (colorInterface == null)
+			{
 				return;
+			}
 
 			if (settingsInterface != null)
+			{
 				settingsInterface.LockInput = false;
+			}
 
 			colorInterface.TerrainApply();
 
@@ -652,10 +818,14 @@ namespace SCANsat.Unity.Unity
 		public void Default()
 		{
 			if (colorInterface == null)
+			{
 				return;
+			}
 
 			if (settingsInterface != null)
+			{
 				settingsInterface.LockInput = false;
+			}
 
 			colorInterface.TerrainDefault();
 
@@ -669,7 +839,9 @@ namespace SCANsat.Unity.Unity
 		public void SaveToConfig()
 		{
 			if (SCAN_Settings.Instance == null)
+			{
 				return;
+			}
 
 			if (SCAN_Settings.Instance.WarningPopup != null)
 			{
@@ -678,12 +850,16 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (SCAN_Settings.Instance.PopupPrefab == null)
+			{
 				return;
+			}
 
 			SCAN_Settings.Instance.WarningPopup = Instantiate(SCAN_Settings.Instance.PopupPrefab).GetComponent<SCAN_Popup>();
 
 			if (SCAN_Settings.Instance.WarningPopup == null)
+			{
 				return;
+			}
 
 			SCAN_Settings.Instance.WarningPopup.transform.SetParent(transform, false);
 
@@ -698,10 +874,14 @@ namespace SCANsat.Unity.Unity
 			SCAN_Settings.Instance.WarningPopup = null;
 
 			if (colorInterface == null)
+			{
 				return;
+			}
 
 			if (settingsInterface != null)
+			{
 				settingsInterface.LockInput = false;
+			}
 
 			colorInterface.TerrainSaveToConfig();
 		}

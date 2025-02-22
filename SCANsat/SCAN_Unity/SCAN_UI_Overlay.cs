@@ -89,16 +89,16 @@ namespace SCANsat.SCAN_Unity
 			}
 
 			if (resourceLegend != null)
-            {
+			{
 				GameObject.Destroy(resourceLegend);
 				resourceLegend = null;
-            }
+			}
 
 			if (mapOverlay != null)
-            {
+			{
 				GameObject.Destroy(mapOverlay);
 				mapOverlay = null;
-            }
+			}
 
 			removeOverlay(true);
 		}
@@ -106,13 +106,17 @@ namespace SCANsat.SCAN_Unity
 		public void SetScale(float scale)
 		{
 			if (uiElement != null)
+			{
 				uiElement.SetScale(scale);
+			}
 		}
 
 		public void ProcessTooltips()
 		{
 			if (uiElement != null)
+			{
 				uiElement.ProcessTooltips();
+			}
 		}
 
 		public void Update()
@@ -124,10 +128,14 @@ namespace SCANsat.SCAN_Unity
 				CelestialBody mapBody = SCANUtil.getTargetBody(MapView.MapCamera.target);
 
 				if (mapBody == null)
+				{
 					return;
+				}
 
 				if (mapBody != body)
+				{
 					setBody(mapBody);
+				}
 
 				if (SCAN_Settings_Config.Instance.OverlayTooltips && _overlayOn)
 				{
@@ -157,7 +165,9 @@ namespace SCANsat.SCAN_Unity
 						}
 
 						if (tooltipActive)
+						{
 							MouseOverTooltip(coords);
+						}
 					}
 				}
 
@@ -165,7 +175,9 @@ namespace SCANsat.SCAN_Unity
 			else if (HighLogic.LoadedSceneIsFlight && FlightGlobals.ready)
 			{
 				if (body != FlightGlobals.currentMainBody)
+				{
 					setBody(FlightGlobals.currentMainBody);
+				}
 			}
 		}
 
@@ -240,7 +252,9 @@ namespace SCANsat.SCAN_Unity
 			uiElement = GameObject.Instantiate(SCAN_UI_Loader.OverlayPrefab).GetComponent<SCAN_Overlay>();
 
 			if (uiElement == null)
+			{
 				return;
+			}
 
 			uiElement.transform.SetParent(UIMasterController.Instance.dialogCanvas.transform, false);
 
@@ -253,7 +267,9 @@ namespace SCANsat.SCAN_Unity
 			if (HighLogic.LoadedSceneIsFlight && SCAN_Settings_Config.Instance.StockToolbar && SCAN_Settings_Config.Instance.ToolbarMenu)
 			{
 				if (SCANappLauncher.Instance != null && SCANappLauncher.Instance.UIElement != null)
+				{
 					SCANappLauncher.Instance.UIElement.SetOverlayToggle(true);
+				}
 			}
 		}
 
@@ -262,14 +278,18 @@ namespace SCANsat.SCAN_Unity
 			_isVisible = false;
 
 			if (uiElement == null)
+			{
 				return;
+			}
 
 			uiElement.FadeOut();
 
 			if (HighLogic.LoadedSceneIsFlight && SCAN_Settings_Config.Instance.StockToolbar && SCAN_Settings_Config.Instance.ToolbarMenu)
 			{
 				if (SCANappLauncher.Instance != null && SCANappLauncher.Instance.UIElement != null)
+				{
 					SCANappLauncher.Instance.UIElement.SetOverlayToggle(false);
+				}
 			}
 
 			uiElement = null;
@@ -298,7 +318,9 @@ namespace SCANsat.SCAN_Unity
 				_isVisible = value;
 
 				if (!value)
+				{
 					Close();
+				}
 			}
 		}
 
@@ -315,10 +337,14 @@ namespace SCANsat.SCAN_Unity
 				if (value)
 				{
 					if (!_overlayOn)
+					{
 						refreshMap(SCANcontroller.controller.overlaySelection);
+					}
 				}
 				else
+				{
 					removeOverlay();
+				}
 			}
 		}
 
@@ -330,7 +356,9 @@ namespace SCANsat.SCAN_Unity
 				if (!value)
 				{
 					if (_overlayOn && SCANcontroller.controller.overlaySelection == 0)
+					{
 						removeOverlay();
+					}
 
 					return;
 				}
@@ -349,7 +377,9 @@ namespace SCANsat.SCAN_Unity
 				if (!value)
 				{
 					if (_overlayOn && SCANcontroller.controller.overlaySelection == 1)
+					{
 						removeOverlay();
+					}
 
 					return;
 				}
@@ -382,16 +412,20 @@ namespace SCANsat.SCAN_Unity
 
 		public IList<string> Resources
 		{
-			get 
+			get
 			{
 				List<string> rList = new List<string>();
 
 				bool threshold;
 
 				if (!SCAN_Settings_Config.Instance.HideZeroResources)
+				{
 					threshold = SCANUtil.getCoveragePercentage(data, SCANtype.ResourceLoRes) > (SCAN_Settings_Config.Instance.StockTreshold * 100) || SCANUtil.getCoveragePercentage(data, SCANtype.ResourceHiRes) > (SCAN_Settings_Config.Instance.StockTreshold * 100);
+				}
 				else
+				{
 					threshold = true;
+				}
 
 				for (int i = 0; i < resources.Count; i++)
 				{
@@ -404,10 +438,14 @@ namespace SCANsat.SCAN_Unity
 						if (resBody != null)
 						{
 							if (resBody.DefaultZero)
+							{
 								continue;
+							}
 						}
 						else if (res.DefaultZero)
+						{
 							continue;
+						}
 					}
 
 					rList.Add(res.DisplayName);
@@ -422,10 +460,14 @@ namespace SCANsat.SCAN_Unity
 			get
 			{
 				if (resourceLegend == null)
+				{
 					resourceLegend = new Texture2D(RESOURCELEGENDWIDTH, 1, TextureFormat.RGB24, false);
+				}
 
 				if (currentResource == null)
+				{
 					return null;
+				}
 
 				Color32[] pix = new Color32[RESOURCELEGENDWIDTH];
 
@@ -476,9 +518,11 @@ namespace SCANsat.SCAN_Unity
 		public void SetResource(string resource, bool isOn)
 		{
 			if (!isOn)
-			{ 
-				if(_overlayOn && SCANcontroller.controller.overlaySelection == 2 && currentResource != null && currentResource.DisplayName == resource)
+			{
+				if (_overlayOn && SCANcontroller.controller.overlaySelection == 2 && currentResource != null && currentResource.DisplayName == resource)
+				{
 					removeOverlay();
+				}
 
 				return;
 			}
@@ -492,7 +536,9 @@ namespace SCANsat.SCAN_Unity
 					SCANresourceGlobal r = resources[i];
 
 					if (r.DisplayName != resource)
+					{
 						continue;
+					}
 
 					currentResource = r;
 					break;
@@ -500,7 +546,9 @@ namespace SCANsat.SCAN_Unity
 			}
 
 			if (currentResource == null)
+			{
 				return;
+			}
 
 			SCANcontroller.controller.overlayResource = SCANUtil.resourceFromDisplayName(resource);
 
@@ -514,7 +562,9 @@ namespace SCANsat.SCAN_Unity
 			refreshMap(SCANcontroller.controller.overlaySelection, true);
 
 			if (SCANcontroller.controller.overlaySelection == 2)
+			{
 				uiElement.SetResourceLegend();
+			}
 		}
 
 		public void OpenSettings()
@@ -522,7 +572,9 @@ namespace SCANsat.SCAN_Unity
 			if (SCAN_UI_Settings.Instance.IsVisible)
 			{
 				if (SCAN_UI_Settings.Instance.Page == 2)
+				{
 					SCAN_UI_Settings.Instance.Close();
+				}
 				else
 				{
 					SCAN_UI_Settings.Instance.Close();
@@ -530,7 +582,9 @@ namespace SCANsat.SCAN_Unity
 				}
 			}
 			else
+			{
 				SCAN_UI_Settings.Instance.Open(2);
+			}
 		}
 
 		public void IncreaseResourceCutoff()
@@ -552,16 +606,22 @@ namespace SCANsat.SCAN_Unity
 					resBody.MinValue = floor * divisor;
 
 					if (floor * divisor >= resBody.MaxValue)
+					{
 						resBody.MinValue = resBody.MaxValue - divisor;
+					}
 				}
 
 				refreshMap(SCANcontroller.controller.overlaySelection, true);
 
 				if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible && SCAN_UI_BigMap.Instance.ResourceToggle)
+				{
 					SCAN_UI_BigMap.Instance.RefreshMap();
+				}
 
 				if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible && SCAN_UI_ZoomMap.Instance.ResourceToggle)
+				{
 					SCAN_UI_ZoomMap.Instance.RefreshMap();
+				}
 			}
 		}
 
@@ -587,16 +647,22 @@ namespace SCANsat.SCAN_Unity
 					resBody.MinValue = floor * divisor;
 
 					if (floor * divisor >= resBody.MaxValue)
+					{
 						resBody.MinValue = resBody.MaxValue - divisor;
+					}
 				}
 
 				refreshMap(SCANcontroller.controller.overlaySelection, true);
 
 				if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible && SCAN_UI_BigMap.Instance.ResourceToggle)
+				{
 					SCAN_UI_BigMap.Instance.RefreshMap();
+				}
 
 				if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible && SCAN_UI_ZoomMap.Instance.ResourceToggle)
+				{
 					SCAN_UI_ZoomMap.Instance.RefreshMap();
+				}
 			}
 		}
 
@@ -657,14 +723,18 @@ namespace SCANsat.SCAN_Unity
 						SCANresourceGlobal r = resources[i];
 
 						if (r.Name != SCANcontroller.controller.overlayResource)
+						{
 							continue;
+						}
 
 						currentResource = r;
 						break;
 					}
 
 					if (currentResource == null)
+					{
 						currentResource = resources[0];
+					}
 
 					currentResource.CurrentBodyConfig(body.bodyName);
 				}
@@ -680,7 +750,9 @@ namespace SCANsat.SCAN_Unity
 			terrainGenerated = false;
 
 			if (_overlayOn)
+			{
 				refreshMap(SCANcontroller.controller.overlaySelection);
+			}
 
 			double circum = body.Radius * 2 * Math.PI;
 			double eqDistancePerDegree = circum / 360;
@@ -700,7 +772,9 @@ namespace SCANsat.SCAN_Unity
 			OverlayGenerator.Instance.ClearDisplay();
 
 			if (mapOverlay != null)
+			{
 				MonoBehaviour.Destroy(mapOverlay);
+			}
 
 			mapOverlay = null;
 
@@ -720,22 +794,31 @@ namespace SCANsat.SCAN_Unity
 		public void refreshMap(float t, int height, int interp, int biomeHeight)
 		{
 			if (_overlayOn)
+			{
 				refreshMap(SCANcontroller.controller.overlaySelection);
+			}
 		}
 
 		private void refreshMap(int i, bool remove = true)
 		{
 			if (remove)
+			{
 				removeOverlay();
+			}
 
 			if (mapGenerating)
+			{
 				return;
+			}
+
 			if (threadRunning)
+			{
 				return;
+			}
 
 			_overlayOn = true;
 
-			switch(i)
+			switch (i)
 			{
 				case 0:
 					body.SetResourceMap(SCANuiUtil.drawBiomeMap(ref mapOverlay, ref biomePixels, data, SCAN_Settings_Config.Instance.CoverageTransparency, SCAN_Settings_Config.Instance.BiomeMapHeight));
@@ -793,7 +876,9 @@ namespace SCANsat.SCAN_Unity
 			}
 
 			if (mapOverlay == null || mapOverlay.height != SCAN_Settings_Config.Instance.ResourceMapHeight)
+			{
 				mapOverlay = new Texture2D(SCAN_Settings_Config.Instance.ResourceMapHeight * 2, SCAN_Settings_Config.Instance.ResourceMapHeight, TextureFormat.ARGB32, true);
+			}
 
 			mapOverlay.SetPixels32(resourcePixels);
 			mapOverlay.Apply();
@@ -821,7 +906,9 @@ namespace SCANsat.SCAN_Unity
 		private IEnumerator setTerrainMap()
 		{
 			if (data.Body.pqsController == null)
+			{
 				yield break;
+			}
 
 			int timer = 0;
 
@@ -883,7 +970,9 @@ namespace SCANsat.SCAN_Unity
 			}
 
 			if (mapOverlay == null)
+			{
 				mapOverlay = new Texture2D(1440, 720, TextureFormat.ARGB32, true);
+			}
 
 			mapOverlay.SetPixels32(terrainPixels);
 			mapOverlay.Apply();
@@ -920,7 +1009,9 @@ namespace SCANsat.SCAN_Unity
 			SCAN_Settings_Config.Instance.OverlayPosition = new Vector2(600, -200);
 
 			if (uiElement != null)
+			{
 				uiElement.SetPosition(SCAN_Settings_Config.Instance.OverlayPosition);
+			}
 		}
 
 	}

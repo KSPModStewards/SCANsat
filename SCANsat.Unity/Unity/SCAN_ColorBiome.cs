@@ -51,26 +51,34 @@ namespace SCANsat.Unity.Unity
 		private void Awake()
 		{
 			if (m_TransInputField != null)
+			{
 				m_TransInputField.OnValueChange.AddListener(new UnityAction<string>(OnTransparencyInputChange));
+			}
 		}
 
 		private void Update()
 		{
 			if (settingsInterface == null)
+			{
 				return;
+			}
 
 			if (settingsInterface.LockInput)
 			{
 				if (m_TransInputField != null && !m_TransInputField.IsFocused
 					&& m_ColorPicker != null && !m_ColorPicker.AnyInputActive)
+				{
 					settingsInterface.LockInput = false;
+				}
 			}
 		}
-	
+
 		public void SetBiome(ISCAN_Color color, ISCAN_Settings settings)
 		{
 			if (color == null)
+			{
 				return;
+			}
 
 			colorInterface = color;
 			settingsInterface = settings;
@@ -78,25 +86,39 @@ namespace SCANsat.Unity.Unity
 			color.Refresh();
 
 			if (m_BigMapColor != null)
+			{
 				m_BigMapColor.isOn = color.BiomeBigMapStockColor;
+			}
 
 			if (m_BigMapBorder != null)
+			{
 				m_BigMapBorder.isOn = color.BiomeBigMapWhiteBorder;
+			}
 
 			if (m_ZoomMapBorder != null)
+			{
 				m_ZoomMapBorder.isOn = color.BiomeZoomMapWhiteBorder;
+			}
 
 			if (m_SmallMapColor != null)
+			{
 				m_SmallMapColor.isOn = color.BiomeSmallMapStockColor;
+			}
 
 			if (m_SmallMapBorder != null)
+			{
 				m_SmallMapBorder.isOn = color.BiomeSmallMapWhiteBorder;
+			}
 
 			if (m_TransparencySlider != null)
+			{
 				m_TransparencySlider.value = color.BiomeTransparency;
+			}
 
 			if (m_ColorPicker != null)
+			{
 				m_ColorPicker.Setup(color.BiomeColorOne, color.BiomeColorTwo, true);
+			}
 
 			loaded = true;
 		}
@@ -104,10 +126,14 @@ namespace SCANsat.Unity.Unity
 		public void OnInputClick(BaseEventData eventData)
 		{
 			if (!(eventData is PointerEventData) || settingsInterface == null)
+			{
 				return;
+			}
 
 			if (((PointerEventData)eventData).button != PointerEventData.InputButton.Left)
+			{
 				return;
+			}
 
 			settingsInterface.LockInput = true;
 		}
@@ -115,7 +141,9 @@ namespace SCANsat.Unity.Unity
 		public void BigMapColor(bool isOn)
 		{
 			if (!loaded || colorInterface == null)
+			{
 				return;
+			}
 
 			colorInterface.BiomeBigMapStockColor = isOn;
 		}
@@ -123,7 +151,9 @@ namespace SCANsat.Unity.Unity
 		public void BigMapBorder(bool isOn)
 		{
 			if (!loaded || colorInterface == null)
+			{
 				return;
+			}
 
 			colorInterface.BiomeBigMapWhiteBorder = isOn;
 		}
@@ -131,7 +161,9 @@ namespace SCANsat.Unity.Unity
 		public void ZoomMapBorder(bool isOn)
 		{
 			if (!loaded || colorInterface == null)
+			{
 				return;
+			}
 
 			colorInterface.BiomeZoomMapWhiteBorder = isOn;
 		}
@@ -139,7 +171,9 @@ namespace SCANsat.Unity.Unity
 		public void SmallMapColor(bool isOn)
 		{
 			if (!loaded || colorInterface == null)
+			{
 				return;
+			}
 
 			colorInterface.BiomeSmallMapStockColor = isOn;
 		}
@@ -147,7 +181,9 @@ namespace SCANsat.Unity.Unity
 		public void SmallMapBorder(bool isOn)
 		{
 			if (!loaded || colorInterface == null)
+			{
 				return;
+			}
 
 			colorInterface.BiomeSmallMapWhiteBorder = isOn;
 		}
@@ -155,10 +191,14 @@ namespace SCANsat.Unity.Unity
 		public void Transparency(float value)
 		{
 			if (m_TransparencyText != null)
+			{
 				m_TransparencyText.OnTextUpdate.Invoke(string.Format("Terrain Transparency: {0}%", value.ToString("N0")));
+			}
 
 			if (!loaded || colorInterface == null)
+			{
 				return;
+			}
 
 			colorInterface.BiomeTransparency = value;
 		}
@@ -166,51 +206,73 @@ namespace SCANsat.Unity.Unity
 		public void OnTransparencyInputChange(string input)
 		{
 			if (m_TransparencySlider == null)
+			{
 				return;
+			}
 
 			float tran = SCAN_ColorControl.ParseInput(input, m_TransparencySlider.value, m_TransparencySlider.minValue, m_TransparencySlider.maxValue, 0);
 
 			if (tran != m_TransparencySlider.value)
+			{
 				m_TransparencySlider.value = tran;
+			}
 		}
 
 		public void Apply()
 		{
 			if (colorInterface == null || m_ColorPicker == null)
+			{
 				return;
+			}
 
 			colorInterface.BiomeApply(m_ColorPicker.GetColorOne, m_ColorPicker.GetColorTwo);
 
 			if (m_ColorPicker != null)
+			{
 				m_ColorPicker.Setup(m_ColorPicker.GetColorOne, m_ColorPicker.GetColorTwo, false);
+			}
 		}
 
 		public void Default()
 		{
 			if (colorInterface == null)
+			{
 				return;
+			}
 
 			colorInterface.BiomeDefault();
 
 			if (m_ColorPicker != null)
+			{
 				m_ColorPicker.Setup(colorInterface.BiomeColorOne, colorInterface.BiomeColorTwo, false);
+			}
 
 			loaded = false;
 
 			if (m_BigMapColor != null)
+			{
 				m_BigMapColor.isOn = colorInterface.BiomeBigMapStockColor;
+			}
 
 			if (m_BigMapBorder != null)
+			{
 				m_BigMapBorder.isOn = colorInterface.BiomeBigMapWhiteBorder;
+			}
 
 			if (m_SmallMapColor != null)
+			{
 				m_SmallMapColor.isOn = colorInterface.BiomeSmallMapStockColor;
+			}
 
 			if (m_SmallMapBorder != null)
+			{
 				m_SmallMapBorder.isOn = colorInterface.BiomeSmallMapWhiteBorder;
+			}
 
 			if (m_TransparencySlider != null)
+			{
 				m_TransparencySlider.value = colorInterface.BiomeTransparency;
+			}
 
 			loaded = true;
 		}

@@ -24,7 +24,10 @@ namespace SCANsat.SCAN_Map
 			mapType[] v = (mapType[])Enum.GetValues(typeof(mapType));
 			string[] r = new string[v.Length];
 			for (int i = 0; i < v.Length; i++)
+			{
 				r[i] = v[i].ToString();
+			}
+
 			return r;
 		}
 	}
@@ -34,7 +37,7 @@ namespace SCANsat.SCAN_Map
 		Altimetry = 0,
 		Slope = 1,
 		Biome = 2,
-        Visual = 3,
+		Visual = 3,
 	}
 
 	public enum mapSource
@@ -43,6 +46,6 @@ namespace SCANsat.SCAN_Map
 		BigMap = 1,
 		ZoomMap = 2,
 		RPM = 3,
-        Overlay = 4,
+		Overlay = 4,
 	}
 }

@@ -140,7 +140,9 @@ namespace SCANsat.SCAN_Data
 		private Waypoint reflectWaypoint(StationaryPointParameter p)
 		{
 			if (SCANmainMenuLoader.FinePrintStationaryWaypoint)
+			{
 				return SCANreflection.FinePrintStationaryWaypointObject(p);
+			}
 
 			return null;
 		}
@@ -148,7 +150,9 @@ namespace SCANsat.SCAN_Data
 		private FlightBand reflectFlightBand(SurveyWaypointParameter p)
 		{
 			if (SCANmainMenuLoader.FinePrintFlightBand)
+			{
 				return SCANreflection.FinePrintFlightBandValue(p);
+			}
 
 			return FlightBand.NONE;
 		}

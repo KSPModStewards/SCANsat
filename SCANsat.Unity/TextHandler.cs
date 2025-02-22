@@ -84,7 +84,9 @@ namespace SCANsat.Unity
 			Text t = GetComponent<Text>();
 
 			if (t != null)
+			{
 				t.text = text;
+			}
 		}
 
 		public Vector2 PreferredSize
@@ -111,7 +113,9 @@ namespace SCANsat.Unity
 		public void OnPointerEnter(PointerEventData eventData)
 		{
 			if (!m_Highlighter)
+			{
 				return;
+			}
 
 			OnColorUpdate.Invoke(m_HighlightColor);
 		}
@@ -119,7 +123,9 @@ namespace SCANsat.Unity
 		public void OnPointerExit(PointerEventData eventData)
 		{
 			if (!m_Highlighter)
+			{
 				return;
+			}
 
 			OnColorUpdate.Invoke(_normalColor);
 		}
@@ -127,7 +133,9 @@ namespace SCANsat.Unity
 		public void OnScroll(PointerEventData eventData)
 		{
 			if (scroller == null)
+			{
 				return;
+			}
 
 			scroller.OnScroll(eventData);
 		}

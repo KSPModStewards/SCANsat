@@ -76,7 +76,9 @@ namespace SCANsat.Unity
 		public void OnPointerEnter(PointerEventData eventData)
 		{
 			if (!m_IsActive)
+			{
 				return;
+			}
 
 			OpenTooltip();
 		}
@@ -84,7 +86,9 @@ namespace SCANsat.Unity
 		public void OnPointerExit(PointerEventData eventData)
 		{
 			if (!m_IsActive)
+			{
 				return;
+			}
 
 			CloseTooltip();
 		}
@@ -92,7 +96,9 @@ namespace SCANsat.Unity
 		public void OnPointerClick(PointerEventData eventData)
 		{
 			if (!m_IsActive)
+			{
 				return;
+			}
 
 			CloseTooltip();
 		}
@@ -100,12 +106,16 @@ namespace SCANsat.Unity
 		private void OpenTooltip()
 		{
 			if (_prefab == null || _canvas == null)
+			{
 				return;
+			}
 
 			_tooltip = Instantiate(_prefab).GetComponent<SCAN_Tooltip>();
 
 			if (_tooltip == null)
+			{
 				return;
+			}
 
 			_tooltip.transform.SetParent(_canvas.transform, false);
 			_tooltip.transform.SetAsLastSibling();
@@ -116,7 +126,9 @@ namespace SCANsat.Unity
 		private void CloseTooltip()
 		{
 			if (_tooltip == null)
+			{
 				return;
+			}
 
 			_tooltip.gameObject.SetActive(false);
 			Destroy(_tooltip.gameObject);

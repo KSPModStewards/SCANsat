@@ -26,13 +26,15 @@ namespace SCANsat.SCAN_Unity
 		new private void Awake()
 		{
 			m_isAlignmentEnumConverted = true;
-			
+
 			base.Awake();
 
 			_handler = GetComponent<TextHandler>();
 
 			if (_handler == null)
+			{
 				return;
+			}
 
 			_handler.SetNormalColor(color);
 

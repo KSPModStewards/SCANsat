@@ -93,10 +93,12 @@ namespace SCANsat.SCAN_Data
 
 			for (int i = 0; i < l; i++)
 			{
-				SCANresourceBody r = c.masterBodyConfigs.At(i);	
+				SCANresourceBody r = c.masterBodyConfigs.At(i);
 				SCANresourceBody newR = new SCANresourceBody(r);
 				if (!newCopy.Contains(newR.BodyName))
+				{
 					newCopy.Add(newR.BodyName, newR);
+				}
 			}
 
 			return newCopy;
@@ -119,11 +121,15 @@ namespace SCANsat.SCAN_Data
 					SCANresourceBody r = Resource_Planetary_Config[i];
 
 					if (r == null)
+					{
 						continue;
+					}
 
 					//SCANUtil.SCANlog("Loading SCANsat body resource config settings: {0} - {1}", name, r.BodyName);
 					if (!masterBodyConfigs.Contains(r.BodyName))
+					{
 						masterBodyConfigs.Add(r.BodyName, r);
+					}
 				}
 			}
 			catch (Exception e)
@@ -155,9 +161,13 @@ namespace SCANsat.SCAN_Data
 		{
 			//SCANUtil.SCANlog("Adding SCANsat body resource config data: {0} - {1}", name, s);
 			if (!masterBodyConfigs.Contains(s))
+			{
 				masterBodyConfigs.Add(s, r);
+			}
 			else if (warn)
+			{
 				Debug.LogError(string.Format("[SCANsat] Warning: SCANresource Dictionary Already Contains Key Of This Type: [{0}] For Body: [{1}]", r.ResourceName, s));
+			}
 		}
 
 		public void updateBodyConfig(SCANresourceBody b)
@@ -180,9 +190,11 @@ namespace SCANsat.SCAN_Data
 			get
 			{
 				if (string.IsNullOrEmpty(displayName))
+				{
 					return name;
+				}
 
-				return displayName; 
+				return displayName;
 			}
 			set { displayName = value; }
 		}
@@ -193,19 +205,25 @@ namespace SCANsat.SCAN_Data
 			internal set
 			{
 				if (value < 0)
+				{
 					resourceTransparency = 0;
+				}
 				else if (value > 80)
+				{
 					resourceTransparency = 80;
+				}
 				else
+				{
 					resourceTransparency = value;
+				}
 			}
 		}
 
 		public bool DefaultZero
-        {
+		{
 			get { return defaultZero; }
 			set { defaultZero = value; }
-        }
+		}
 
 		public Color MinColor
 		{
@@ -243,7 +261,9 @@ namespace SCANsat.SCAN_Data
 			internal set
 			{
 				if (value >= 0 && value < defaultMaxValue && value <= 100)
+				{
 					defaultMinValue = value;
+				}
 			}
 		}
 
@@ -253,7 +273,9 @@ namespace SCANsat.SCAN_Data
 			internal set
 			{
 				if (value >= 0 && value > defaultMinValue && value <= 100)
+				{
 					defaultMaxValue = value;
+				}
 			}
 		}
 
@@ -265,19 +287,27 @@ namespace SCANsat.SCAN_Data
 		public SCANresourceBody getBodyConfig(string body, bool warn = true)
 		{
 			if (masterBodyConfigs.Contains(body))
+			{
 				return masterBodyConfigs[body];
+			}
 			else if (warn)
+			{
 				SCANUtil.SCANlog("SCANsat resource celestial body config: [{0}] is empty; something probably went wrong here", body);
+			}
 
 			return null;
 		}
 
-		public SCANresourceBody getBodyConfig (int i)
+		public SCANresourceBody getBodyConfig(int i)
 		{
 			if (masterBodyConfigs.Count > i)
+			{
 				return masterBodyConfigs.At(i);
+			}
 			else
+			{
 				SCANUtil.SCANlog("SCANsat resource celestial body config is empty; something probably went wrong here");
+			}
 
 			return null;
 		}
@@ -285,9 +315,13 @@ namespace SCANsat.SCAN_Data
 		public void CurrentBodyConfig(string body)
 		{
 			if (masterBodyConfigs.Contains(body))
+			{
 				currentBody = masterBodyConfigs[body];
+			}
 			else
+			{
 				currentBody = masterBodyConfigs.At(0);
+			}
 		}
 
 		public SCANresourceBody CurrentBody

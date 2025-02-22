@@ -176,14 +176,24 @@ namespace SCANsat.SCAN_Platform
 						uint len = 2;
 						uint maxlen = (uint)inputLength - iidx - len;
 						maxlen = maxlen > MAX_REF ? MAX_REF : maxlen;
-						if (oidx + lit + 1 + 3 >= outputLength) return 0;
-						do len++;
+						if (oidx + lit + 1 + 3 >= outputLength)
+						{
+							return 0;
+						}
+
+						do
+						{
+							len++;
+						}
 						while (len < maxlen && input[reference + len] == input[iidx + len]);
 						if (lit != 0)
 						{
 							output[oidx++] = (byte)(lit - 1);
 							lit = -lit;
-							do output[oidx++] = input[iidx + lit];
+							do
+							{
+								output[oidx++] = input[iidx + lit];
+							}
 							while ((++lit) != 0);
 						}
 						len -= 2;
@@ -209,25 +219,42 @@ namespace SCANsat.SCAN_Platform
 						continue;
 					}
 				}
-				else if (iidx == inputLength) break;
+				else if (iidx == inputLength)
+				{
+					break;
+				}
 				/* one more literal byte we must copy */
 				lit++;
 				iidx++;
 				if (lit == MAX_LIT)
 				{
-					if (oidx + 1 + MAX_LIT >= outputLength) return 0;
+					if (oidx + 1 + MAX_LIT >= outputLength)
+					{
+						return 0;
+					}
+
 					output[oidx++] = (byte)(MAX_LIT - 1);
 					lit = -lit;
-					do output[oidx++] = input[iidx + lit];
+					do
+					{
+						output[oidx++] = input[iidx + lit];
+					}
 					while ((++lit) != 0);
 				}
 			}
 			if (lit != 0)
 			{
-				if (oidx + lit + 1 >= outputLength) return 0;
+				if (oidx + lit + 1 >= outputLength)
+				{
+					return 0;
+				}
+
 				output[oidx++] = (byte)(lit - 1);
 				lit = -lit;
-				do output[oidx++] = input[iidx + lit];
+				do
+				{
+					output[oidx++] = input[iidx + lit];
+				}
 				while ((++lit) != 0);
 			}
 			return (int)oidx;
@@ -256,14 +283,21 @@ namespace SCANsat.SCAN_Platform
 						//SET_ERRNO (E2BIG);
 						return 0;
 					}
-					do output[oidx++] = input[iidx++];
+					do
+					{
+						output[oidx++] = input[iidx++];
+					}
 					while ((--ctrl) != 0);
 				}
 				else
 				{ /* back reference */
 					uint len = ctrl >> 5;
 					int reference = (int)(oidx - ((ctrl & 0x1f) << 8) - 1);
-					if (len == 7) len += input[iidx++];
+					if (len == 7)
+					{
+						len += input[iidx++];
+					}
+
 					reference -= input[iidx++];
 					if (oidx + len + 2 > outputLength)
 					{
@@ -277,7 +311,10 @@ namespace SCANsat.SCAN_Platform
 					}
 					output[oidx++] = output[reference++];
 					output[oidx++] = output[reference++];
-					do output[oidx++] = output[reference++];
+					do
+					{
+						output[oidx++] = output[reference++];
+					}
 					while ((--len) != 0);
 				}
 			} while (iidx < inputLength);

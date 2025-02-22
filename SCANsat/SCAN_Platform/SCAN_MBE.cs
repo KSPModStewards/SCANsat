@@ -62,7 +62,10 @@ namespace SCANsat.SCAN_Platform
 			{
 				Log.Debug("Setting RepeatSecs to {0}", value);
 				_RepeatSecs = value;
-				if (LooperRunning) RestartLooper();
+				if (LooperRunning)
+				{
+					RestartLooper();
+				}
 			}
 		}
 
@@ -80,9 +83,9 @@ namespace SCANsat.SCAN_Platform
 		protected bool StartLooper(Int32 TimesPerSec)
 		{
 			Log.Debug("Starting the repeating function");
-			StopLooper(); 							// stop it if its running
-			SetRepeatTimesPerSecond(TimesPerSec); 	// set the new value
-			return StartLooper(); 					// start it and return the result
+			StopLooper();                           // stop it if its running
+			SetRepeatTimesPerSecond(TimesPerSec);   // set the new value
+			return StartLooper();                   // start it and return the result
 		}
 		protected bool StartLooper()
 		{
@@ -115,12 +118,12 @@ namespace SCANsat.SCAN_Platform
 
 		private void LooperWrapper()
 		{
-			DateTime Duration = DateTime.Now; 					// record the start date
-			LooperUTLastStart = LooperUTStart;					// ... and last invocation
-			LooperUTStart = Planetarium.GetUniversalTime();	// ... and this too
+			DateTime Duration = DateTime.Now;                   // record the start date
+			LooperUTLastStart = LooperUTStart;                  // ... and last invocation
+			LooperUTStart = Planetarium.GetUniversalTime(); // ... and this too
 			LooperUTPeriod = LooperUTStart - LooperUTLastStart;// and diff!
 
-			Looper();	// do the work (overload this)
+			Looper();   // do the work (overload this)
 
 			LooperDuration = (DateTime.Now - Duration);
 		}
@@ -137,29 +140,29 @@ namespace SCANsat.SCAN_Platform
 
 				_seedGenerated = true;
 			}
-		}		// 1.
-		//internal virtual void OnEnable()		{ }								// 2.
-		protected virtual void Start() { Log.Debug("MBE Started"); }		// 3.
-		protected virtual void FixedUpdate() { }								// 4a. called (>1) per frame
-		protected virtual void Update() { }								// 4b.   ""   (=1) per frame
-		// 4c.        <coroutines run>
-		protected virtual void LateUpdate() { }								// 4d.   ""   (=1) per frame
-		//internal virtual void OnGUI()			{ }								// 5.    ""   (>1) per frame
-		// 5a. (layout and repaint)
-		// 5a. (layout and input) (1 per input)
+		}       // 1.
+				//internal virtual void OnEnable()		{ }								// 2.
+		protected virtual void Start() { Log.Debug("MBE Started"); }        // 3.
+		protected virtual void FixedUpdate() { }                                // 4a. called (>1) per frame
+		protected virtual void Update() { }                             // 4b.   ""   (=1) per frame
+																		// 4c.        <coroutines run>
+		protected virtual void LateUpdate() { }                             // 4d.   ""   (=1) per frame
+																			//internal virtual void OnGUI()			{ }								// 5.    ""   (>1) per frame
+																			// 5a. (layout and repaint)
+																			// 5a. (layout and input) (1 per input)
 		protected virtual void OnGUIEvery() { }
 		protected virtual void OnGUI_FirstRun() { Log.Debug("Running OnGUI OnceOnly Code"); }
 		//internal virtual void OnDisable()		{ }								// 6.
-		protected virtual void OnDestroy() { Log.Debug("MBE Destroy-ing"); }	// 7.
+		protected virtual void OnDestroy() { Log.Debug("MBE Destroy-ing"); }    // 7.
 
 		private void OnGUI()
 		{
 			if (!_OnGUI_FirstRun)
 			{
-				_OnGUI_FirstRun = true; 					// set the flag so this only runs once
-				//if (!SCAN_SkinsLibrary._Initialized)
-					//SCAN_SkinsLibrary.InitSkinList();		// set up the skins library
-				OnGUI_FirstRun();							// then actually *do* the firstrun stuff
+				_OnGUI_FirstRun = true;                     // set the flag so this only runs once
+															//if (!SCAN_SkinsLibrary._Initialized)
+															//SCAN_SkinsLibrary.InitSkinList();		// set up the skins library
+				OnGUI_FirstRun();                           // then actually *do* the firstrun stuff
 			}
 			OnGUIEvery();
 		}

@@ -22,29 +22,29 @@ namespace SCANsat
 {
 	static class SCANreflection
 	{
-        public const string KOPERNICUSONDEMANDTYPE = "ScaledSpaceOnDemand";
-        private const string KOPERNICUSONDEMANDLOAD = "LoadTextures";
-        private const string KOPERNICUSONDEMANDUNLOAD = "UnloadTextures";
+		public const string KOPERNICUSONDEMANDTYPE = "ScaledSpaceOnDemand";
+		private const string KOPERNICUSONDEMANDLOAD = "LoadTextures";
+		private const string KOPERNICUSONDEMANDUNLOAD = "UnloadTextures";
 
-        private static bool FinePrintFlightBandRun = false;
+		private static bool FinePrintFlightBandRun = false;
 		private static bool FinePrintStationaryWaypointRun = false;
 
 		private static FieldInfo _FinePrintFlightBand;
 		private static FieldInfo _FinePrintStationaryWaypoint;
 
-        internal static void LoadOnDemand(MonoBehaviour scaledSpaceOnDemand)
-        {
-            scaledSpaceOnDemand.GetType().InvokeMember(KOPERNICUSONDEMANDLOAD
-                , BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreReturn | BindingFlags.InvokeMethod, null, scaledSpaceOnDemand, null);
-        }
+		internal static void LoadOnDemand(MonoBehaviour scaledSpaceOnDemand)
+		{
+			scaledSpaceOnDemand.GetType().InvokeMember(KOPERNICUSONDEMANDLOAD
+				, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreReturn | BindingFlags.InvokeMethod, null, scaledSpaceOnDemand, null);
+		}
 
-        internal static void UnloadOnDemand(MonoBehaviour scaledSpaceOnDemand)
-        {
-            scaledSpaceOnDemand.GetType().InvokeMember(KOPERNICUSONDEMANDUNLOAD
-                , BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreReturn | BindingFlags.InvokeMethod, null, scaledSpaceOnDemand, null);
-        }
+		internal static void UnloadOnDemand(MonoBehaviour scaledSpaceOnDemand)
+		{
+			scaledSpaceOnDemand.GetType().InvokeMember(KOPERNICUSONDEMANDUNLOAD
+				, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreReturn | BindingFlags.InvokeMethod, null, scaledSpaceOnDemand, null);
+		}
 
-        internal static Waypoint FinePrintStationaryWaypointObject(StationaryPointParameter p)
+		internal static Waypoint FinePrintStationaryWaypointObject(StationaryPointParameter p)
 		{
 			Waypoint w = null;
 			try
@@ -77,10 +77,14 @@ namespace SCANsat
 		internal static bool FinePrintStationaryWaypointReflection()
 		{
 			if (_FinePrintStationaryWaypoint != null)
+			{
 				return true;
+			}
 
 			if (FinePrintStationaryWaypointRun)
+			{
 				return false;
+			}
 
 			FinePrintStationaryWaypointRun = true;
 
@@ -113,10 +117,14 @@ namespace SCANsat
 		internal static bool FinePrintFlightBandReflection()
 		{
 			if (_FinePrintFlightBand != null)
+			{
 				return true;
+			}
 
 			if (FinePrintFlightBandRun)
+			{
 				return false;
+			}
 
 			FinePrintFlightBandRun = true;
 

@@ -21,12 +21,12 @@ using UnityEngine.EventSystems;
 namespace SCANsat.Unity
 {
 	public class InputHandler : MonoBehaviour
-	{		
+	{
 		private string _text;
 		private bool _isFocused;
 
 		public class OnTextEvent : UnityEvent<string> { }
-		public class OnValueChanged: UnityEvent<string> { }
+		public class OnValueChanged : UnityEvent<string> { }
 
 		private OnTextEvent _onTextUpdate = new OnTextEvent();
 		private OnValueChanged _onValueChanged = new OnValueChanged();
@@ -42,7 +42,7 @@ namespace SCANsat.Unity
 			get { return _isFocused; }
 			set { _isFocused = value; }
 		}
-		
+
 		public UnityEvent<string> OnTextUpdate
 		{
 			get { return _onTextUpdate; }

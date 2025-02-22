@@ -71,7 +71,9 @@ namespace SCANsat.SCAN_Toolbar
 		public void ProcessTooltips()
 		{
 			if (uiElement != null)
+			{
 				uiElement.ProcessTooltips();
+			}
 		}
 
 		private void Start()
@@ -95,7 +97,9 @@ namespace SCANsat.SCAN_Toolbar
 			GameEvents.onGUIApplicationLauncherUnreadifying.Remove(removeButton);
 
 			if (SCANappLauncherButton != null)
+			{
 				removeButton(HighLogic.LoadedScene);
+			}
 
 			GameEvents.OnGameSettingsApplied.Remove(settingsApplied);
 
@@ -105,7 +109,9 @@ namespace SCANsat.SCAN_Toolbar
 		private void settingsApplied()
 		{
 			if (!_sticky || uiElement == null)
+			{
 				return;
+			}
 
 			uiElement.gameObject.SetActive(false);
 			DestroyImmediate(uiElement.gameObject);
@@ -121,7 +127,9 @@ namespace SCANsat.SCAN_Toolbar
 		IEnumerator addButton()
 		{
 			while (!ApplicationLauncher.Ready)
+			{
 				yield return null;
+			}
 
 			if (HighLogic.LoadedScene == GameScenes.FLIGHT)
 			{
@@ -135,7 +143,9 @@ namespace SCANsat.SCAN_Toolbar
 					SCANappLauncherButton = ApplicationLauncher.Instance.AddModApplication(toggleFlight, toggleFlight, null, null, null, null, ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW, SCAN_UI_Loader.SmallMapAppIcon.texture);
 
 					if (SCAN_UI_MainMap.Instance.IsVisible)
+					{
 						SCANappLauncherButton.SetTrue(false);
+					}
 				}
 			}
 			else if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedScene == GameScenes.TRACKSTATION)
@@ -164,17 +174,25 @@ namespace SCANsat.SCAN_Toolbar
 		private void toggleFlight()
 		{
 			if (SCAN_UI_MainMap.Instance.IsVisible)
+			{
 				SCAN_UI_MainMap.Instance.Close();
+			}
 			else
+			{
 				SCAN_UI_MainMap.Instance.Open();
+			}
 		}
 
 		private void toggleKSC()
 		{
 			if (SCAN_UI_BigMap.Instance.IsVisible)
+			{
 				SCAN_UI_BigMap.Instance.Close();
+			}
 			else
+			{
 				SCAN_UI_BigMap.Instance.Open();
+			}
 		}
 
 		private void OnTrue()
@@ -182,7 +200,9 @@ namespace SCANsat.SCAN_Toolbar
 			_sticky = true;
 
 			if (uiElement == null)
+			{
 				OpenMenu();
+			}
 		}
 
 		private void OnFalse()
@@ -199,7 +219,9 @@ namespace SCANsat.SCAN_Toolbar
 			_hovering = true;
 
 			if (_sticky || uiElement != null)
+			{
 				return;
+			}
 
 			OpenMenu();
 		}
@@ -209,7 +231,9 @@ namespace SCANsat.SCAN_Toolbar
 			_hovering = false;
 
 			if (!_sticky)
+			{
 				StartCoroutine(HoverOutWait());
+			}
 		}
 
 		private IEnumerator HoverOutWait()
@@ -223,13 +247,17 @@ namespace SCANsat.SCAN_Toolbar
 			}
 
 			if (!_inMenu)
+			{
 				CloseMenu();
+			}
 		}
 
 		public Vector3 GetAnchor()
 		{
 			if (SCANappLauncherButton == null)
+			{
 				return Vector3.zero;
+			}
 
 			Vector3 anchor = SCANappLauncherButton.GetAnchor();
 
@@ -242,12 +270,16 @@ namespace SCANsat.SCAN_Toolbar
 		private void OpenMenu()
 		{
 			if (SCAN_UI_Loader.ToolbarPrefab == null)
+			{
 				return;
+			}
 
 			uiElement = (Instantiate(SCAN_UI_Loader.ToolbarPrefab, GetAnchor(), Quaternion.identity) as GameObject).GetComponent<SCANsat.Unity.Unity.SCAN_Toolbar>();
-			
+
 			if (uiElement == null)
+			{
 				return;
+			}
 
 			uiElement.transform.SetParent(UIMasterController.Instance.appCanvas.transform);
 
@@ -257,7 +289,9 @@ namespace SCANsat.SCAN_Toolbar
 		private void CloseMenu()
 		{
 			if (uiElement != null)
+			{
 				uiElement.FadeOut();
+			}
 		}
 
 		private IEnumerator MenuHoverOutWait()
@@ -271,7 +305,9 @@ namespace SCANsat.SCAN_Toolbar
 			}
 
 			if (!_hovering && !_sticky)
+			{
 				CloseMenu();
+			}
 		}
 
 		public bool InMenu
@@ -282,7 +318,9 @@ namespace SCANsat.SCAN_Toolbar
 				_inMenu = value;
 
 				if (!value)
+				{
 					StartCoroutine(MenuHoverOutWait());
+				}
 			}
 		}
 
@@ -292,9 +330,13 @@ namespace SCANsat.SCAN_Toolbar
 			set
 			{
 				if (value)
+				{
 					SCAN_UI_MainMap.Instance.Open();
+				}
 				else
+				{
 					SCAN_UI_MainMap.Instance.Close();
+				}
 			}
 		}
 
@@ -304,9 +346,13 @@ namespace SCANsat.SCAN_Toolbar
 			set
 			{
 				if (value)
+				{
 					SCAN_UI_BigMap.Instance.Open();
+				}
 				else
+				{
 					SCAN_UI_BigMap.Instance.Close();
+				}
 			}
 		}
 
@@ -316,9 +362,13 @@ namespace SCANsat.SCAN_Toolbar
 			set
 			{
 				if (value)
+				{
 					SCAN_UI_ZoomMap.Instance.Open(true);
+				}
 				else
+				{
 					SCAN_UI_ZoomMap.Instance.Close();
+				}
 			}
 		}
 
@@ -328,9 +378,13 @@ namespace SCANsat.SCAN_Toolbar
 			set
 			{
 				if (value)
+				{
 					SCAN_UI_Overlay.Instance.Open();
+				}
 				else
+				{
 					SCAN_UI_Overlay.Instance.Close();
+				}
 			}
 		}
 
@@ -340,9 +394,13 @@ namespace SCANsat.SCAN_Toolbar
 			set
 			{
 				if (value)
+				{
 					SCAN_UI_Instruments.Instance.Open();
+				}
 				else
+				{
 					SCAN_UI_Instruments.Instance.Close();
+				}
 			}
 		}
 
@@ -352,9 +410,13 @@ namespace SCANsat.SCAN_Toolbar
 			set
 			{
 				if (value)
+				{
 					SCAN_UI_Settings.Instance.Open();
+				}
 				else
+				{
 					SCAN_UI_Settings.Instance.Close();
+				}
 			}
 		}
 	}

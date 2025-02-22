@@ -40,9 +40,9 @@ namespace SCANsat.Unity.Unity
 		private SCAN_Toggle m_MechJebToggle = null;
 		[SerializeField]
 		private SCAN_Toggle m_MechJebLoadToggle = null;
-        [SerializeField]
-        private SCAN_Toggle m_DaylightCheckToggle = null;
-        [SerializeField]
+		[SerializeField]
+		private SCAN_Toggle m_DaylightCheckToggle = null;
+		[SerializeField]
 		private GameObject m_MechJebBar = null;
 		[SerializeField]
 		private TextHandler m_UIScale = null;
@@ -57,12 +57,16 @@ namespace SCANsat.Unity.Unity
 		public void setup(ISCAN_Settings set)
 		{
 			if (set == null)
+			{
 				return;
+			}
 
 			settings = set;
 
 			if (m_GroundTrackToggle != null)
+			{
 				m_GroundTrackToggle.isOn = set.GroundTracks;
+			}
 
 			if (m_GroundTrackActiveToggle != null)
 			{
@@ -71,30 +75,40 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_WindowTooltipToggle != null)
+			{
 				m_WindowTooltipToggle.isOn = set.WindowTooltips;
+			}
 
 			if (m_LegendTooltipToggle != null)
+			{
 				m_LegendTooltipToggle.isOn = set.LegendTooltips;
+			}
 
 			if (m_StockToolbarToggle != null)
+			{
 				m_StockToolbarToggle.isOn = set.StockToolbar;
+			}
 
 			if (m_MechJebBar != null)
 			{
 				m_MechJebBar.SetActive(set.MechJebAvailable);
 
 				if (m_MechJebToggle != null)
+				{
 					m_MechJebToggle.isOn = set.MechJebTarget;
+				}
 
 				if (m_MechJebLoadToggle != null)
 				{
 					m_MechJebLoadToggle.isOn = set.MechJebLoad;
 					m_MechJebLoadToggle.gameObject.SetActive(set.MechJebTarget);
 				}
-			}			
-            
-            if (m_DaylightCheckToggle != null)
-                m_DaylightCheckToggle.isOn = set.DaylightCheck;
+			}
+
+			if (m_DaylightCheckToggle != null)
+			{
+				m_DaylightCheckToggle.isOn = set.DaylightCheck;
+			}
 
 			if (m_ToolbarMenuToggle != null)
 			{
@@ -103,16 +117,24 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_StockUIToggle != null)
+			{
 				m_StockUIToggle.isOn = set.StockUIStyle;
+			}
 
 			if (m_MapSpeedSlider != null)
+			{
 				m_MapSpeedSlider.value = set.MapGenSpeed;
+			}
 
 			if (m_UIScale != null)
+			{
 				m_UIScale.OnTextUpdate.Invoke("UI Scale: " + set.UIScale.ToString("P0"));
+			}
 
 			if (m_UIScaleSlider != null)
+			{
 				m_UIScaleSlider.value = set.UIScale * 100;
+			}
 
 			loaded = true;
 		}
@@ -120,18 +142,24 @@ namespace SCANsat.Unity.Unity
 		public void GroundTrack(bool isOn)
 		{
 			if (!loaded || settings == null)
+			{
 				return;
+			}
 
 			settings.GroundTracks = isOn;
 
 			if (m_GroundTrackActiveToggle != null)
+			{
 				m_GroundTrackActiveToggle.gameObject.SetActive(isOn);
+			}
 		}
 
 		public void ActiveTrackOnly(bool isOn)
 		{
 			if (!loaded || settings == null)
+			{
 				return;
+			}
 
 			settings.ActiveGround = isOn;
 		}
@@ -139,7 +167,9 @@ namespace SCANsat.Unity.Unity
 		public void WindowTooltip(bool isOn)
 		{
 			if (!loaded || settings == null)
+			{
 				return;
+			}
 
 			settings.WindowTooltips = isOn;
 		}
@@ -147,7 +177,9 @@ namespace SCANsat.Unity.Unity
 		public void LegendTooltip(bool isOn)
 		{
 			if (!loaded || settings == null)
+			{
 				return;
+			}
 
 			settings.LegendTooltips = isOn;
 		}
@@ -155,18 +187,24 @@ namespace SCANsat.Unity.Unity
 		public void StockToolbar(bool isOn)
 		{
 			if (!loaded || settings == null)
+			{
 				return;
+			}
 
 			settings.StockToolbar = isOn;
 
 			if (m_ToolbarMenuToggle != null)
+			{
 				m_ToolbarMenuToggle.gameObject.SetActive(isOn);
+			}
 		}
 
 		public void ToolbarMenu(bool isOn)
 		{
 			if (!loaded || settings == null)
+			{
 				return;
+			}
 
 			settings.ToolbarMenu = isOn;
 		}
@@ -174,34 +212,44 @@ namespace SCANsat.Unity.Unity
 		public void StockUIStlye(bool isOn)
 		{
 			if (!loaded || settings == null)
+			{
 				return;
+			}
 
 			settings.StockUIStyle = isOn;
 		}
 
-        public void DaylightCheck(bool isOn)
-        {
-            if (!loaded || settings == null)
-                return;
+		public void DaylightCheck(bool isOn)
+		{
+			if (!loaded || settings == null)
+			{
+				return;
+			}
 
-            settings.DaylightCheck = isOn;
-        }
+			settings.DaylightCheck = isOn;
+		}
 
 		public void MechJebTargetSelection(bool isOn)
 		{
 			if (!loaded || settings == null)
+			{
 				return;
+			}
 
 			settings.MechJebTarget = isOn;
 
 			if (m_MechJebLoadToggle != null)
+			{
 				m_MechJebLoadToggle.gameObject.SetActive(isOn);
+			}
 		}
 
 		public void MechJebLoadTarget(bool isOn)
 		{
 			if (!loaded || settings == null)
+			{
 				return;
+			}
 
 			settings.MechJebLoad = isOn;
 		}
@@ -209,7 +257,9 @@ namespace SCANsat.Unity.Unity
 		public void MapGenSlider(float speed)
 		{
 			if (!loaded || settings == null)
+			{
 				return;
+			}
 
 			settings.MapGenSpeed = Mathf.RoundToInt(speed);
 		}
@@ -217,7 +267,9 @@ namespace SCANsat.Unity.Unity
 		public void UISlider(float scale)
 		{
 			if (!loaded || m_UIScale == null)
+			{
 				return;
+			}
 
 			m_UIScale.OnTextUpdate.Invoke("UI Scale: " + (scale / 100).ToString("P0"));
 		}
@@ -225,7 +277,9 @@ namespace SCANsat.Unity.Unity
 		public void SetUIScale()
 		{
 			if (settings == null || m_UIScaleSlider == null)
+			{
 				return;
+			}
 
 			settings.UIScale = m_UIScaleSlider.value / 100;
 		}
@@ -233,7 +287,9 @@ namespace SCANsat.Unity.Unity
 		public void ResetWindows()
 		{
 			if (settings == null)
+			{
 				return;
+			}
 
 			settings.ResetWindows();
 		}

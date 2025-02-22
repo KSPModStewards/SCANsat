@@ -65,9 +65,14 @@ namespace SCANsat.SCAN_Data
 			terrainRange = max * maxHeightMultiplier - min * minHeightMultiplier;
 			clampTerrain = clamp;
 			if (clampTerrain == null)
+			{
 				clampHeight = "Null";
+			}
 			else
+			{
 				clampHeight = clampTerrain.Value.ToString("F0");
+			}
+
 			colorPal = color;
 			paletteName = colorPal.Name;
 			paletteSize = size;
@@ -110,19 +115,29 @@ namespace SCANsat.SCAN_Data
 		{
 			body = FlightGlobals.Bodies.FirstOrDefault(b => b.flightGlobalsIndex == index);
 			if (body != null)
+			{
 				name = body.bodyName;
+			}
 			else
+			{
 				name = "WrongBody" + index;
+			}
 
 			colorPal = SCANUtil.PaletteLoader(paletteName, paletteSize);
 
 			float tempClamp = 0;
 			if (clampHeight == "Null" || clampHeight == "null" || string.IsNullOrEmpty(clampHeight))
+			{
 				clampTerrain = null;
+			}
 			else if (float.TryParse(clampHeight, out tempClamp))
+			{
 				clampTerrain = tempClamp;
+			}
 			else
+			{
 				clampTerrain = null;
+			}
 
 			terrainRange = maxHeightRange * maxHeightMultiplier - minHeightRange * minHeightMultiplier;
 			internalMaxHeightMult = maxHeightMultiplier;
@@ -146,9 +161,13 @@ namespace SCANsat.SCAN_Data
 		public override void OnEncodeToConfigNode()
 		{
 			if (clampTerrain == null)
+			{
 				clampHeight = "Null";
+			}
 			else
+			{
 				clampHeight = clampTerrain.Value.ToString("F0");
+			}
 
 			paletteName = colorPal.Name;
 
@@ -171,14 +190,18 @@ namespace SCANsat.SCAN_Data
 				float min = minHeightRange * internalMinHeightMult;
 
 				if (min < -250000)
+				{
 					return 200000;
-			
+				}
+
 				return min;
 			}
 			internal set
 			{
 				if (value < -250000)
+				{
 					value = -250000;
+				}
 
 				if (value < maxHeightRange * internalMaxHeightMult)
 				{
@@ -195,14 +218,18 @@ namespace SCANsat.SCAN_Data
 				float max = maxHeightRange * internalMaxHeightMult;
 
 				if (max > 500000)
+				{
 					return 500000;
+				}
 
 				return max;
 			}
 			internal set
 			{
 				if (value > 500000)
+				{
 					value = 500000;
+				}
 
 				if (value > minHeightRange * internalMinHeightMult)
 				{
@@ -223,9 +250,13 @@ namespace SCANsat.SCAN_Data
 			internal set
 			{
 				if (value == null)
+				{
 					clampTerrain = null;
+				}
 				else if (value > minHeightRange * internalMinHeightMult && value < maxHeightRange * internalMaxHeightMult)
+				{
 					clampTerrain = value / internalClampHeightMult;
+				}
 			}
 		}
 

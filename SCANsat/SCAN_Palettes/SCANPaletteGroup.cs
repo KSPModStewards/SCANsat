@@ -46,7 +46,9 @@ namespace SCANsat.SCAN_Palettes
 			Palettes.Add(palette);
 
 			if (!MasterPaletteList.Contains(palette.Count))
+			{
 				MasterPaletteList.Add(palette.Count, palette);
+			}
 		}
 
 		public SCANPaletteKind Kind
@@ -63,17 +65,23 @@ namespace SCANsat.SCAN_Palettes
 		public SCANPalette GetPalette(int length)
 		{
 			if (_kind == SCANPaletteKind.Fixed && MasterPaletteList.Count > 0)
+			{
 				return MasterPaletteList.At(0);
+			}
 
 			if (MasterPaletteList.Contains(length))
+			{
 				return MasterPaletteList[length];
+			}
 
 			if (MasterPaletteList.Count > 0)
 			{
 				int max = MasterPaletteList.Values.Max(p => p.Count);
 
 				if (MasterPaletteList.Contains(max))
+				{
 					return MasterPaletteList[max];
+				}
 
 				return MasterPaletteList.At(0);
 			}
@@ -150,10 +158,14 @@ namespace SCANsat.SCAN_Palettes
 					SCANPalette p = Palettes[i];
 
 					if (p == null)
+					{
 						continue;
+					}
 
 					if (!MasterPaletteList.Contains(p.Count))
+					{
 						MasterPaletteList.Add(p.Count, p);
+					}
 
 					p.Name = name;
 				}

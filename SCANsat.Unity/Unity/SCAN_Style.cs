@@ -54,7 +54,9 @@ namespace SCANsat.Unity.Unity
 			Selectable select = GetComponent<Selectable>();
 
 			if (select == null)
+			{
 				return;
+			}
 
 			select.image.sprite = normal;
 			select.image.type = Image.Type.Sliced;
@@ -72,7 +74,9 @@ namespace SCANsat.Unity.Unity
 			Image image = GetComponent<Image>();
 
 			if (image == null)
+			{
 				return;
+			}
 
 			image.sprite = sprite;
 		}
@@ -89,12 +93,16 @@ namespace SCANsat.Unity.Unity
 			Toggle toggle = GetComponent<Toggle>();
 
 			if (toggle == null)
+			{
 				return;
+			}
 
 			Image toggleImage = toggle.graphic as Image;
 
 			if (toggleImage == null)
+			{
 				return;
+			}
 
 			toggleImage.sprite = checkmark;
 			toggleImage.type = Image.Type.Sliced;
@@ -102,7 +110,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_Toggle scan_toggle = GetComponent<SCAN_Toggle>();
 
 			if (scan_toggle != null)
+			{
 				scan_toggle.HoverCheckmark = checkmarkHover;
+			}
 		}
 
 		public void setToggleButton(Sprite normal, Sprite highlight, Sprite active, Sprite inactive, Sprite checkmark)
@@ -112,12 +122,16 @@ namespace SCANsat.Unity.Unity
 			Toggle toggle = GetComponent<Toggle>();
 
 			if (toggle == null)
+			{
 				return;
+			}
 
 			Image toggleImage = toggle.graphic as Image;
 
 			if (toggleImage == null)
+			{
 				return;
+			}
 
 			toggleImage.sprite = checkmark;
 			toggleImage.type = Image.Type.Sliced;
@@ -128,17 +142,23 @@ namespace SCANsat.Unity.Unity
 			setSelectable(thumb, thumbHighlight, thumbActive, thumbInactive);
 
 			if (background == null)
+			{
 				return;
+			}
 
 			Slider slider = GetComponent<Slider>();
 
 			if (slider == null)
+			{
 				return;
+			}
 
 			Image back = slider.GetComponentInChildren<Image>();
 
 			if (back == null)
+			{
 				return;
+			}
 
 			back.sprite = background;
 			back.type = Image.Type.Sliced;
@@ -149,22 +169,30 @@ namespace SCANsat.Unity.Unity
 			Image back = GetComponent<Image>();
 
 			if (back == null)
+			{
 				return;
+			}
 
 			back.sprite = background;
 
 			Scrollbar scroll = GetComponent<Scrollbar>();
 
 			if (scroll == null)
+			{
 				return;
+			}
 
 			if (scroll.targetGraphic == null)
+			{
 				return;
+			}
 
 			Image scrollThumb = scroll.targetGraphic.GetComponent<Image>();
 
 			if (scrollThumb == null)
+			{
 				return;
+			}
 
 			scrollThumb.sprite = thumb;
 		}

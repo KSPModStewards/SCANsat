@@ -60,7 +60,7 @@ namespace SCANsat.SCAN_PartModules
 		{
 			string dataType = "";
 
-			switch(expType)
+			switch (expType)
 			{
 				case SCANexperimentType.SCANsatAltimetryLoRes:
 					dataType = "RADAR";
@@ -73,9 +73,9 @@ namespace SCANsat.SCAN_PartModules
 					break;
 				case SCANexperimentType.SCANsatResources:
 					dataType = "Resources";
-                    break;
-                case SCANexperimentType.SCANsatVisual:
-                    dataType = "Visual";
+					break;
+				case SCANexperimentType.SCANsatVisual:
+					dataType = "Visual";
 					break;
 			}
 
@@ -124,7 +124,9 @@ namespace SCANsat.SCAN_PartModules
 				if (EVACont.First().StoreData(new List<IScienceDataContainer>() { this }, false))
 				{
 					foreach (ScienceData data in storedData)
+					{
 						DumpData(data);
+					}
 				}
 			}
 		}
@@ -146,7 +148,9 @@ namespace SCANsat.SCAN_PartModules
 			makeScienceData();
 
 			if (!silent)
+			{
 				ReviewData();
+			}
 		}
 
 		[KSPEvent(guiActive = true, guiName = "Review Data", active = false)]
@@ -160,7 +164,10 @@ namespace SCANsat.SCAN_PartModules
 			storedData.Clear();
 			ScienceData sd = getAvailableScience();
 			if (sd == null)
+			{
 				return;
+			}
+
 			storedData.Add(sd);
 		}
 
@@ -169,7 +176,9 @@ namespace SCANsat.SCAN_PartModules
 			SCANdata data = SCANUtil.getData(vessel.mainBody);
 
 			if (data == null)
+			{
 				return null;
+			}
 
 			ScienceData sd = null;
 			ScienceExperiment se = null;
@@ -181,7 +190,9 @@ namespace SCANsat.SCAN_PartModules
 			{
 				case SCANexperimentType.SCANsatAltimetryLoRes:
 					if (vessel.mainBody.pqsController == null)
+					{
 						multiplier = 0.5f;
+					}
 
 					coverage = (float)SCANUtil.getCoveragePercentage(data, SCANtype.AltimetryLoRes);
 
@@ -189,7 +200,9 @@ namespace SCANsat.SCAN_PartModules
 					break;
 				case SCANexperimentType.SCANsatAltimetryHiRes:
 					if (vessel.mainBody.pqsController == null)
+					{
 						multiplier = 0.5f;
+					}
 
 					coverage = (float)SCANUtil.getCoveragePercentage(data, SCANtype.AltimetryHiRes);
 
@@ -197,7 +210,9 @@ namespace SCANsat.SCAN_PartModules
 					break;
 				case SCANexperimentType.SCANsatBiomeAnomaly:
 					if (vessel.mainBody.BiomeMap == null)
+					{
 						multiplier = 0.5f;
+					}
 
 					coverage = (float)SCANUtil.getCoveragePercentage(data, SCANtype.Biome);
 
@@ -208,15 +223,17 @@ namespace SCANsat.SCAN_PartModules
 
 					coverage = GetScienceCoverage(expType.ToString(), ref se, ref su, coverage, multiplier);
 					break;
-                case SCANexperimentType.SCANsatVisual:
-                    coverage = (float)SCANUtil.getCoveragePercentage(data, SCANtype.VisualHiRes);
+				case SCANexperimentType.SCANsatVisual:
+					coverage = (float)SCANUtil.getCoveragePercentage(data, SCANtype.VisualHiRes);
 
-                    coverage = GetScienceCoverage(expType.ToString(), ref se, ref su, coverage, multiplier);
-                    break;
-            }
+					coverage = GetScienceCoverage(expType.ToString(), ref se, ref su, coverage, multiplier);
+					break;
+			}
 
 			if (su == null || se == null)
+			{
 				return null;
+			}
 
 			su.scientificValue = 1;
 
@@ -224,7 +241,9 @@ namespace SCANsat.SCAN_PartModules
 			coverage /= su.subjectValue;
 
 			if (coverage <= 0)
+			{
 				coverage = 0.0000001f;
+			}
 
 			string title = Localizer.Format("#autoLOC_301689", se.experimentTitle, vessel.mainBody.displayName.LocalizeBodyName());
 
@@ -239,19 +258,27 @@ namespace SCANsat.SCAN_PartModules
 			se = ResearchAndDevelopment.GetExperiment(scienceID);
 
 			if (se == null)
+			{
 				return 0;
+			}
 
 			su = ResearchAndDevelopment.GetExperimentSubject(se, ExperimentSituations.InSpaceHigh, vessel.mainBody, "", "");
 
 			if (su == null)
+			{
 				return 0;
+			}
 
 			su.scienceCap *= mult;
 
 			if (coverage > 97.5)
+			{
 				coverage = 100;
+			}
 			else if (coverage < 30)
+			{
 				coverage = 0;
+			}
 
 			coverage /= 100;
 
@@ -268,7 +295,9 @@ namespace SCANsat.SCAN_PartModules
 		public void ReturnData(ScienceData data)
 		{
 			if (data == null)
+			{
 				return;
+			}
 
 			storedData.Clear();
 
@@ -292,9 +321,13 @@ namespace SCANsat.SCAN_PartModules
 				DumpData(data);
 			}
 			else if (CommNet.CommNetScenario.CommNetEnabled)
+			{
 				ScreenMessages.PostScreenMessage(Localizer.Format("#autoLOC_237738"), 3f, ScreenMessageStyle.UPPER_CENTER);
+			}
 			else
+			{
 				ScreenMessages.PostScreenMessage(Localizer.Format("#autoLOC_237740"), 3f, ScreenMessageStyle.UPPER_CENTER);
+			}
 		}
 
 		private void LabData(ScienceData data)
@@ -308,7 +341,9 @@ namespace SCANsat.SCAN_PartModules
 				DumpData(data);
 			}
 			else
+			{
 				labSearch.PostErrorToScreen();
+			}
 		}
 
 		public void DumpData(ScienceData data)
@@ -316,7 +351,9 @@ namespace SCANsat.SCAN_PartModules
 			expDialog = null;
 
 			if (storedData.Contains(data))
+			{
 				storedData.Remove(data);
+			}
 		}
 
 		public void ReviewDataItem(ScienceData sd)
@@ -327,7 +364,9 @@ namespace SCANsat.SCAN_PartModules
 		public void ReviewData()
 		{
 			if (storedData.Count < 1)
+			{
 				return;
+			}
 
 			expDialog = null;
 			ScienceData sd = storedData[0];

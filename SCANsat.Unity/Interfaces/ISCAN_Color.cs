@@ -29,9 +29,9 @@ namespace SCANsat.Unity.Interfaces
 
 		string TerrainPaletteStyle { get; set; }
 
-        bool MapVignette { get; set; }
+		bool MapVignette { get; set; }
 
-        bool BiomeBigMapStockColor { get; set; }
+		bool BiomeBigMapStockColor { get; set; }
 
 		bool BiomeBigMapWhiteBorder { get; set; }
 
@@ -50,26 +50,26 @@ namespace SCANsat.Unity.Interfaces
 		bool TerrainHasSize { get; }
 
 
-        int MapWidth { get; set; }
+		int MapWidth { get; set; }
 
-        bool UseMapWidth { get; set; }
+		bool UseMapWidth { get; set; }
 
-        bool PixelFiltering { get; set; }
+		bool PixelFiltering { get; set; }
 
-        bool NormalMap { get; set; }
+		bool NormalMap { get; set; }
 
-        bool ColorMap { get; set; }
+		bool ColorMap { get; set; }
 
-        float NormalOpacity { get; set; }
+		float NormalOpacity { get; set; }
 
-        float LuminanceReduction { get; set; }
+		float LuminanceReduction { get; set; }
 
 
-        float UnscannedTransparency { get; set; }
+		float UnscannedTransparency { get; set; }
 
-        float BackgroundTransparency { get; set; }
+		float BackgroundTransparency { get; set; }
 
-        float BiomeTransparency { get; set; }
+		float BiomeTransparency { get; set; }
 
 		float SlopeCutoff { get; set; }
 
@@ -95,11 +95,11 @@ namespace SCANsat.Unity.Interfaces
 
 		int TerrainSizeMax { get; }
 
-        Color MapBackgroundColor { get; }
+		Color MapBackgroundColor { get; }
 
-        Color UnscannedColor { get; }
+		Color UnscannedColor { get; }
 
-        Color BiomeColorOne { get; }
+		Color BiomeColorOne { get; }
 
 		Color BiomeColorTwo { get; }
 
@@ -127,11 +127,11 @@ namespace SCANsat.Unity.Interfaces
 
 		IList<string> PaletteStyleNames { get; }
 
-        void MapApply(Color one, Color two);
+		void MapApply(Color one, Color two);
 
-        void MapDefault();
+		void MapDefault();
 
-        void BiomeApply(Color one, Color two);
+		void BiomeApply(Color one, Color two);
 
 		void BiomeDefault();
 

@@ -20,18 +20,22 @@ using UnityEngine.EventSystems;
 
 namespace SCANsat.Unity
 {
-    [AddComponentMenu("UI/SCAN Double Button", 31)]
-    public class SCAN_DoubleButton : Button, IPointerClickHandler
+	[AddComponentMenu("UI/SCAN Double Button", 31)]
+	public class SCAN_DoubleButton : Button, IPointerClickHandler
 	{
 		private int clickCount;
 
 		new public void OnPointerClick(PointerEventData eventData)
 		{
 			if (eventData.button != PointerEventData.InputButton.Left)
+			{
 				return;
+			}
 
 			if (clickCount > 0)
+			{
 				clickCount++;
+			}
 			else
 			{
 				clickCount = 1;
@@ -44,7 +48,9 @@ namespace SCANsat.Unity
 			yield return new WaitForSeconds(0.4f);
 
 			if (clickCount > 1)
+			{
 				doubleClick();
+			}
 
 			clickCount = 0;
 		}
@@ -52,7 +58,9 @@ namespace SCANsat.Unity
 		private void doubleClick()
 		{
 			if (!IsActive() || !IsInteractable())
+			{
 				return;
+			}
 
 			onClick.Invoke();
 		}

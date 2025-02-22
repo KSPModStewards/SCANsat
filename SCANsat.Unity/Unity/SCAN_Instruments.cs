@@ -28,9 +28,9 @@ namespace SCANsat.Unity.Unity
 		private TextHandler m_ReadoutText = null;
 		[SerializeField]
 		private RectTransform m_ResourceButtons = null;
-        [SerializeField]
-        private GameObject m_AnomalyButtons = null;
-        [SerializeField]
+		[SerializeField]
+		private GameObject m_AnomalyButtons = null;
+		[SerializeField]
 		private RawImage m_AnomalyImage = null;
 		[SerializeField]
 		private TextHandler m_AnomalyPrintText = null;
@@ -78,7 +78,9 @@ namespace SCANsat.Unity.Unity
 		private void Update()
 		{
 			if (insInterface == null || !insInterface.IsVisible)
+			{
 				return;
+			}
 
 			insInterface.Update();
 		}
@@ -86,18 +88,26 @@ namespace SCANsat.Unity.Unity
 		public void SetInstruments(ISCAN_Instruments ins)
 		{
 			if (ins == null)
+			{
 				return;
+			}
 
 			insInterface = ins;
 
 			if (m_Version != null)
+			{
 				m_Version.OnTextUpdate.Invoke(ins.Version);
+			}
 
 			if (!ins.ResourceButtons && m_ResourceButtons != null)
+			{
 				m_ResourceButtons.gameObject.SetActive(false);
+			}
 
-            if (!ins.AnomalyButtons && m_AnomalyButtons != null)
-                m_AnomalyButtons.SetActive(false);
+			if (!ins.AnomalyButtons && m_AnomalyButtons != null)
+			{
+				m_AnomalyButtons.SetActive(false);
+			}
 
 			SetScale(ins.Scale);
 
@@ -127,27 +137,37 @@ namespace SCANsat.Unity.Unity
 		public void Close()
 		{
 			if (insInterface != null)
+			{
 				insInterface.IsVisible = false;
+			}
 		}
 
 		public void ProcessTooltips()
 		{
 			if (insInterface == null)
+			{
 				return;
+			}
 
 			TooltipHandler[] handlers = gameObject.GetComponentsInChildren<TooltipHandler>(true);
 
 			if (handlers == null)
+			{
 				return;
+			}
 
 			for (int j = 0; j < handlers.Length; j++)
+			{
 				ProcessTooltip(handlers[j], insInterface.TooltipsOn, insInterface.TooltipCanvas, insInterface.Scale);
+			}
 		}
 
 		private void ProcessTooltip(TooltipHandler handler, bool isOn, Canvas c, float scale)
 		{
 			if (handler == null)
+			{
 				return;
+			}
 
 			handler.IsActive = isOn && !handler.HelpTip;
 			handler._Canvas = c;
@@ -157,30 +177,40 @@ namespace SCANsat.Unity.Unity
 		public void SetResourceButtons(int lines)
 		{
 			if (insInterface == null || m_ResourceButtons == null)
+			{
 				return;
+			}
 
 			float y = -1 * lines * 24;
 
 			if (insInterface.ResourceButtons)
+			{
 				m_ResourceButtons.anchoredPosition3D = new Vector3(m_ResourceButtons.anchoredPosition.x, y, 0);
+			}
 		}
 
-        public void SetAnomalyButtons()
-        {
-            if (insInterface == null || m_AnomalyButtons == null)
-                return;
+		public void SetAnomalyButtons()
+		{
+			if (insInterface == null || m_AnomalyButtons == null)
+			{
+				return;
+			}
 
-            if (!insInterface.AnomalyButtons)
-            {
-                if (m_AnomalyButtons.activeSelf)
-                    m_AnomalyButtons.SetActive(false);
-            }
-            else
-            {
-                if (!m_AnomalyButtons.activeSelf)
-                    m_AnomalyButtons.SetActive(true);
-            }
-        }
+			if (!insInterface.AnomalyButtons)
+			{
+				if (m_AnomalyButtons.activeSelf)
+				{
+					m_AnomalyButtons.SetActive(false);
+				}
+			}
+			else
+			{
+				if (!m_AnomalyButtons.activeSelf)
+				{
+					m_AnomalyButtons.SetActive(true);
+				}
+			}
+		}
 
 		public void SetScale(float scale)
 		{
@@ -190,7 +220,9 @@ namespace SCANsat.Unity.Unity
 		public void SetPosition(Vector2 pos)
 		{
 			if (rect == null)
+			{
 				return;
+			}
 
 			rect.anchoredPosition = new Vector3(pos.x, pos.y, 0);
 		}
@@ -203,7 +235,9 @@ namespace SCANsat.Unity.Unity
 		public void OnBeginDrag(PointerEventData eventData)
 		{
 			if (rect == null)
+			{
 				return;
+			}
 
 			mouseStart = eventData.position;
 			windowStart = rect.position;
@@ -212,12 +246,16 @@ namespace SCANsat.Unity.Unity
 		public void OnDrag(PointerEventData eventData)
 		{
 			if (rect == null)
+			{
 				return;
+			}
 
 			rect.position = windowStart + (Vector3)(eventData.position - mouseStart);
 
 			if (insInterface == null)
+			{
 				return;
+			}
 
 			insInterface.ClampToScreen(rect);
 		}
@@ -225,7 +263,9 @@ namespace SCANsat.Unity.Unity
 		public void OnEndDrag(PointerEventData eventData)
 		{
 			if (rect == null || insInterface == null)
+			{
 				return;
+			}
 
 			insInterface.Position = new Vector2(rect.anchoredPosition.x, rect.anchoredPosition.y);
 		}
@@ -233,7 +273,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateText(string s)
 		{
 			if (m_ReadoutText == null)
+			{
 				return;
+			}
 
 			m_ReadoutText.OnTextUpdate.Invoke(s);
 		}
@@ -241,7 +283,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateAnomaly(Texture tex)
 		{
 			if (m_AnomalyImage == null)
+			{
 				return;
+			}
 
 			m_AnomalyImage.texture = tex;
 		}
@@ -249,7 +293,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateAnomalyText(string s)
 		{
 			if (m_AnomalyPrintText == null)
+			{
 				return;
+			}
 
 			m_AnomalyPrintText.OnTextUpdate.Invoke(s);
 		}
@@ -257,7 +303,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateAnomalyName(string s)
 		{
 			if (m_AnomalyNameText == null)
+			{
 				return;
+			}
 
 			m_AnomalyNameText.OnTextUpdate.Invoke(s);
 		}
@@ -265,7 +313,9 @@ namespace SCANsat.Unity.Unity
 		public void PreviousResource()
 		{
 			if (insInterface == null)
+			{
 				return;
+			}
 
 			insInterface.PreviousResource();
 		}
@@ -273,34 +323,46 @@ namespace SCANsat.Unity.Unity
 		public void NextResource()
 		{
 			if (insInterface == null)
+			{
 				return;
+			}
 
 			insInterface.NextResource();
 		}
-        
-        public void NextAnomaly()
-        {
-            if (insInterface == null)
-                return;
 
-            insInterface.NextAnomaly();
-        }
+		public void NextAnomaly()
+		{
+			if (insInterface == null)
+			{
+				return;
+			}
+
+			insInterface.NextAnomaly();
+		}
 
 		public void SetDetailState(bool isOn)
 		{
 			if (m_AnomalyObject == null)
+			{
 				return;
+			}
 
 			if (isOn && !m_AnomalyObject.activeSelf)
+			{
 				m_AnomalyObject.SetActive(true);
+			}
 			else if (!isOn && m_AnomalyObject.activeSelf)
+			{
 				m_AnomalyObject.SetActive(false);
+			}
 		}
 
 		public void OnMouseEnterAnomaly(BaseEventData eventData)
 		{
 			if (!(eventData is PointerEventData) || insInterface == null)
+			{
 				return;
+			}
 
 			insInterface.MouseAnomaly = true;
 		}
@@ -308,7 +370,9 @@ namespace SCANsat.Unity.Unity
 		public void OnMouseExitAnomaly(BaseEventData eventData)
 		{
 			if (!(eventData is PointerEventData) || insInterface == null)
+			{
 				return;
+			}
 
 			insInterface.MouseAnomaly = false;
 		}

@@ -35,7 +35,7 @@ namespace SCANsat.Unity.Unity
 		private string currentElement;
 		private OnSelectEvent _onSelectUpdate = new OnSelectEvent();
 		private int fontsize = 14;
-        private int maxLength = 12;
+		private int maxLength = 12;
 
 		protected override void Awake()
 		{
@@ -52,7 +52,9 @@ namespace SCANsat.Unity.Unity
 		public void Setup(IList<string> elements, string current, int font = 14, int max = 12)
 		{
 			if (elements == null)
+			{
 				return;
+			}
 
 			if (m_Layout != null)
 			{
@@ -61,13 +63,15 @@ namespace SCANsat.Unity.Unity
 				height += 5;
 
 				if (height > 155)
+				{
 					height = 155;
+				}
 
 				m_Layout.preferredHeight = height;
 			}
 
 			fontsize = font;
-            maxLength = 12;
+			maxLength = 12;
 
 			currentElement = current;
 
@@ -100,7 +104,9 @@ namespace SCANsat.Unity.Unity
 		private void AddElements(IList<string> elements)
 		{
 			if (m_ContentPrefab == null || m_ContentTransform == null)
+			{
 				return;
+			}
 
 			for (int i = 0; i < elements.Count; i++)
 			{
@@ -115,7 +121,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_DropDownElement dropDown = Instantiate(m_ContentPrefab).GetComponent<SCAN_DropDownElement>();
 
 			if (dropDown == null)
+			{
 				return;
+			}
 
 			dropDown.transform.SetParent(m_ContentTransform, false);
 

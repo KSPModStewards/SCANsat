@@ -20,283 +20,331 @@ using SCANsat.Unity.Interfaces;
 
 namespace SCANsat.Unity.Unity
 {
-    public class SCAN_Settings : CanvasFader, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
-    {
-        [SerializeField]
-        private TextHandler m_Version = null;
-        [SerializeField]
-        private Transform m_ContentTransform = null;
-        [SerializeField]
-        private Toggle m_GeneralToggle = null;
-        [SerializeField]
-        private Toggle m_BackgroundToggle = null;
-        [SerializeField]
-        private Toggle m_ResourceToggle = null;
-        [SerializeField]
-        private Toggle m_DataToggle = null;
-        [SerializeField]
-        private Toggle m_ColorToggle = null;
-        [SerializeField]
-        private Toggle m_HelpTips = null;
-        [SerializeField]
-        private GameObject m_GeneralPrefab = null;
-        [SerializeField]
-        private GameObject m_BackgroundPrefab = null;
-        [SerializeField]
-        private GameObject m_ResourcePrefab = null;
-        [SerializeField]
-        private GameObject m_DataPrefab = null;
-        [SerializeField]
-        private GameObject m_ColorPrefab = null;
-        [SerializeField]
-        private GameObject m_PopupPrefab = null;
-        [SerializeField]
-        private GameObject m_DropDownPrefab = null;
+	public class SCAN_Settings : CanvasFader, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
+	{
+		[SerializeField]
+		private TextHandler m_Version = null;
+		[SerializeField]
+		private Transform m_ContentTransform = null;
+		[SerializeField]
+		private Toggle m_GeneralToggle = null;
+		[SerializeField]
+		private Toggle m_BackgroundToggle = null;
+		[SerializeField]
+		private Toggle m_ResourceToggle = null;
+		[SerializeField]
+		private Toggle m_DataToggle = null;
+		[SerializeField]
+		private Toggle m_ColorToggle = null;
+		[SerializeField]
+		private Toggle m_HelpTips = null;
+		[SerializeField]
+		private GameObject m_GeneralPrefab = null;
+		[SerializeField]
+		private GameObject m_BackgroundPrefab = null;
+		[SerializeField]
+		private GameObject m_ResourcePrefab = null;
+		[SerializeField]
+		private GameObject m_DataPrefab = null;
+		[SerializeField]
+		private GameObject m_ColorPrefab = null;
+		[SerializeField]
+		private GameObject m_PopupPrefab = null;
+		[SerializeField]
+		private GameObject m_DropDownPrefab = null;
 
-        private ISCAN_Settings settingsInterface;
-        private RectTransform rect;
-        private Vector2 mouseStart;
-        private Vector3 windowStart;
-        private int _page;
-        private bool _forceResource;
+		private ISCAN_Settings settingsInterface;
+		private RectTransform rect;
+		private Vector2 mouseStart;
+		private Vector3 windowStart;
+		private int _page;
+		private bool _forceResource;
 
-        private SettingsPage CurrentPage;
-        private SCAN_Popup warningPopup;
-        private SCAN_DropDown dropDown;
+		private SettingsPage CurrentPage;
+		private SCAN_Popup warningPopup;
+		private SCAN_DropDown dropDown;
 
-        private static SCAN_Settings instance;
+		private static SCAN_Settings instance;
 
-        public static SCAN_Settings Instance
-        {
-            get { return instance; }
-        }
+		public static SCAN_Settings Instance
+		{
+			get { return instance; }
+		}
 
-        public int Page
-        {
-            get { return _page; }
-        }
+		public int Page
+		{
+			get { return _page; }
+		}
 
-        public GameObject PopupPrefab
-        {
-            get { return m_PopupPrefab; }
-        }
+		public GameObject PopupPrefab
+		{
+			get { return m_PopupPrefab; }
+		}
 
-        public GameObject DropDownPrefab
-        {
-            get { return m_DropDownPrefab; }
-        }
+		public GameObject DropDownPrefab
+		{
+			get { return m_DropDownPrefab; }
+		}
 
-        public SCAN_Popup WarningPopup
-        {
-            get { return warningPopup; }
-            set { warningPopup = value; }
-        }
+		public SCAN_Popup WarningPopup
+		{
+			get { return warningPopup; }
+			set { warningPopup = value; }
+		}
 
-        public SCAN_DropDown DropDown
-        {
-            get { return dropDown; }
-            set { dropDown = value; }
-        }
+		public SCAN_DropDown DropDown
+		{
+			get { return dropDown; }
+			set { dropDown = value; }
+		}
 
-        public bool IsCurrentResourceActive(string body, string resource)
-        {
-            if (CurrentPage != null)
-            {
-                if (CurrentPage is SCAN_ColorControl)
-                {
-                    return ((SCAN_ColorControl)CurrentPage).IsResourcePage(body, resource);
-                }
-            }
+		public bool IsCurrentResourceActive(string body, string resource)
+		{
+			if (CurrentPage != null)
+			{
+				if (CurrentPage is SCAN_ColorControl)
+				{
+					return ((SCAN_ColorControl)CurrentPage).IsResourcePage(body, resource);
+				}
+			}
 
-            return false;
-        }
+			return false;
+		}
 
-        public void ClearWarningsAndDropDown()
-        {
-            if (dropDown != null)
-            {
-                dropDown.gameObject.SetActive(false);
-                DestroyImmediate(dropDown.gameObject);
-                dropDown = null;
-            }
+		public void ClearWarningsAndDropDown()
+		{
+			if (dropDown != null)
+			{
+				dropDown.gameObject.SetActive(false);
+				DestroyImmediate(dropDown.gameObject);
+				dropDown = null;
+			}
 
-            if (warningPopup != null)
-            {
-                warningPopup.gameObject.SetActive(false);
-                DestroyImmediate(warningPopup.gameObject);
-                warningPopup = null;
-            }
-        }
+			if (warningPopup != null)
+			{
+				warningPopup.gameObject.SetActive(false);
+				DestroyImmediate(warningPopup.gameObject);
+				warningPopup = null;
+			}
+		}
 
-        protected override void Awake()
-        {
-            base.Awake();
+		protected override void Awake()
+		{
+			base.Awake();
 
-            instance = this;
+			instance = this;
 
-            rect = GetComponent<RectTransform>();
+			rect = GetComponent<RectTransform>();
 
-            Alpha(0);
-        }
+			Alpha(0);
+		}
 
-        private void Update()
-        {
-            if (settingsInterface == null || !settingsInterface.IsVisible)
-                return;
+		private void Update()
+		{
+			if (settingsInterface == null || !settingsInterface.IsVisible)
+			{
+				return;
+			}
 
-            settingsInterface.Update();
-        }
+			settingsInterface.Update();
+		}
 
-        public void setSettings(ISCAN_Settings settings, int page, bool resource)
-        {
-            if (settings == null)
-                return;
+		public void setSettings(ISCAN_Settings settings, int page, bool resource)
+		{
+			if (settings == null)
+			{
+				return;
+			}
 
-            settingsInterface = settings;
+			settingsInterface = settings;
 
-            if (m_Version != null)
-                m_Version.OnTextUpdate.Invoke(settings.Version);
+			if (m_Version != null)
+			{
+				m_Version.OnTextUpdate.Invoke(settings.Version);
+			}
 
-            _page = page;
-            _forceResource = resource;
+			_page = page;
+			_forceResource = resource;
 
-            switch (page)
-            {
-                case 0:
-                    if (m_GeneralToggle != null)
-                        m_GeneralToggle.isOn = true;
-                    break;
-                case 1:
-                    if (m_BackgroundToggle != null)
-                        m_BackgroundToggle.isOn = true;
-                    break;
-                case 2:
-                    if (m_ResourceToggle != null)
-                        m_ResourceToggle.isOn = true;
-                    break;
-                case 3:
-                    if (m_DataToggle != null)
-                        m_DataToggle.isOn = true;
-                    break;
-                case 4:
-                    if (m_ColorToggle != null)
-                        m_ColorToggle.isOn = true;
-                    break;
-                default:
-                    if (m_GeneralToggle != null)
-                        m_GeneralToggle.isOn = true;
-                    break;
-            }
+			switch (page)
+			{
+				case 0:
+					if (m_GeneralToggle != null)
+					{
+						m_GeneralToggle.isOn = true;
+					}
 
-            SetScale(settings.UIScale);
+					break;
+				case 1:
+					if (m_BackgroundToggle != null)
+					{
+						m_BackgroundToggle.isOn = true;
+					}
 
-            FadeIn();
-        }
+					break;
+				case 2:
+					if (m_ResourceToggle != null)
+					{
+						m_ResourceToggle.isOn = true;
+					}
 
-        public void FadeIn()
-        {
-            Fade(1, true);
-        }
+					break;
+				case 3:
+					if (m_DataToggle != null)
+					{
+						m_DataToggle.isOn = true;
+					}
 
-        public void FadeOut()
-        {
-            Fade(0, false, Kill, false);
-        }
+					break;
+				case 4:
+					if (m_ColorToggle != null)
+					{
+						m_ColorToggle.isOn = true;
+					}
 
-        private void Kill()
-        {
-            gameObject.SetActive(false);
-            Destroy(gameObject);
-        }
+					break;
+				default:
+					if (m_GeneralToggle != null)
+					{
+						m_GeneralToggle.isOn = true;
+					}
 
-        public void Close()
-        {
-            if (settingsInterface != null)
-                settingsInterface.IsVisible = false;
-        }
+					break;
+			}
 
-        public void ProcessTooltips()
-        {
-            if (settingsInterface == null)
-                return;
+			SetScale(settings.UIScale);
 
-            TooltipHandler[] handlers = gameObject.GetComponentsInChildren<TooltipHandler>(true);
+			FadeIn();
+		}
 
-            if (handlers == null)
-                return;
+		public void FadeIn()
+		{
+			Fade(1, true);
+		}
 
-            for (int j = 0; j < handlers.Length; j++)
-                ProcessTooltip(handlers[j], settingsInterface.WindowTooltips, settingsInterface.TooltipCanvas, settingsInterface.UIScale);
+		public void FadeOut()
+		{
+			Fade(0, false, Kill, false);
+		}
 
-            if (m_HelpTips != null)
-                ProcessHelpTooltips(m_HelpTips.isOn);
-        }
+		private void Kill()
+		{
+			gameObject.SetActive(false);
+			Destroy(gameObject);
+		}
 
-        private void ProcessTooltip(TooltipHandler handler, bool isOn, Canvas c, float scale)
-        {
-            if (handler == null)
-                return;
+		public void Close()
+		{
+			if (settingsInterface != null)
+			{
+				settingsInterface.IsVisible = false;
+			}
+		}
 
-            handler.IsActive = isOn && !handler.HelpTip;
-            handler._Canvas = c;
-            handler.Scale = scale;
-        }
+		public void ProcessTooltips()
+		{
+			if (settingsInterface == null)
+			{
+				return;
+			}
 
-        public void SetScale(float scale)
-        {
-            rect.localScale = Vector3.one * scale;
-        }
+			TooltipHandler[] handlers = gameObject.GetComponentsInChildren<TooltipHandler>(true);
 
-        public void SetPosition(Vector2 pos)
-        {
-            if (rect == null)
-                return;
+			if (handlers == null)
+			{
+				return;
+			}
 
-            rect.anchoredPosition = new Vector3(pos.x, pos.y, 0);
-        }
+			for (int j = 0; j < handlers.Length; j++)
+			{
+				ProcessTooltip(handlers[j], settingsInterface.WindowTooltips, settingsInterface.TooltipCanvas, settingsInterface.UIScale);
+			}
 
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            transform.SetAsLastSibling();
+			if (m_HelpTips != null)
+			{
+				ProcessHelpTooltips(m_HelpTips.isOn);
+			}
+		}
 
-            ((SettingsPage)CurrentPage).OnPointerDown(eventData);
-        }
+		private void ProcessTooltip(TooltipHandler handler, bool isOn, Canvas c, float scale)
+		{
+			if (handler == null)
+			{
+				return;
+			}
 
-        public void OnBeginDrag(PointerEventData eventData)
-        {
-            if (rect == null)
-                return;
+			handler.IsActive = isOn && !handler.HelpTip;
+			handler._Canvas = c;
+			handler.Scale = scale;
+		}
 
-            mouseStart = eventData.position;
-            windowStart = rect.position;
-        }
+		public void SetScale(float scale)
+		{
+			rect.localScale = Vector3.one * scale;
+		}
 
-        public void OnDrag(PointerEventData eventData)
-        {
-            if (rect == null)
-                return;
+		public void SetPosition(Vector2 pos)
+		{
+			if (rect == null)
+			{
+				return;
+			}
 
-            rect.position = windowStart + (Vector3)(eventData.position - mouseStart);
+			rect.anchoredPosition = new Vector3(pos.x, pos.y, 0);
+		}
 
-            if (settingsInterface == null)
-                return;
+		public void OnPointerDown(PointerEventData eventData)
+		{
+			transform.SetAsLastSibling();
 
-            settingsInterface.ClampToScreen(rect);
-        }
+			((SettingsPage)CurrentPage).OnPointerDown(eventData);
+		}
 
-        public void OnEndDrag(PointerEventData eventData)
-        {
-            if (rect == null || settingsInterface == null)
-                return;
+		public void OnBeginDrag(PointerEventData eventData)
+		{
+			if (rect == null)
+			{
+				return;
+			}
 
-            settingsInterface.Position = new Vector2(rect.anchoredPosition.x, rect.anchoredPosition.y);
-        }
+			mouseStart = eventData.position;
+			windowStart = rect.position;
+		}
 
-        public void KSPedia(bool isOn)
-        {
-            if (settingsInterface != null)
-                settingsInterface.OpenKSPedia(isOn);
-        }
+		public void OnDrag(PointerEventData eventData)
+		{
+			if (rect == null)
+			{
+				return;
+			}
+
+			rect.position = windowStart + (Vector3)(eventData.position - mouseStart);
+
+			if (settingsInterface == null)
+			{
+				return;
+			}
+
+			settingsInterface.ClampToScreen(rect);
+		}
+
+		public void OnEndDrag(PointerEventData eventData)
+		{
+			if (rect == null || settingsInterface == null)
+			{
+				return;
+			}
+
+			settingsInterface.Position = new Vector2(rect.anchoredPosition.x, rect.anchoredPosition.y);
+		}
+
+		public void KSPedia(bool isOn)
+		{
+			if (settingsInterface != null)
+			{
+				settingsInterface.OpenKSPedia(isOn);
+			}
+		}
 
 		public void HelpTips(bool isOn)
 		{
@@ -306,21 +354,29 @@ namespace SCANsat.Unity.Unity
 		public void ProcessHelpTooltips(bool isOn)
 		{
 			if (settingsInterface == null)
+			{
 				return;
+			}
 
 			TooltipHandler[] handlers = gameObject.GetComponentsInChildren<TooltipHandler>(true);
 
 			if (handlers == null)
+			{
 				return;
+			}
 
 			for (int j = 0; j < handlers.Length; j++)
+			{
 				ProcessHelpTooltip(handlers[j], isOn, settingsInterface.TooltipCanvas);
+			}
 		}
 
 		private void ProcessHelpTooltip(TooltipHandler handler, bool isOn, Canvas c)
 		{
 			if (handler == null)
+			{
 				return;
+			}
 
 			handler.IsActive = isOn && handler.HelpTip;
 			handler._Canvas = c;
@@ -329,7 +385,9 @@ namespace SCANsat.Unity.Unity
 		public void GeneralSettings(bool isOn)
 		{
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (CurrentPage != null)
 			{
@@ -338,15 +396,21 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_GeneralPrefab == null || m_ContentTransform == null || settingsInterface == null)
+			{
 				return;
+			}
 
 			if (settingsInterface.LockInput)
+			{
 				settingsInterface.LockInput = false;
+			}
 
 			CurrentPage = Instantiate(m_GeneralPrefab).GetComponent<SettingsPage>();
 
 			if (CurrentPage == null)
+			{
 				return;
+			}
 
 			_page = 0;
 
@@ -362,7 +426,9 @@ namespace SCANsat.Unity.Unity
 		public void BackgroundSettings(bool isOn)
 		{
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (CurrentPage != null)
 			{
@@ -371,15 +437,21 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_BackgroundPrefab == null || m_ContentTransform == null || settingsInterface == null)
+			{
 				return;
+			}
 
 			if (settingsInterface.LockInput)
+			{
 				settingsInterface.LockInput = false;
+			}
 
 			CurrentPage = Instantiate(m_BackgroundPrefab).GetComponent<SettingsPage>();
 
 			if (CurrentPage == null)
+			{
 				return;
+			}
 
 			_page = 1;
 
@@ -395,7 +467,9 @@ namespace SCANsat.Unity.Unity
 		public void ResourceSettings(bool isOn)
 		{
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (CurrentPage != null)
 			{
@@ -404,15 +478,21 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_ResourcePrefab == null || m_ContentTransform == null || settingsInterface == null)
+			{
 				return;
+			}
 
 			if (settingsInterface.LockInput)
+			{
 				settingsInterface.LockInput = false;
+			}
 
 			CurrentPage = Instantiate(m_ResourcePrefab).GetComponent<SettingsPage>();
 
 			if (CurrentPage == null)
+			{
 				return;
+			}
 
 			_page = 2;
 
@@ -428,7 +508,9 @@ namespace SCANsat.Unity.Unity
 		public void DataSettings(bool isOn)
 		{
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (CurrentPage != null)
 			{
@@ -437,15 +519,21 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_DataPrefab == null || m_ContentTransform == null || settingsInterface == null)
+			{
 				return;
+			}
 
 			if (settingsInterface.LockInput)
+			{
 				settingsInterface.LockInput = false;
+			}
 
 			CurrentPage = Instantiate(m_DataPrefab).GetComponent<SettingsPage>();
 
 			if (CurrentPage == null)
+			{
 				return;
+			}
 
 			_page = 3;
 
@@ -461,7 +549,9 @@ namespace SCANsat.Unity.Unity
 		public void ColorSettings(bool isOn)
 		{
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (CurrentPage != null)
 			{
@@ -470,15 +560,21 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_ColorPrefab == null || m_ContentTransform == null || settingsInterface == null)
+			{
 				return;
+			}
 
 			if (settingsInterface.LockInput)
+			{
 				settingsInterface.LockInput = false;
+			}
 
 			CurrentPage = Instantiate(m_ColorPrefab).GetComponent<SettingsPage>();
 
 			if (CurrentPage == null)
+			{
 				return;
+			}
 
 			_page = 4;
 

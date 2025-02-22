@@ -29,7 +29,7 @@ namespace SCANsat.SCAN_Unity
 {
 	public class SCAN_UI_Settings : ISCAN_Settings
 	{
-        private static ApplicationLauncherButton dummyButton;
+		private static ApplicationLauncherButton dummyButton;
 
 		private bool _isVisible;
 		private bool _inputLock;
@@ -63,21 +63,23 @@ namespace SCANsat.SCAN_Unity
 			get
 			{
 				if (uiElement != null)
+				{
 					return uiElement.Page;
+				}
 
 				return 0;
 			}
 		}
 
 		public bool IsCurrentResource(string body, string resource)
-        {
+		{
 			if (uiElement != null)
-            {
+			{
 				return uiElement.IsCurrentResourceActive(body, resource);
-            }
+			}
 
 			return false;
-        }
+		}
 
 		public void OnDestroy()
 		{
@@ -91,7 +93,9 @@ namespace SCANsat.SCAN_Unity
 		public void Update()
 		{
 			if (!_isVisible)
+			{
 				return;
+			}
 
 			_sensorCount = string.Format("Vessels: {0} Sensors: {1} Passes: {2}"
 				, SCANcontroller.controller.ActiveVessels
@@ -110,14 +114,18 @@ namespace SCANsat.SCAN_Unity
 			uiElement = GameObject.Instantiate(SCAN_UI_Loader.SettingsPrefab).GetComponent<SCAN_Settings>();
 
 			if (uiElement == null)
+			{
 				return;
+			}
 
 			uiElement.transform.SetParent(UIMasterController.Instance.dialogCanvas.transform, false);
 
 			uiElement.setSettings(this, page, forceResource);
 
 			if (!savePosition)
+			{
 				_position = new Vector2(0, 100);
+			}
 
 			uiElement.SetPosition(_position);
 
@@ -126,7 +134,9 @@ namespace SCANsat.SCAN_Unity
 			if (HighLogic.LoadedSceneIsFlight && SCAN_Settings_Config.Instance.StockToolbar && SCAN_Settings_Config.Instance.ToolbarMenu)
 			{
 				if (SCANappLauncher.Instance != null && SCANappLauncher.Instance.UIElement != null)
+				{
 					SCANappLauncher.Instance.UIElement.SetSettingsToggle(true);
+				}
 			}
 		}
 
@@ -135,18 +145,24 @@ namespace SCANsat.SCAN_Unity
 			_isVisible = false;
 
 			if (uiElement == null)
+			{
 				return;
+			}
 
 			uiElement.FadeOut();
 
 			if (HighLogic.LoadedSceneIsFlight && SCAN_Settings_Config.Instance.StockToolbar && SCAN_Settings_Config.Instance.ToolbarMenu)
 			{
 				if (SCANappLauncher.Instance != null && SCANappLauncher.Instance.UIElement != null)
+				{
 					SCANappLauncher.Instance.UIElement.SetSettingsToggle(false);
+				}
 			}
 
 			if (_inputLock)
+			{
 				InputLockManager.RemoveControlLock(controlLock);
+			}
 
 			uiElement = null;
 		}
@@ -214,12 +230,14 @@ namespace SCANsat.SCAN_Unity
 				_currentData = value;
 
 				if (value == "All Data")
+				{
 					_currentDataType = SCANtype.Everything;
+				}
 				//else if (value == "SCAN Data Types")
 				//	_currentDataType = SCANtype.Everything_SCAN;
 				//else if (value == "All Resource Types")
 				//{
-    //                _currentDataType = SCANtype.ResourceHiRes;
+				//                _currentDataType = SCANtype.ResourceHiRes;
 				//	//_currentDataType = 0;
 
 				//	//List<SCANresourceGlobal> resources = SCANcontroller.setLoadedResourceList();
@@ -313,19 +331,29 @@ namespace SCANsat.SCAN_Unity
 				uiElement.SetScale(value);
 
 				if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible)
+				{
 					SCAN_UI_BigMap.Instance.SetScale(value);
+				}
 
 				if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible)
+				{
 					SCAN_UI_MainMap.Instance.SetScale(value);
+				}
 
 				if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible)
+				{
 					SCAN_UI_ZoomMap.Instance.SetScale(value);
+				}
 
 				if (SCAN_UI_Instruments.Instance != null && SCAN_UI_Instruments.Instance.IsVisible)
+				{
 					SCAN_UI_Instruments.Instance.SetScale(value);
+				}
 
 				if (SCAN_UI_Overlay.Instance != null && SCAN_UI_Overlay.Instance.IsVisible)
+				{
 					SCAN_UI_Overlay.Instance.SetScale(value);
+				}
 			}
 		}
 
@@ -337,7 +365,9 @@ namespace SCANsat.SCAN_Unity
 				_isVisible = value;
 
 				if (!value)
+				{
 					Close();
+				}
 			}
 		}
 
@@ -375,21 +405,31 @@ namespace SCANsat.SCAN_Unity
 				SCAN_UI_Loader.ToggleTooltips(value);
 
 				if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible)
+				{
 					SCAN_UI_BigMap.Instance.ProcessTooltips();
+				}
 
 				if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible)
+				{
 					SCAN_UI_MainMap.Instance.ProcessTooltips();
+				}
 
 				if (SCAN_UI_Instruments.Instance != null && SCAN_UI_Instruments.Instance.IsVisible)
+				{
 					SCAN_UI_Instruments.Instance.ProcessTooltips();
+				}
 
 				if (SCAN_UI_Overlay.Instance != null && SCAN_UI_Overlay.Instance.IsVisible)
+				{
 					SCAN_UI_Overlay.Instance.ProcessTooltips();
+				}
 
 				if (SCAN_Settings_Config.Instance.StockToolbar && SCAN_Settings_Config.Instance.ToolbarMenu
 					&& SCANappLauncher.Instance != null && SCANappLauncher.Instance.IsVisible)
+				{
 					SCANappLauncher.Instance.ProcessTooltips();
-			}			
+				}
+			}
 		}
 
 		public bool LegendTooltips
@@ -406,7 +446,9 @@ namespace SCANsat.SCAN_Unity
 				SCAN_Settings_Config.Instance.StockToolbar = value;
 
 				if (value)
+				{
 					SCANcontroller.controller.appLauncher = SCANcontroller.controller.gameObject.AddComponent<SCANappLauncher>();
+				}
 				else
 				{
 					MonoBehaviour.Destroy(SCANcontroller.controller.appLauncher);
@@ -423,7 +465,9 @@ namespace SCANsat.SCAN_Unity
 				SCAN_Settings_Config.Instance.ToolbarMenu = value;
 
 				if (SCANappLauncher.Instance != null)
+				{
 					SCANappLauncher.Instance.ToggleToolbarType();
+				}
 			}
 		}
 
@@ -443,7 +487,7 @@ namespace SCANsat.SCAN_Unity
 				}
 
 				if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && HighLogic.LoadedSceneIsFlight)
-				{ 
+				{
 					SCAN_UI_MainMap.Instance.Close();
 					SCAN_UI_MainMap.Instance.Open();
 				}
@@ -488,11 +532,11 @@ namespace SCANsat.SCAN_Unity
 			get { return SCANmainMenuLoader.MechJebLoaded; }
 		}
 
-        public bool DaylightCheck
-        {
-            get { return SCAN_Settings_Config.Instance.DaylightCheck; }
-            set { SCAN_Settings_Config.Instance.DaylightCheck = value; }
-        }
+		public bool DaylightCheck
+		{
+			get { return SCAN_Settings_Config.Instance.DaylightCheck; }
+			set { SCAN_Settings_Config.Instance.DaylightCheck = value; }
+		}
 
 		public bool BiomeLock
 		{
@@ -528,7 +572,7 @@ namespace SCANsat.SCAN_Unity
 			set
 			{
 				SCAN_Settings_Config.Instance.DisableStockResource = value;
-				
+
 				if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible)
 				{
 					SCAN_UI_MainMap.Instance.Close();
@@ -545,10 +589,10 @@ namespace SCANsat.SCAN_Unity
 		}
 
 		public bool HideZeroResources
-        {
+		{
 			get { return SCAN_Settings_Config.Instance.HideZeroResources; }
 			set { SCAN_Settings_Config.Instance.HideZeroResources = value; }
-        }
+		}
 
 		public bool GreyScale
 		{
@@ -580,9 +624,13 @@ namespace SCANsat.SCAN_Unity
 				_inputLock = value;
 
 				if (_inputLock)
+				{
 					InputLockManager.SetControlLock(controlLock);
+				}
 				else
+				{
 					InputLockManager.RemoveControlLock(controlLock);
+				}
 			}
 		}
 
@@ -600,10 +648,10 @@ namespace SCANsat.SCAN_Unity
 		{
 			set { _position = value; }
 		}
-		
+
 		public IList<string> BackgroundBodies
 		{
-			get 
+			get
 			{
 				var bodies = FlightGlobals.Bodies.Where(b => b.referenceBody == Planetarium.fetch.Sun && b.referenceBody != b);
 
@@ -634,7 +682,9 @@ namespace SCANsat.SCAN_Unity
 				SCANdata sun = SCANcontroller.controller.getData(Planetarium.fetch.Sun.bodyName);
 
 				if (sun != null)
+				{
 					bodyList.Add(sun.Body.displayName.LocalizeBodyName());
+				}
 
 				return bodyList;
 			}
@@ -642,17 +692,19 @@ namespace SCANsat.SCAN_Unity
 
 		public IList<string> MapDataTypes
 		{
-            get
-            {
-                List<int> availableTypes = new List<int>() { 0, 1, 3, 4, 5, 2, 6, 7, 8 };
+			get
+			{
+				List<int> availableTypes = new List<int>() { 0, 1, 3, 4, 5, 2, 6, 7, 8 };
 
-                List<string> types = new List<string>() { "All Data" };
+				List<string> types = new List<string>() { "All Data" };
 
-                for (int i = 0; i < availableTypes.Count; i++)
-                    types.Add(((SCANtype)(1 << availableTypes[i])).ToString());
+				for (int i = 0; i < availableTypes.Count; i++)
+				{
+					types.Add(((SCANtype)(1 << availableTypes[i])).ToString());
+				}
 
-                return types;
-            }
+				return types;
+			}
 		}
 
 		public ISCAN_Color ColorInterface
@@ -660,27 +712,31 @@ namespace SCANsat.SCAN_Unity
 			get { return colorInterface; }
 		}
 
-        public void OpenKSPedia(bool isOn)
-        {
-            if (dummyButton == null)
-                dummyButton = UnityEngine.Object.Instantiate<ApplicationLauncherButton>(ApplicationLauncher.Instance.listItemPrefab);
-            
-            if (isOn)
-            {
-                KSPediaSpawner.Show(dummyButton);
+		public void OpenKSPedia(bool isOn)
+		{
+			if (dummyButton == null)
+			{
+				dummyButton = UnityEngine.Object.Instantiate<ApplicationLauncherButton>(ApplicationLauncher.Instance.listItemPrefab);
+			}
 
-                try
-                {
-                    KSPediaSpawner.Show("SCANsat_Header");
-                }
-                catch (Exception e)
-                {
-                    SCANUtil.SCANlog("KSPedia Database not ready; can't load SCANsat page; loading first page");
-                }
-            }
-            else
-                KSPediaSpawner.Hide();
-        }
+			if (isOn)
+			{
+				KSPediaSpawner.Show(dummyButton);
+
+				try
+				{
+					KSPediaSpawner.Show("SCANsat_Header");
+				}
+				catch (Exception e)
+				{
+					SCANUtil.SCANlog("KSPedia Database not ready; can't load SCANsat page; loading first page");
+				}
+			}
+			else
+			{
+				KSPediaSpawner.Hide();
+			}
+		}
 
 		public void ClampToScreen(RectTransform rect)
 		{
@@ -694,13 +750,17 @@ namespace SCANsat.SCAN_Unity
 			SCANdata data = SCANUtil.getData(thisBody);
 
 			if (data != null)
+			{
 				data.reset(_currentDataType);
+			}
 		}
 
 		public void ResetAll()
 		{
 			foreach (SCANdata data in SCANcontroller.controller.GetAllData)
+			{
 				data.reset(_currentDataType);
+			}
 		}
 
 		public void ResetStockResourceCurrent()
@@ -727,9 +787,9 @@ namespace SCANsat.SCAN_Unity
 			{
 				data = new SCANdata(thisBody);
 				SCANcontroller.controller.addToBodyData(thisBody, data);
-            }
+			}
 
-            data.fillMap(_currentDataType);
+			data.fillMap(_currentDataType);
 		}
 
 		public void FillAll()
@@ -743,8 +803,8 @@ namespace SCANsat.SCAN_Unity
 					data = new SCANdata(b);
 					SCANcontroller.controller.addToBodyData(b, data);
 				}
-                
-                data.fillMap(_currentDataType);
+
+				data.fillMap(_currentDataType);
 			}
 		}
 
@@ -763,7 +823,9 @@ namespace SCANsat.SCAN_Unity
 				SCANuiUtil.resetBigMapPos();
 				SCANuiUtil.resetZoomMapPos();
 				if (HighLogic.LoadedScene == GameScenes.TRACKSTATION)
+				{
 					SCANuiUtil.resetOverlayControllerPos();
+				}
 			}
 		}
 
@@ -774,7 +836,9 @@ namespace SCANsat.SCAN_Unity
 			SCANdata data = SCANUtil.getData(body);
 
 			if (data != null)
+			{
 				data.Disabled = !data.Disabled;
+			}
 		}
 
 		public bool ToggleBodyActive(string bodyName)
@@ -788,8 +852,8 @@ namespace SCANsat.SCAN_Unity
 
 		public double BodyPercentage(string bodyName)
 		{
-            return SCANUtil.getCoveragePercentage(SCANUtil.getData(SCANUtil.bodyFromDisplayName(bodyName)), SCANtype.Nothing) / 100;
-        }
+			return SCANUtil.getCoveragePercentage(SCANUtil.getData(SCANUtil.bodyFromDisplayName(bodyName)), SCANtype.Nothing) / 100;
+		}
 
 		private CelestialBody getTargetBody()
 		{

@@ -39,23 +39,27 @@ namespace SCANsat.SCAN_PartModules
 			Actions["toggleResourceScanAction"].guiName = string.Format("{0}: {1}", Localizer.Format("#autoLOC_SCANsat_ToggleScan"), scanName);
 
 			if (state == StartState.Editor)
+			{
 				return;
+			}
 
-            scanInfoAltitude.guiActive = false;
-            scanInfoStatus.guiActive = false;
-            scanInfoType.guiActive = false;
-            scanInfoFOV.guiActive = false;
-            scanInfoPower.guiActive = false;
-            scanInfoDaylight.guiActive = false;
+			scanInfoAltitude.guiActive = false;
+			scanInfoStatus.guiActive = false;
+			scanInfoType.guiActive = false;
+			scanInfoFOV.guiActive = false;
+			scanInfoPower.guiActive = false;
+			scanInfoDaylight.guiActive = false;
 
-            UpdateScannerInfo = !SCAN_Settings_Config.Instance.InstantScan || SCAN_Settings_Config.Instance.DisableStockResource;
+			UpdateScannerInfo = !SCAN_Settings_Config.Instance.InstantScan || SCAN_Settings_Config.Instance.DisableStockResource;
 
-            mSurvey = findSurvey();
+			mSurvey = findSurvey();
 			mScanner = findScanner();
 			animGroup = findAnimator();
 
 			if (animGroup == null)
+			{
 				activated = true;
+			}
 
 			refreshState = true;
 		}
@@ -96,15 +100,22 @@ namespace SCANsat.SCAN_PartModules
 				base.Events["startScan"].active = false;
 				base.Events["stopScan"].active = false;
 				if (scanning && loaded)
+				{
 					unregisterScanner();
+				}
+
 				return;
 			}
 
 			if (!HighLogic.LoadedSceneIsFlight || !FlightGlobals.ready)
+			{
 				return;
+			}
 
 			if (SCANcontroller.controller == null)
+			{
 				return;
+			}
 
 			base.Update();
 
@@ -117,26 +128,34 @@ namespace SCANsat.SCAN_PartModules
 					if (mSurvey != null)
 					{
 						foreach (ModuleOrbitalSurveyor m in mSurvey)
+						{
 							m.DisableModule();
+						}
 					}
 
 					if (mScanner != null)
 					{
 						foreach (ModuleOrbitalScanner m in mScanner)
+						{
 							m.DisableModule();
+						}
 					}
 				}
 				loaded = true;
 			}
 
 			if (!SCAN_Settings_Config.Instance.InstantScan || SCAN_Settings_Config.Instance.DisableStockResource)
+			{
 				updateEvents();
+			}
 			else
 			{
 				base.Events["startScan"].active = false;
 				base.Events["stopScan"].active = false;
 				if (scanning)
+				{
 					unregisterScanner();
+				}
 			}
 		}
 
@@ -146,7 +165,10 @@ namespace SCANsat.SCAN_PartModules
 			if (!SCAN_Settings_Config.Instance.InstantScan || SCAN_Settings_Config.Instance.DisableStockResource)
 			{
 				if (animGroup != null && !scanning && !animGroup.isDeployed)
+				{
 					animGroup.DeployModule();
+				}
+
 				startScan();
 			}
 		}
@@ -161,13 +183,18 @@ namespace SCANsat.SCAN_PartModules
 		public void toggleResourceScanAction(KSPActionParam param)
 		{
 			if (scanning)
+			{
 				stopScan();
+			}
 			else
 			{
 				if (!SCAN_Settings_Config.Instance.InstantScan || SCAN_Settings_Config.Instance.DisableStockResource)
 				{
 					if (animGroup != null && !animGroup.isDeployed)
+					{
 						animGroup.DeployModule();
+					}
+
 					startScan();
 				}
 			}
@@ -179,67 +206,78 @@ namespace SCANsat.SCAN_PartModules
 			base.Events["startScan"].active = false;
 			base.Events["stopScan"].active = false;
 			if (scanning && loaded)
+			{
 				unregisterScanner();
+			}
 
 			if (SCAN_Settings_Config.Instance.DisableStockResource)
 			{
 				if (mSurvey != null)
 				{
 					foreach (ModuleOrbitalSurveyor m in mSurvey)
+					{
 						m.DisableModule();
+					}
 				}
 
 				if (mScanner != null)
 				{
 					foreach (ModuleOrbitalScanner m in mScanner)
+					{
 						m.DisableModule();
-                }
-            }
+					}
+				}
+			}
 
-            UpdateScannerInfo = !SCAN_Settings_Config.Instance.InstantScan || SCAN_Settings_Config.Instance.DisableStockResource;
+			UpdateScannerInfo = !SCAN_Settings_Config.Instance.InstantScan || SCAN_Settings_Config.Instance.DisableStockResource;
 
-            if (!UpdateScannerInfo)
-            {
-                scanInfoAltitude.guiActive = false;
-                scanInfoStatus.guiActive = false;
-                scanInfoType.guiActive = false;
-                scanInfoFOV.guiActive = false;
-                scanInfoPower.guiActive = false;
-                scanInfoDaylight.guiActive = false;
-            }
-        }
+			if (!UpdateScannerInfo)
+			{
+				scanInfoAltitude.guiActive = false;
+				scanInfoStatus.guiActive = false;
+				scanInfoType.guiActive = false;
+				scanInfoFOV.guiActive = false;
+				scanInfoPower.guiActive = false;
+				scanInfoDaylight.guiActive = false;
+			}
+		}
 
-        public void EnableModule()
+		public void EnableModule()
 		{
 			activated = true;
-            if (SCAN_Settings_Config.Instance.DisableStockResource)
-            {
-                if (mSurvey != null)
-                {
-                    foreach (ModuleOrbitalSurveyor m in mSurvey)
-                        m.DisableModule();
-                }
+			if (SCAN_Settings_Config.Instance.DisableStockResource)
+			{
+				if (mSurvey != null)
+				{
+					foreach (ModuleOrbitalSurveyor m in mSurvey)
+					{
+						m.DisableModule();
+					}
+				}
 
-                if (mScanner != null)
-                {
-                    foreach (ModuleOrbitalScanner m in mScanner)
-                        m.DisableModule();
-                }
-            }
-            else
+				if (mScanner != null)
+				{
+					foreach (ModuleOrbitalScanner m in mScanner)
+					{
+						m.DisableModule();
+					}
+				}
+			}
+			else
+			{
+				UpdateScannerInfo = !SCAN_Settings_Config.Instance.InstantScan || SCAN_Settings_Config.Instance.DisableStockResource;
+			}
 
-            UpdateScannerInfo = !SCAN_Settings_Config.Instance.InstantScan || SCAN_Settings_Config.Instance.DisableStockResource;
-
-            if (!UpdateScannerInfo)
-            {
-                scanInfoAltitude.guiActive = false;
-                scanInfoStatus.guiActive = false;
-                scanInfoType.guiActive = false;
-                scanInfoFOV.guiActive = false;
-                scanInfoPower.guiActive = false;
-                scanInfoDaylight.guiActive = false;
-            }
-        }
+			if (!UpdateScannerInfo)
+			{
+				scanInfoAltitude.guiActive = false;
+				scanInfoStatus.guiActive = false;
+				scanInfoType.guiActive = false;
+				scanInfoFOV.guiActive = false;
+				scanInfoPower.guiActive = false;
+				scanInfoDaylight.guiActive = false;
+			}
+		}
 
 		public bool IsSituationValid()
 		{

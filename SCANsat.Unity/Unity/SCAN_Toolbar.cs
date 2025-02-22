@@ -47,27 +47,41 @@ namespace SCANsat.Unity.Unity
 		public void Setup(ISCAN_Toolbar toolbar)
 		{
 			if (toolbar == null)
+			{
 				return;
+			}
 
 			toolbarInterface = toolbar;
 
 			if (m_MainMapToggle != null)
+			{
 				m_MainMapToggle.isOn = toolbar.MainMap;
+			}
 
 			if (m_BigMapToggle != null)
+			{
 				m_BigMapToggle.isOn = toolbar.BigMap;
+			}
 
 			if (m_ZoomMapToggle != null)
+			{
 				m_ZoomMapToggle.isOn = toolbar.ZoomMap;
+			}
 
 			if (m_OverlayToggle != null)
+			{
 				m_OverlayToggle.isOn = toolbar.Overlay;
+			}
 
 			if (m_InstrumentsToggle != null)
+			{
 				m_InstrumentsToggle.isOn = toolbar.Instruments;
+			}
 
 			if (m_SettingsToggle != null)
+			{
 				m_SettingsToggle.isOn = toolbar.Settings;
+			}
 
 			ProcessTooltips();
 
@@ -95,21 +109,29 @@ namespace SCANsat.Unity.Unity
 		public void ProcessTooltips()
 		{
 			if (toolbarInterface == null)
+			{
 				return;
+			}
 
 			TooltipHandler[] handlers = gameObject.GetComponentsInChildren<TooltipHandler>(true);
 
 			if (handlers == null)
+			{
 				return;
+			}
 
 			for (int j = 0; j < handlers.Length; j++)
+			{
 				ProcessTooltip(handlers[j], toolbarInterface.TooltipsOn, toolbarInterface.TooltipCanvas, toolbarInterface.Scale);
+			}
 		}
 
 		private void ProcessTooltip(TooltipHandler handler, bool isOn, Canvas c, float scale)
 		{
 			if (handler == null)
+			{
 				return;
+			}
 
 			handler.IsActive = isOn && !handler.HelpTip;
 			handler._Canvas = c;
@@ -119,7 +141,9 @@ namespace SCANsat.Unity.Unity
 		public void SetMainMapToggle(bool isOn)
 		{
 			if (m_MainMapToggle == null)
+			{
 				return;
+			}
 
 			loaded = false;
 
@@ -131,7 +155,9 @@ namespace SCANsat.Unity.Unity
 		public void SetBigMapToggle(bool isOn)
 		{
 			if (m_BigMapToggle == null)
+			{
 				return;
+			}
 
 			loaded = false;
 
@@ -143,7 +169,9 @@ namespace SCANsat.Unity.Unity
 		public void SetZoomMapToggle(bool isOn)
 		{
 			if (m_ZoomMapToggle == null)
+			{
 				return;
+			}
 
 			loaded = false;
 
@@ -155,7 +183,9 @@ namespace SCANsat.Unity.Unity
 		public void SetOverlayToggle(bool isOn)
 		{
 			if (m_OverlayToggle == null)
+			{
 				return;
+			}
 
 			loaded = false;
 
@@ -167,7 +197,9 @@ namespace SCANsat.Unity.Unity
 		public void SetInstrumentToggle(bool isOn)
 		{
 			if (m_InstrumentsToggle == null)
+			{
 				return;
+			}
 
 			loaded = false;
 
@@ -179,7 +211,9 @@ namespace SCANsat.Unity.Unity
 		public void SetSettingsToggle(bool isOn)
 		{
 			if (m_SettingsToggle == null)
+			{
 				return;
+			}
 
 			loaded = false;
 
@@ -191,7 +225,9 @@ namespace SCANsat.Unity.Unity
 		public void ToggleMainMap(bool isOn)
 		{
 			if (!loaded || toolbarInterface == null)
+			{
 				return;
+			}
 
 			toolbarInterface.MainMap = isOn;
 		}
@@ -199,7 +235,9 @@ namespace SCANsat.Unity.Unity
 		public void ToggleBigMap(bool isOn)
 		{
 			if (!loaded || toolbarInterface == null)
+			{
 				return;
+			}
 
 			toolbarInterface.BigMap = isOn;
 		}
@@ -207,7 +245,9 @@ namespace SCANsat.Unity.Unity
 		public void ToggleZoomMap(bool isOn)
 		{
 			if (!loaded || toolbarInterface == null)
+			{
 				return;
+			}
 
 			toolbarInterface.ZoomMap = isOn;
 		}
@@ -215,7 +255,9 @@ namespace SCANsat.Unity.Unity
 		public void ToggleOverlay(bool isOn)
 		{
 			if (!loaded || toolbarInterface == null)
+			{
 				return;
+			}
 
 			toolbarInterface.Overlay = isOn;
 		}
@@ -223,7 +265,9 @@ namespace SCANsat.Unity.Unity
 		public void ToggleInstruments(bool isOn)
 		{
 			if (!loaded || toolbarInterface == null)
+			{
 				return;
+			}
 
 			toolbarInterface.Instruments = isOn;
 		}
@@ -231,7 +275,9 @@ namespace SCANsat.Unity.Unity
 		public void ToggleSettings(bool isOn)
 		{
 			if (!loaded || toolbarInterface == null)
+			{
 				return;
+			}
 
 			toolbarInterface.Settings = isOn;
 		}
@@ -239,13 +285,17 @@ namespace SCANsat.Unity.Unity
 		public void OnPointerEnter(PointerEventData eventData)
 		{
 			if (toolbarInterface != null)
+			{
 				toolbarInterface.InMenu = true;
+			}
 		}
 
 		public void OnPointerExit(PointerEventData eventData)
 		{
 			if (toolbarInterface != null)
+			{
 				toolbarInterface.InMenu = false;
+			}
 		}
 	}
 }

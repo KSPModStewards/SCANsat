@@ -51,12 +51,16 @@ namespace SCANmechjeb
 			shutdown = true;
 
 			while (!FlightGlobals.ready || FlightGlobals.ActiveVessel == null)
+			{
 				yield return null;
+			}
 
 			vessel = FlightGlobals.ActiveVessel;
 
 			if (vessel == null)
+			{
 				yield break;
+			}
 
 			VesselChange(vessel);
 
@@ -65,9 +69,13 @@ namespace SCANmechjeb
 			data = SCANUtil.getData(body);
 
 			if (data == null)
+			{
 				shutdown = true;
+			}
 			else
+			{
 				shutdown = false;
+			}
 		}
 
 		private void OnDestroy()
@@ -81,36 +89,54 @@ namespace SCANmechjeb
 		private void LateUpdate()
 		{
 			if (shutdown || !mjOnboard || mjTechTreeLocked || body == null || vessel == null || data == null)
+			{
 				return;
+			}
 
 			if (!HighLogic.LoadedSceneIsFlight || !FlightGlobals.ready)
+			{
 				return;
+			}
 
 			way = null;
 
 			if (!SCAN_Settings_Config.Instance.MechJebTarget)
+			{
 				return;
+			}
 
 			if (SCANcontroller.controller == null)
+			{
 				return;
+			}
 
 			if (!SCANcontroller.controller.MechJebLoaded)
+			{
 				SCANcontroller.controller.MechJebLoaded = true;
+			}
 
 			if (target.Target == null)
+			{
 				return;
+			}
 
 			if (target.targetBody != body)
+			{
 				return;
+			}
 
 			if ((target.Target is DirectionTarget))
+			{
 				return;
+			}
 
 			coords.x = target.targetLongitude;
 			coords.y = target.targetLatitude;
 
 			if (SCANcontroller.controller.LandingTarget != null)
+			{
 				way = SCANcontroller.controller.LandingTarget;
+			}
 
 			if (way != null)
 			{
@@ -132,7 +158,9 @@ namespace SCANmechjeb
 		private void OnTargetSet(Vector2d pos, CelestialBody b)
 		{
 			if (!mjOnboard || target == null)
+			{
 				return;
+			}
 
 			target.SetPositionTarget(b, pos.y, pos.x);
 		}
@@ -140,23 +168,31 @@ namespace SCANmechjeb
 		private void SOIChange(GameEvents.HostedFromToAction<Vessel, CelestialBody> action)
 		{
 			if (vessel == null)
+			{
 				return;
+			}
 
 			if (vessel != action.host)
+			{
 				return;
+			}
 
 			body = action.to;
 
 			data = SCANUtil.getData(body);
 
 			if (data == null)
+			{
 				shutdown = true;
+			}
 		}
 
 		private void VesselChange(Vessel v)
 		{
 			if (vessel != v)
+			{
 				return;
+			}
 
 			body = v.mainBody;
 
@@ -192,7 +228,9 @@ namespace SCANmechjeb
 			if (HighLogic.CurrentGame.Mode != Game.Modes.SANDBOX)
 			{
 				if (guidanceModule == null)
+				{
 					guidanceModule = (DisplayModule)mjCore.GetComputerModule("MechJebModuleLandingGuidance");
+				}
 
 				if (guidanceModule == null)
 				{

@@ -31,7 +31,7 @@ namespace SCANsat.Unity.Unity
 		{
 			get { return _onSelectUpdate; }
 		}
-	
+
 		protected override void Awake()
 		{
 			base.Awake();
@@ -42,7 +42,9 @@ namespace SCANsat.Unity.Unity
 		public void Setup(string text)
 		{
 			if (m_WarningText != null)
+			{
 				m_WarningText.OnTextUpdate.Invoke(text);
+			}
 
 			FadeIn();
 		}

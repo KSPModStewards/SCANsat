@@ -46,7 +46,7 @@ namespace SCANsat.SCAN_Palettes
 			{
 				_name = value;
 
-				_hash = (_name + _count).GetHashCode(); 
+				_hash = (_name + _count).GetHashCode();
 			}
 		}
 
@@ -99,7 +99,7 @@ namespace SCANsat.SCAN_Palettes
 				}
 				catch (Exception e)
 				{
-					SCANUtil.SCANlog("Error while parsing SCANsat palette colors - {0}\n{1}", color, e);					
+					SCANUtil.SCANlog("Error while parsing SCANsat palette colors - {0}\n{1}", color, e);
 				}
 
 				_colors[i] = c;

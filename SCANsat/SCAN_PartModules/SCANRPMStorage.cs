@@ -32,7 +32,9 @@ namespace SCANsat.SCAN_PartModules
 					string id = RPMNode.parse("Prop ID", "");
 
 					if (string.IsNullOrEmpty(id))
+					{
 						continue;
+					}
 
 					int m = RPMNode.parse("Mode", (int)0);
 					int z = RPMNode.parse("Zoom", (int)0);

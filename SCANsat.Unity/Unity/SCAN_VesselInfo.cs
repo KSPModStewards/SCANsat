@@ -36,7 +36,9 @@ namespace SCANsat.Unity.Unity
 		public void SetVessel(Guid id, MapLabelInfo info, ISCAN_MainMap map)
 		{
 			if (map == null)
+			{
 				return;
+			}
 
 			_id = id;
 			label = info;
@@ -44,7 +46,9 @@ namespace SCANsat.Unity.Unity
 			mapInterface = map;
 
 			if (m_VesselText == null)
+			{
 				return;
+			}
 
 			if (info.label != "1")
 			{
@@ -58,7 +62,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateText(string value)
 		{
 			if (m_VesselText == null)
+			{
 				return;
+			}
 
 			m_VesselText.OnTextUpdate.Invoke(string.Format("[{0}] {1}: {2}", label.label, label.name, value));
 		}
@@ -66,7 +72,9 @@ namespace SCANsat.Unity.Unity
 		public void ChangeToVessel()
 		{
 			if (mapInterface == null)
+			{
 				return;
+			}
 
 			mapInterface.ChangeToVessel(_id);
 		}

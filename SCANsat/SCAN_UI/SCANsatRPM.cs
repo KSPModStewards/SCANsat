@@ -28,7 +28,7 @@ using SCANsat.SCAN_Unity;
 
 namespace SCANsat.SCAN_UI
 {
-	public class JSISCANsatRPM: InternalModule
+	public class JSISCANsatRPM : InternalModule
 	{
 		[KSPField]
 		public int buttonUp = 0;
@@ -153,9 +153,14 @@ namespace SCANsat.SCAN_UI
 		private bool TestForActiveSCANsat()
 		{
 			if (satFound)
+			{
 				return true;
-			foreach (ScenarioModule thatScenario in ScenarioRunner.GetLoadedModules()) {
-				if (thatScenario.ClassName == "SCANcontroller") {
+			}
+
+			foreach (ScenarioModule thatScenario in ScenarioRunner.GetLoadedModules())
+			{
+				if (thatScenario.ClassName == "SCANcontroller")
+				{
 					satFound = true;
 					return true;
 				}
@@ -167,14 +172,20 @@ namespace SCANsat.SCAN_UI
 		{
 			// Just in case.
 			if (!HighLogic.LoadedSceneIsFlight)
+			{
 				return false;
+			}
 
 			if (!TestForActiveSCANsat())
+			{
 				return false;
+			}
 
-			if (screenWidth == 0 || screenHeight == 0) {
+			if (screenWidth == 0 || screenHeight == 0)
+			{
 
-				if (satModuleFound) {
+				if (satModuleFound)
+				{
 					int? loadedMode = persist.RPMMode;
 					mapMode = loadedMode ?? 0;
 					int? loadedZoom = persist.RPMZoom;
@@ -188,16 +199,23 @@ namespace SCANsat.SCAN_UI
 						currentResource = loadedResource ?? 0;
 
 						if (currentResource >= loadedResources.Count - 1)
+						{
 							currentResource = 0;
+						}
 						else if (currentResource < 0)
+						{
 							currentResource = 0;
+						}
 
 						if (loadedResources.Count > 0)
+						{
 							loadedResources[currentResource].CurrentBodyConfig(vessel.mainBody.bodyName);
+						}
 					}
 
 				}
-				else {
+				else
+				{
 					mapMode = 0;
 					zoomLevel = 0;
 				}
@@ -213,7 +231,8 @@ namespace SCANsat.SCAN_UI
 			}
 
 			// In case SCANsat is present but not working, we can't run any of our code. :(
-			if (map == null) {
+			if (map == null)
+			{
 				return false;
 			}
 
@@ -225,24 +244,32 @@ namespace SCANsat.SCAN_UI
 
 			// Markup lines are the lowest layer.
 			if (showLines)
-				foreach (MapMarkupLine vectorLine in mapMarkup) {
-					if (vectorLine.body == orbitingBody && vectorLine.points.Count > 0) {
+			{
+				foreach (MapMarkupLine vectorLine in mapMarkup)
+				{
+					if (vectorLine.body == orbitingBody && vectorLine.points.Count > 0)
+					{
 						DrawTrail(vectorLine.points, vectorLine.color, Vector2d.zero);
 					}
 				}
+			}
 
 			// Trails go above markup lines
 			if (showLines && trailLimit > 0 && trail.Count > 0)
+			{
 				DrawTrail(trail, trailColorValue, new Vector2d(vessel.longitude, vessel.latitude), true);
-		
+			}
+
 			// Anomalies go above trails
 			if (drawAnomaly)
 			{
 				foreach (SCANanomaly anomaly in localAnomalies)
 				{
 					if (anomaly.Known)
+					{
 						DrawIcon(anomaly.Longitude, anomaly.Latitude, SCANicon.orbitIconForVesselType(anomaly.Detail ? (VesselType)int.MaxValue : VesselType.Unknown),
 							anomaly.Detail ? iconColorVisitedAnomalyValue : iconColorUnvisitedAnomalyValue);
+					}
 				}
 				foreach (SCANwaypoint w in localWaypoints)
 				{
@@ -251,12 +278,16 @@ namespace SCANsat.SCAN_UI
 						if (w.Root != null)
 						{
 							if (w.Root.ContractState != Contracts.Contract.State.Active)
+							{
 								continue;
+							}
 						}
 						if (w.Param != null)
 						{
 							if (w.Param.State != Contracts.ParameterState.Incomplete)
+							{
 								continue;
+							}
 						}
 					}
 
@@ -265,19 +296,23 @@ namespace SCANsat.SCAN_UI
 			}
 
 			// Target orbit and targets go above anomalies
-			if (targetVessel != null && targetVessel.mainBody == orbitingBody) {
-				if (showLines && JUtil.OrbitMakesSense(targetVessel)) {
+			if (targetVessel != null && targetVessel.mainBody == orbitingBody)
+			{
+				if (showLines && JUtil.OrbitMakesSense(targetVessel))
+				{
 					DrawOrbit(targetVessel, targetVessel.orbit, start, iconColorTargetValue);
 					// Connect our orbit and the target orbit with a line at the point of closest approach...
-					if (JUtil.OrbitMakesSense(vessel)) {
+					if (JUtil.OrbitMakesSense(vessel))
+					{
 						double closestApproachMoment;
-						JUtil.GetClosestApproach(vessel.orbit,targetVessel.orbit, out closestApproachMoment);
+						JUtil.GetClosestApproach(vessel.orbit, targetVessel.orbit, out closestApproachMoment);
 						Vector2d targetCoord, vesselCoord;
 						bool targetCollision, vesselCollision;
 						// Analysis disable once CompareOfFloatsByEqualityOperator
 						if (closestApproachMoment != start &&
-						    GetPositionAtT(targetVessel, targetVessel.orbit, start, closestApproachMoment, out targetCoord, out targetCollision) && !targetCollision &&
-						    GetPositionAtT(vessel, targetVessel.orbit, start, closestApproachMoment, out vesselCoord, out vesselCollision) && !vesselCollision) {
+							GetPositionAtT(targetVessel, targetVessel.orbit, start, closestApproachMoment, out targetCoord, out targetCollision) && !targetCollision &&
+							GetPositionAtT(vessel, targetVessel.orbit, start, closestApproachMoment, out vesselCoord, out vesselCollision) && !vesselCollision)
+						{
 							var endpoints = new List<Vector2d>();
 							endpoints.Add(targetCoord);
 							endpoints.Add(vesselCoord);
@@ -286,7 +321,8 @@ namespace SCANsat.SCAN_UI
 					}
 				}
 				DrawIcon(targetVessel.longitude, targetVessel.latitude, SCANicon.orbitIconForVesselType(targetVessel.vesselType), iconColorTargetValue);
-				if (showLines) {
+				if (showLines)
+				{
 					DrawOrbitIcon(targetVessel, SCANicon.OrbitIcon.Ap, iconColorTargetValue);
 					DrawOrbitIcon(targetVessel, SCANicon.OrbitIcon.Pe, iconColorTargetValue);
 				}
@@ -294,15 +330,22 @@ namespace SCANsat.SCAN_UI
 
 			}
 			// Own orbit goes above that.
-			if (showLines && JUtil.OrbitMakesSense(vessel)) {
+			if (showLines && JUtil.OrbitMakesSense(vessel))
+			{
 				DrawOrbit(vessel, vessel.orbit, start, iconColorSelfValue);
 				DrawOrbitIcon(vessel, SCANicon.OrbitIcon.Ap, iconColorAPValue);
 				DrawOrbitIcon(vessel, SCANicon.OrbitIcon.Pe, iconColorPEValue);
-				if (targetVessel != null && JUtil.OrbitMakesSense(targetVessel)) {
+				if (targetVessel != null && JUtil.OrbitMakesSense(targetVessel))
+				{
 					if (vessel.orbit.AscendingNodeExists(targetVessel.orbit))
+					{
 						DrawOrbitIcon(vessel, SCANicon.OrbitIcon.AN, iconColorANDNValue, vessel.orbit.TimeOfAscendingNode(targetVessel.orbit, start));
+					}
+
 					if (vessel.orbit.DescendingNodeExists(targetVessel.orbit))
+					{
 						DrawOrbitIcon(vessel, SCANicon.OrbitIcon.DN, iconColorANDNValue, vessel.orbit.TimeOfDescendingNode(targetVessel.orbit, start));
+					}
 				}
 				// And the maneuver node and post-maneuver orbit: 
 				if (vessel.patchedConicSolver != null)
@@ -328,7 +371,8 @@ namespace SCANsat.SCAN_UI
 		private void DrawOrbitIcon(Vessel thatVessel, SCANicon.OrbitIcon iconType, Color iconColor, double givenPoint = 0)
 		{
 			double timePoint = start;
-			switch (iconType) {
+			switch (iconType)
+			{
 				case SCANicon.OrbitIcon.Ap:
 					timePoint += thatVessel.orbit.timeToAp;
 					break;
@@ -345,10 +389,12 @@ namespace SCANsat.SCAN_UI
 					break;
 			}
 
-			if (JUtil.OrbitMakesSense(thatVessel)) {
+			if (JUtil.OrbitMakesSense(thatVessel))
+			{
 				bool collision;
 				Vector2d coord;
-				if (GetPositionAtT(thatVessel, thatVessel.orbit, start, timePoint, out coord, out collision) && !collision) {
+				if (GetPositionAtT(thatVessel, thatVessel.orbit, start, timePoint, out coord, out collision) && !collision)
+				{
 					DrawIcon(coord.x, coord.y, iconType, iconColor);
 				}
 			}
@@ -359,13 +405,18 @@ namespace SCANsat.SCAN_UI
 			coordinates = Vector2d.zero;
 			collision = false;
 			if (double.IsNaN(thatOrbit.getObtAtUT(initial + timePoint)))
+			{
 				return false;
+			}
+
 			double rotOffset = 0;
-			if (thatVessel.mainBody.rotates) {
+			if (thatVessel.mainBody.rotates)
+			{
 				rotOffset = (360 * ((timePoint - initial) / thatVessel.mainBody.rotationPeriod)) % 360;
 			}
 			Vector3d pos = thatOrbit.getPositionAtUT(timePoint);
-			if (thatOrbit.Radius(timePoint) < thatVessel.mainBody.Radius + thatVessel.mainBody.getElevation(pos)) {
+			if (thatOrbit.Radius(timePoint) < thatVessel.mainBody.Radius + thatVessel.mainBody.getElevation(pos))
+			{
 				collision = true;
 				return false;
 			}
@@ -376,16 +427,25 @@ namespace SCANsat.SCAN_UI
 		private void DrawOrbit(Vessel thatVessel, Orbit thatOrbit, double startMoment, Color32 thatColor)
 		{
 			if (orbitPoints == 0)
+			{
 				return;
+			}
+
 			double dTstep = Math.Floor(thatOrbit.period / orbitPoints);
 			var points = new List<Vector2d>();
-			for (double timePoint = startMoment; timePoint < (startMoment + thatOrbit.period); timePoint += dTstep) {
+			for (double timePoint = startMoment; timePoint < (startMoment + thatOrbit.period); timePoint += dTstep)
+			{
 				bool collision;
 				Vector2d coord;
 				if (GetPositionAtT(thatVessel, thatOrbit, start, timePoint, out coord, out collision))
+				{
 					points.Add(coord);
+				}
+
 				if (collision)
+				{
 					break;
+				}
 			}
 			DrawTrail(points, thatColor, Vector2d.zero);
 		}
@@ -393,7 +453,10 @@ namespace SCANsat.SCAN_UI
 		private void DrawTrail(IList<Vector2d> points, Color32 lineColor, Vector2d endPoint, bool hasEndpoint = false)
 		{
 			if (points.Count < 2)
+			{
 				return;
+			}
+
 			GL.Begin(GL.LINES);
 			trailMaterial.SetPass(0);
 			GL.Color(lineColor);
@@ -407,7 +470,8 @@ namespace SCANsat.SCAN_UI
 
 			xStart = (float)longitudeToPixels(points[0].x, points[0].y);
 			yStart = (float)latitudeToPixels(points[0].x, points[0].y);
-			for (int i = 1; i < points.Count; i++) {
+			for (int i = 1; i < points.Count; i++)
+			{
 				float xEnd = (float)longitudeToPixels(points[i].x, points[i].y);
 				float yEnd = (float)latitudeToPixels(points[i].x, points[i].y);
 				DrawLine(xStart, yStart, xEnd, yEnd, screenSpace, actualMapWidth);
@@ -416,7 +480,10 @@ namespace SCANsat.SCAN_UI
 				yStart = yEnd;
 			}
 			if (hasEndpoint)
+			{
 				DrawLine(xStart, yStart, (float)longitudeToPixels(endPoint.x, endPoint.y), (float)latitudeToPixels(endPoint.x, endPoint.y), screenSpace, actualMapWidth);
+			}
+
 			GL.End();
 		}
 
@@ -426,7 +493,9 @@ namespace SCANsat.SCAN_UI
 			var end = new Vector2(xEnd, yEnd);
 
 			if (!screenSpace.Contains(start) && !screenSpace.Contains(end))
+			{
 				return;
+			}
 
 			// We order these so we don't have to mess with absolute values.
 			float leftX = Math.Min(start.x, end.x);
@@ -449,10 +518,14 @@ namespace SCANsat.SCAN_UI
 			// is rightX - leftX.  The MD of the repositioned point is
 			// (leftX + actualMapWidth) - rightX.  Move like terms and
 			// divide by two, and here's what you get:
-			if (leftX + actualMapWidth * 0.5f < rightX) {
-				if (start.x < end.x) {
+			if (leftX + actualMapWidth * 0.5f < rightX)
+			{
+				if (start.x < end.x)
+				{
 					end.x -= actualMapWidth;
-				} else {
+				}
+				else
+				{
 					start.x -= actualMapWidth;
 				}
 			}
@@ -465,7 +538,9 @@ namespace SCANsat.SCAN_UI
 		private void DrawScale()
 		{
 			if (scaleBarTexture == null || scaleLabelTexture == null)
+			{
 				return;
+			}
 
 			var scaleBarRect = new Rect();
 			scaleBarRect.x = scaleBarPosition.x;
@@ -473,8 +548,10 @@ namespace SCANsat.SCAN_UI
 			scaleBarRect.y = screenHeight - scaleBarPosition.y - scaleBarRect.height;
 
 			int scaleID = 0;
-			for (int i = scaleLevelValues.Length; i-- > 0;) {
-				if (scaleLevelValues[i] * pixelsPerKm < scaleBarSizeLimit) {
+			for (int i = scaleLevelValues.Length; i-- > 0;)
+			{
+				if (scaleLevelValues[i] * pixelsPerKm < scaleBarSizeLimit)
+				{
 					scaleBarRect.width = (float)(scaleLevelValues[i] * pixelsPerKm);
 					scaleID = i;
 					break;
@@ -489,7 +566,7 @@ namespace SCANsat.SCAN_UI
 
 		private void DrawIcon(double longitude, double latitude, SCANicon.OrbitIcon icon, Color iconColor)
 		{
-			Vector2 pos = new Vector2((float)(longitudeToPixels(longitude, latitude)),(float)(latitudeToPixels(longitude, latitude)));
+			Vector2 pos = new Vector2((float)(longitudeToPixels(longitude, latitude)), (float)(latitudeToPixels(longitude, latitude)));
 
 			SCANicon.drawOrbitIconGL((int)pos.x, (int)pos.y, icon, iconColor, iconColorShadowValue, iconMaterial, 16, true);
 		}
@@ -547,48 +624,71 @@ namespace SCANsat.SCAN_UI
 		{
 			value = value % clamp;
 			if (value < 0)
+			{
 				return value + clamp;
+			}
+
 			return value;
 		}
 
 		public void ButtonProcessor(int buttonID)
 		{
 			if (screenWidth == 0 || screenHeight == 0)
+			{
 				return;
-			if (buttonID == buttonUp) {
+			}
+
+			if (buttonID == buttonUp)
+			{
 				ChangeZoom(false);
 			}
-			else if (buttonID == buttonDown) {
+			else if (buttonID == buttonDown)
+			{
 				ChangeZoom(true);
 			}
-			else if (buttonID == buttonEnter) {
+			else if (buttonID == buttonEnter)
+			{
 				ChangeMapMode(true);
 			}
-			else if (buttonID == buttonEsc) {
+			else if (buttonID == buttonEsc)
+			{
 				// Whatever possessed him to do THAT?
 				if (satModuleFound)
+				{
 					persist.RPMColor = !persist.RPMColor;
+				}
+
 				map.ColorMap = persist.RPMColor;
 				RedrawMap();
 			}
-			else if (buttonID == buttonHome) {
+			else if (buttonID == buttonHome)
+			{
 				showLines = !showLines;
 				if (satModuleFound)
+				{
 					persist.RPMLines = showLines;
+				}
 			}
 			else if (buttonID == buttonRight)
 			{
 				resourceOverlay = !resourceOverlay;
 				if (SCANconfigLoader.GlobalResource)
+				{
 					RedrawMap();
+				}
+
 				if (satModuleFound)
+				{
 					persist.RPMDrawResource = resourceOverlay;
+				}
 			}
 			else if (buttonID == buttonLeft)
 			{
 				drawAnomaly = !drawAnomaly;
 				if (satModuleFound)
+				{
 					persist.RPMAnomaly = drawAnomaly;
+				}
 			}
 			else if (buttonID == buttonR9)
 			{
@@ -607,7 +707,10 @@ namespace SCANsat.SCAN_UI
 			mapMode = (mapMode + mapTypeCount) % mapTypeCount;
 
 			if (satModuleFound)
+			{
 				persist.RPMMode = mapMode;
+			}
+
 			RedrawMap();
 		}
 
@@ -616,12 +719,22 @@ namespace SCANsat.SCAN_UI
 			int oldZoom = zoomLevel;
 			zoomLevel += up ? 1 : -1;
 			if (zoomLevel < 0)
+			{
 				zoomLevel = 0;
+			}
+
 			if (zoomLevel > maxZoom)
+			{
 				zoomLevel = maxZoom;
-			if (zoomLevel != oldZoom) {
+			}
+
+			if (zoomLevel != oldZoom)
+			{
 				if (satModuleFound)
+				{
 					persist.RPMZoom = zoomLevel;
+				}
+
 				RedrawMap();
 			}
 		}
@@ -629,16 +742,24 @@ namespace SCANsat.SCAN_UI
 		private void ChangeResource(bool up)
 		{
 			if (loadedResources.Count <= 0)
+			{
 				return;
+			}
 
 			int oldResource = currentResource;
 
 			currentResource += up ? 1 : -1;
 
 			if (currentResource < 0)
-				currentResource = loadedResources.Count -1;
+			{
+				currentResource = loadedResources.Count - 1;
+			}
+
 			if (currentResource >= loadedResources.Count)
+			{
 				currentResource = 0;
+			}
+
 			if (currentResource != oldResource)
 			{
 				resourceOverlay = true;
@@ -655,33 +776,47 @@ namespace SCANsat.SCAN_UI
 		{
 			pageActiveState = status;
 			if (status)
+			{
 				Debug.Log("JSISCANsatRPM: Active on page " + pageNumber);
+			}
 			else
+			{
 				Debug.Log("JSISCANsatRPM: Inactive.");
+			}
 		}
 
 		public override void OnUpdate()
 		{
 			if (!JUtil.IsActiveVessel(vessel) || !satFound)
+			{
 				return;
+			}
 
-			if ((Planetarium.GetUniversalTime() - trailPointEvery) > trailCounter) {
+			if ((Planetarium.GetUniversalTime() - trailPointEvery) > trailCounter)
+			{
 				trailCounter = Planetarium.GetUniversalTime();
 				LeaveTrail();
 			}
 
 			if (!JUtil.IsInIVA())
+			{
 				return;
+			}
 
-			if (pageActiveState && map != null && !map.isMapComplete()) {
+			if (pageActiveState && map != null && !map.isMapComplete())
+			{
 				map.getPartialMap();
 			}
 
 			targetVessel = FlightGlobals.fetch.VesselTarget as Vessel;
 
-			if (UpdateCheck() || orbitingBody != vessel.mainBody) {
+			if (UpdateCheck() || orbitingBody != vessel.mainBody)
+			{
 				if (orbitingBody != vessel.mainBody)
+				{
 					trail.Clear();
+				}
+
 				RedrawMap();
 			}
 		}
@@ -702,14 +837,21 @@ namespace SCANsat.SCAN_UI
 			mapCenterLat = vessel.latitude;
 			// That's really just sweeping the problem under the carpet instead of fixing it, but meh.
 			if (zoomLevel == 0)
+			{
 				mapCenterLat = 0;
+			}
+
 			map.centerAround(mapCenterLong, mapCenterLat);
 			if (SCANconfigLoader.GlobalResource && loadedResources.Count > 0)
 			{
 				if (currentResource >= loadedResources.Count - 1)
+				{
 					currentResource = 0;
+				}
 				else if (currentResource < 0)
+				{
 					currentResource = 0;
+				}
 
 				map.Resource = loadedResources[currentResource];
 				map.Resource.CurrentBodyConfig(orbitingBody.bodyName);
@@ -722,14 +864,17 @@ namespace SCANsat.SCAN_UI
 			// makes sense to compute it only when it changes.
 			mapSizeScale = new Vector2d(360.0 * map.MapScale / map.MapWidth, 180.0 * map.MapScale / map.MapHeight);
 			redrawDeviation = redrawEdge * 180 / (zoomLevel * zoomLevel + zoomModifier);
-			try {
+			try
+			{
 				SCANdata data = SCANUtil.getData(orbitingBody);
 				if (data != null)
 				{
 					localAnomalies = data.Anomalies;
 					localWaypoints = data.Waypoints;
 				}
-			} catch {
+			}
+			catch
+			{
 				Debug.Log("JSISCANsatRPM: Could not get a list of anomalies, what happened?");
 			}
 			// MATH!
@@ -741,7 +886,9 @@ namespace SCANsat.SCAN_UI
 		private void calcTerrainLimits(CelestialBody b)
 		{
 			if (map.MType == mapType.Slope)
+			{
 				return;
+			}
 
 			int w = map.MapWidth / 4;
 			int h = map.MapHeight / 4;
@@ -769,9 +916,14 @@ namespace SCANsat.SCAN_UI
 						float resource = SCANUtil.ResourceOverlay(lat, lon, map.Resource.Name, orbitingBody, false) * 100f;
 
 						if (resource < resourceMin)
+						{
 							resourceMin = resource;
+						}
+
 						if (resource > resourceMax)
+						{
 							resourceMax = resource;
+						}
 					}
 					else
 					{
@@ -780,32 +932,51 @@ namespace SCANsat.SCAN_UI
 					}
 
 					if (terrain < min)
+					{
 						min = terrain;
+					}
+
 					if (terrain > max)
+					{
 						max = terrain;
+					}
 				}
 			}
 
 			if (min > max)
+			{
 				min = max - 1f;
+			}
 
 			if (min == max)
+			{
 				min = max - 1f;
+			}
 
 			if (map.Resource != null && map.Resource.CurrentBody != null && resourceMin < map.Resource.CurrentBody.MinValue)
+			{
 				resourceMin = map.Resource.CurrentBody.MinValue;
+			}
 
 			if (resourceMin >= resourceMax)
+			{
 				resourceMax = resourceMin + 1f;
+			}
 
 			if (resourceMin < 0)
+			{
 				resourceMin = 0;
+			}
 
 			if (map.Resource != null && map.Resource.CurrentBody != null && resourceMax > map.Resource.CurrentBody.MaxValue)
+			{
 				resourceMax = map.Resource.CurrentBody.MaxValue;
+			}
 
 			if (resourceMin >= resourceMax)
+			{
 				resourceMin = resourceMax - 1f;
+			}
 
 			map.setCustomRange(min, max, resourceMin, resourceMax);
 		}
@@ -813,25 +984,37 @@ namespace SCANsat.SCAN_UI
 		private bool UpdateCheck()
 		{
 			if (map == null)
+			{
 				return false;
+			}
 			// Do not flush map when timewarping.
 			if (TimeWarp.WarpMode == TimeWarp.Modes.HIGH && TimeWarp.CurrentRateIndex != 0)
+			{
 				return false;
+			}
+
 			if (Math.Abs(vessel.longitude - mapCenterLong) > redrawDeviation)
+			{
 				return true;
+			}
 			// Same sweeping.
 			if (Math.Abs(vessel.latitude - mapCenterLat) > redrawDeviation && zoomLevel > 0)
+			{
 				return true;
+			}
 
 			return false;
 		}
 
 		private void LeaveTrail()
 		{
-			if (trailLimit > 0) {
+			if (trailLimit > 0)
+			{
 				trail.Add(new Vector2d(vessel.longitude, vessel.latitude));
 				if (trail.Count > trailLimit)
+				{
 					trail.RemoveRange(0, trail.Count - trailLimit);
+				}
 			}
 		}
 
@@ -840,25 +1023,32 @@ namespace SCANsat.SCAN_UI
 			// Referencing the parent project should work, shouldn't it.
 			persistentVarName = "scansat" + internalProp.propID;
 
-			try {
+			try
+			{
 				sat = part.FindModulesImplementing<SCANsat.SCAN_PartModules.SCANRPMStorage>().FirstOrDefault();
 			}
-			catch {
+			catch
+			{
 				Debug.LogWarning("[SCANsatRPM] SCANsat RPM Storage Module not attached to this IVA, check for Module Manager problems and make sure the RPMMapTraq.cfg file is in the SCANsat/MMconfigs folder");
 				sat = null;
 			}
 
-			if (sat != null) {
+			if (sat != null)
+			{
 				satModuleFound = true;
-				if (sat.RPMList.Count > 0) {
-					foreach (RPMPersistence RPMProp in sat.RPMList) {
-						if (RPMProp.RPMID == persistentVarName) {
+				if (sat.RPMList.Count > 0)
+				{
+					foreach (RPMPersistence RPMProp in sat.RPMList)
+					{
+						if (RPMProp.RPMID == persistentVarName)
+						{
 							persist = RPMProp;
 							break;
 						}
 					}
 				}
-				if (persist == null) {
+				if (persist == null)
+				{
 					persist = new RPMPersistence(persistentVarName);
 					sat.RPMList.Add(persist);
 				}
@@ -867,43 +1057,77 @@ namespace SCANsat.SCAN_UI
 				resourceOverlay = persist.RPMDrawResource;
 			}
 			else
+			{
 				satModuleFound = false;
+			}
 
 			// Arrrgh.
 			if (!string.IsNullOrEmpty(iconColorSelf))
+			{
 				iconColorSelfValue = ConfigNode.ParseColor32(iconColorSelf);
+			}
+
 			if (!string.IsNullOrEmpty(iconColorTarget))
+			{
 				iconColorTargetValue = ConfigNode.ParseColor32(iconColorTarget);
+			}
+
 			if (!string.IsNullOrEmpty(iconColorUnvisitedAnomaly))
+			{
 				iconColorUnvisitedAnomalyValue = ConfigNode.ParseColor32(iconColorUnvisitedAnomaly);
+			}
+
 			if (!string.IsNullOrEmpty(iconColorVisitedAnomaly))
+			{
 				iconColorVisitedAnomalyValue = ConfigNode.ParseColor32(iconColorVisitedAnomaly);
+			}
+
 			if (!string.IsNullOrEmpty(iconColorShadow))
+			{
 				iconColorShadowValue = ConfigNode.ParseColor32(iconColorShadow);
+			}
+
 			if (!string.IsNullOrEmpty(iconColorAP))
+			{
 				iconColorAPValue = ConfigNode.ParseColor32(iconColorAP);
+			}
+
 			if (!string.IsNullOrEmpty(iconColorPE))
+			{
 				iconColorPEValue = ConfigNode.ParseColor32(iconColorPE);
+			}
+
 			if (!string.IsNullOrEmpty(iconColorANDN))
+			{
 				iconColorANDNValue = ConfigNode.ParseColor32(iconColorANDN);
+			}
+
 			if (!string.IsNullOrEmpty(iconColorNode))
+			{
 				iconColorNodeValue = ConfigNode.ParseColor32(iconColorNode);
+			}
+
 			if (!string.IsNullOrEmpty(trailColor))
+			{
 				trailColorValue = ConfigNode.ParseColor32(trailColor);
+			}
 
 			trailMaterial = JUtil.DrawLineMaterial();
 
 			LeaveTrail();
 
-			if (!string.IsNullOrEmpty(scaleBar) && !string.IsNullOrEmpty(scaleLabels) && !string.IsNullOrEmpty(scaleLevels)) {
+			if (!string.IsNullOrEmpty(scaleBar) && !string.IsNullOrEmpty(scaleLabels) && !string.IsNullOrEmpty(scaleLevels))
+			{
 				scaleBarTexture = GameDatabase.Instance.GetTexture(scaleBar, false);
 				scaleLabelTexture = GameDatabase.Instance.GetTexture(scaleLabels, false);
 				var scales = new List<float>();
-				foreach (string scl in scaleLevels.Split(',')) {
+				foreach (string scl in scaleLevels.Split(','))
+				{
 					float scale;
 					if (float.TryParse(scl.Trim(), out scale))
+					{
 						scales.Add(scale / 1000);
-
+					}
 				}
 				scaleLevelValues = scales.ToArray();
 				Array.Sort(scaleLevelValues);
@@ -912,7 +1136,8 @@ namespace SCANsat.SCAN_UI
 
 			// Now the fun bit: Locate all cfg files depicting map features anywhere.
 
-			foreach (ConfigNode node in GameDatabase.Instance.GetConfigNodes ("JSISCANSATVECTORMARK")) {
+			foreach (ConfigNode node in GameDatabase.Instance.GetConfigNodes("JSISCANSATVECTORMARK"))
+			{
 				mapMarkup.Add(new MapMarkupLine(node));
 			}
 		}
@@ -926,37 +1151,58 @@ namespace SCANsat.SCAN_UI
 			public MapMarkupLine(ConfigNode node)
 			{
 				if (!node.HasData)
+				{
 					throw new ArgumentException("Map markup section with no data?!");
+				}
 
-				if (node.HasValue("body")) {
+				if (node.HasValue("body"))
+				{
 					string bodyName = node.GetValue("body").ToLower();
-					foreach (CelestialBody thatBody in FlightGlobals.fetch.bodies) {
-						if (thatBody.GetName().ToLower() == bodyName) {
+					foreach (CelestialBody thatBody in FlightGlobals.fetch.bodies)
+					{
+						if (thatBody.GetName().ToLower() == bodyName)
+						{
 							body = thatBody;
 							break;
 						}
 					}
 					if (body == null)
+					{
 						throw new ArgumentException("No celestial body matching '" + bodyName + "'.");
-				} else {
+					}
+				}
+				else
+				{
 					throw new ArgumentException("Found a map markup section that does not say which celestial body it refers to.");
 				}
 
 				color = Color.white;
 				if (node.HasValue("color"))
+				{
 					color = ConfigNode.ParseColor32(node.GetValue("color"));
+				}
 				// Now to actually load in the points...
 
-				foreach (string pointData in node.GetValues("vertex")) {
+				foreach (string pointData in node.GetValues("vertex"))
+				{
 					string[] tokens = pointData.Split(',');
 					if (tokens.Length != 2)
+					{
 						throw new ArgumentException("Incorrect vertex format.");
+					}
+
 					double x, y;
 					if (!(double.TryParse(tokens[0].Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out x) &&
-					    double.TryParse(tokens[1].Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out y)))
+						double.TryParse(tokens[1].Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out y)))
+					{
 						throw new ArgumentException("Could not parse a vertex position.");
+					}
+
 					if (x > 180d || x < -180d || y > 90d || y < -90d)
+					{
 						throw new ArgumentException("Vertex positions must be in degrees appropriate to longitude and latitude.");
+					}
+
 					points.Add(new Vector2d(x, y));
 				}
 			}

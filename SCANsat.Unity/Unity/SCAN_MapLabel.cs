@@ -64,12 +64,16 @@ namespace SCANsat.Unity.Unity
 		private void Update()
 		{
 			if (!label.flash || m_Image == null || m_Label == null)
+			{
 				return;
+			}
 
 			lastUpdate++;
 
 			if (lastUpdate < updateInterval)
+			{
 				return;
+			}
 
 			lastUpdate = 0;
 			flip = !flip;
@@ -85,8 +89,8 @@ namespace SCANsat.Unity.Unity
 				m_Label.OnColorUpdate.Invoke(label.baseColor);
 			}
 		}
-        
-        public void Setup(Guid id, MapLabelInfo info)
+
+		public void Setup(Guid id, MapLabelInfo info)
 		{
 			_guid = id;
 
@@ -96,7 +100,7 @@ namespace SCANsat.Unity.Unity
 		public void Setup(int id, MapLabelInfo info)
 		{
 			_intID = id;
-			
+
 			Setup(info);
 		}
 
@@ -112,13 +116,19 @@ namespace SCANsat.Unity.Unity
 			label = info;
 
 			if (m_Image != null)
+			{
 				m_Image.color = info.baseColor;
+			}
 
 			if (m_Label != null)
+			{
 				m_Label.OnColorUpdate.Invoke(info.baseColor);
+			}
 
 			if (rect != null)
+			{
 				rect.anchoredPosition = new Vector2(rect.anchoredPosition.x - (info.width / 2), rect.anchoredPosition.y + info.alignBottom);
+			}
 
 			UpdateLabel(info.label);
 
@@ -134,13 +144,17 @@ namespace SCANsat.Unity.Unity
 		public void UpdateLabel(string l)
 		{
 			if (m_Label != null)
+			{
 				m_Label.OnTextUpdate.Invoke(l);
+			}
 		}
 
 		public void UpdateImage(Sprite s)
 		{
 			if (m_Image != null)
+			{
 				m_Image.sprite = s;
+			}
 		}
 
 		public void UpdateSize(int i)
@@ -160,13 +174,17 @@ namespace SCANsat.Unity.Unity
 				return;
 			}
 			else if (!gameObject.activeSelf && show)
+			{
 				gameObject.SetActive(true);
+			}
 		}
 
 		public void UpdatePosition(Vector2 p)
 		{
 			if (rect != null)
+			{
 				rect.anchoredPosition = new Vector2(p.x - (label.width / 2), p.y + label.alignBottom);
+			}
 		}
 
 		public void UpdatePositionActivation(MapLabelInfo info)
@@ -174,12 +192,16 @@ namespace SCANsat.Unity.Unity
 			UpdateActive(info.show);
 
 			if (!info.show)
+			{
 				return;
+			}
 
 			UpdatePosition(info.pos);
 
 			if (label.label != info.label)
+			{
 				UpdateLabel(info.label);
+			}
 		}
 	}
 }

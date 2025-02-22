@@ -37,7 +37,9 @@ namespace SCANsat.Unity.HSVPicker.UI
 		private void ColorChanged(Color newColor)
 		{
 			if (_isActive)
+			{
 				image.color = newColor;
+			}
 		}
 
 		public void SetColor(Color newColor)

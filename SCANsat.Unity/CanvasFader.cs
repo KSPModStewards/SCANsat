@@ -38,7 +38,9 @@ namespace SCANsat.Unity
 		protected void Fade(float to, bool fast, Action call = null, bool interrupt = true, bool overrule = false)
 		{
 			if (canvas == null)
+			{
 				return;
+			}
 
 			Fade(canvas.alpha, to, fast ? FastRate : SlowRate, call, interrupt, overrule);
 		}
@@ -46,7 +48,9 @@ namespace SCANsat.Unity
 		protected void Alpha(float to)
 		{
 			if (canvas == null)
+			{
 				return;
+			}
 
 			to = Mathf.Clamp01(to);
 			canvas.alpha = to;
@@ -55,10 +59,14 @@ namespace SCANsat.Unity
 		private void Fade(float from, float to, float duration, Action call, bool interrupt, bool overrule)
 		{
 			if (!allowInterrupt && !overrule)
+			{
 				return;
+			}
 
 			if (fader != null)
+			{
 				StopCoroutine(fader);
+			}
 
 			fader = FadeRoutine(from, to, duration, call, interrupt);
 			StartCoroutine(fader);
@@ -80,7 +88,9 @@ namespace SCANsat.Unity
 			}
 
 			if (call != null)
+			{
 				call.Invoke();
+			}
 
 			allowInterrupt = true;
 

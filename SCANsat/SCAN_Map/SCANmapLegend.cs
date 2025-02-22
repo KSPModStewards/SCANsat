@@ -38,7 +38,9 @@ namespace SCANsat.SCAN_Map
 		public Texture2D getLegend(bool color, SCANterrainConfig terrain)
 		{
 			if (legend != null && legendMin == terrain.MinTerrain && legendMax == terrain.MaxTerrain && legendScheme == color && terrain.ColorPal.Hash == dataPalette.Hash)
+			{
 				return legend;
+			}
 
 			body = null;
 
@@ -61,7 +63,9 @@ namespace SCANsat.SCAN_Map
 		public Texture2D getLegend(float min, float max, bool color, SCANterrainConfig terrain)
 		{
 			if (legend != null && legendMin == min && legendMax == max && legendScheme == color && terrain.ColorPal.Hash == dataPalette.Hash)
+			{
 				return legend;
+			}
 
 			legend = new Texture2D(256, 1, TextureFormat.RGB24, false);
 			legendMin = min;
@@ -82,7 +86,9 @@ namespace SCANsat.SCAN_Map
 		public Texture2D getLegend(SCANdata data, bool color, bool stock, CBAttributeMapSO.MapAttribute[] biomes, bool reset = false)
 		{
 			if (legend != null && legendScheme == color && stockScheme == stock && body == data.Body && !reset)
+			{
 				return legend;
+			}
 
 			dataPalette = new SCANPalette();
 
@@ -104,16 +110,24 @@ namespace SCANsat.SCAN_Map
 				for (int j = 0; j < blockSize; j++)
 				{
 					if (total >= 256)
+					{
 						break;
-										
+					}
+
 					int current = i * blockSize + j;
 
 					if (stock && color)
+					{
 						pix[current] = biomes[i].mapColor;
+					}
 					else if (color)
+					{
 						pix[current] = palette.lerp(SCANcontroller.controller.lowBiomeColor32, SCANcontroller.controller.highBiomeColor32, (float)((i * 1f) / (count * 1f)));
+					}
 					else
+					{
 						pix[current] = palette.lerp(palette.Black, palette.White, (float)(i * 1f) / (count * 1f));
+					}
 
 					total++;
 				}
@@ -125,14 +139,22 @@ namespace SCANsat.SCAN_Map
 			for (int i = 0; i < remaining; i++)
 			{
 				if (total > 256 || backCount <= 0)
+				{
 					break;
+				}
 
 				if (SCAN_Settings_Config.Instance.BigMapStockBiomes && color)
+				{
 					pix[256 - backCount] = biomes[count - 1].mapColor;
+				}
 				else if (color)
+				{
 					pix[256 - backCount] = palette.lerp(SCANcontroller.controller.lowBiomeColor32, SCANcontroller.controller.highBiomeColor32, (float)(((count - 1) * 1f) / (count * 1f)));
+				}
 				else
+				{
 					pix[256 - backCount] = palette.lerp(palette.Black, palette.White, (float)(((count - 1) * 1f) / (count * 1f)));
+				}
 
 				backCount--;
 

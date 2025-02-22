@@ -68,11 +68,14 @@ namespace SCANsat
 			foreach (var rs in ResourceCache.Instance.GlobalResources)
 			{
 				if ((HarvestTypes)rs.ResourceType != HarvestTypes.Planetary)
+				{
 					continue;
+				}
+
 				SCANresourceGlobal currentGlobal = SCANcontroller.getResourceNode(rs.ResourceName);
 
 				PartResourceDefinition pr = PartResourceLibrary.Instance.GetDefinition(rs.ResourceName);
-                
+
 				if (currentGlobal == null)
 				{
 					SCANcontroller.addToResourceData(rs.ResourceName, new SCANresourceGlobal(rs.ResourceName, pr == null || string.IsNullOrEmpty(pr.displayName) ? rs.ResourceName : pr.displayName, 20, rs.Distribution.MinAbundance, rs.Distribution.MaxAbundance, palette.magenta, palette.cb_orange));//, t));
@@ -83,28 +86,38 @@ namespace SCANsat
 				currentGlobal.DefaultZero = rs.Distribution.PresenceChance <= 0;
 
 				if (rs.Distribution.MinAbundance < currentGlobal.DefaultMinValue)
+				{
 					currentGlobal.DefaultMinValue = rs.Distribution.MinAbundance;
+				}
 
 				if (rs.Distribution.MaxAbundance > currentGlobal.DefaultMaxValue)
+				{
 					currentGlobal.DefaultMaxValue = rs.Distribution.MaxAbundance;
+				}
 
 				foreach (CelestialBody body in FlightGlobals.Bodies)
 				{
 					SCANresourceBody newBody = currentGlobal.getBodyConfig(body.bodyName, false);
 
 					if (newBody == null)
+					{
 						currentGlobal.addToBodyConfigs(body.bodyName, new SCANresourceBody(rs.ResourceName, body, currentGlobal.DefaultMinValue, currentGlobal.DefaultMaxValue, currentGlobal.DefaultZero), false);
+					}
 					else
+					{
 						newBody.DefaultZero = currentGlobal.DefaultZero;
+					}
 				}
 
 				SCANcontroller.addToLoadedResourceNames(rs.ResourceName);
-            }
+			}
 
 			foreach (var rsBody in ResourceCache.Instance.PlanetaryResources)
 			{
 				if ((HarvestTypes)rsBody.ResourceType != HarvestTypes.Planetary)
+				{
 					continue;
+				}
 
 				SCANresourceGlobal currentGlobal = SCANcontroller.getResourceNode(rsBody.ResourceName);
 
@@ -122,11 +135,15 @@ namespace SCANsat
 						SCANresourceBody newBody = currentGlobal.getBodyConfig(body.bodyName, false);
 
 						if (newBody == null)
+						{
 							currentGlobal.addToBodyConfigs(body.bodyName, new SCANresourceBody(rsBody.ResourceName, body, 1f, 10f, true), false);
+						}
 						else
+						{
 							newBody.DefaultZero = true;
+						}
 					}
-                }
+				}
 
 				SCANresourceBody currentBody = currentGlobal.getBodyConfig(rsBody.PlanetName, false);
 
@@ -134,22 +151,32 @@ namespace SCANsat
 				{
 					CelestialBody body = FlightGlobals.Bodies.FirstOrDefault(a => a.bodyName == rsBody.PlanetName);
 					if (body == null)
+					{
 						continue;
+					}
 
 					currentGlobal.addToBodyConfigs(rsBody.PlanetName, new SCANresourceBody(rsBody.ResourceName, body, rsBody.Distribution.MinAbundance, rsBody.Distribution.MaxAbundance, rsBody.Distribution.PresenceChance <= 0), false);
 					currentBody = currentGlobal.getBodyConfig(rsBody.PlanetName, false);
 				}
 
 				if (rsBody.Distribution.MinAbundance < currentBody.DefaultMinValue)
+				{
 					currentBody.DefaultMinValue = rsBody.Distribution.MinAbundance;
+				}
 
 				if (rsBody.Distribution.MaxAbundance > currentBody.DefaultMaxValue)
+				{
 					currentBody.DefaultMaxValue = rsBody.Distribution.MaxAbundance;
+				}
 
 				if (rsBody.Distribution.PresenceChance <= 0)
+				{
 					currentBody.DefaultZero = true;
+				}
 				else
+				{
 					currentBody.DefaultZero = false;
+				}
 
 				SCANcontroller.addToLoadedResourceNames(rsBody.ResourceName, false);
 			}
@@ -159,10 +186,14 @@ namespace SCANsat
 				foreach (var rsBiome in ResourceCache.Instance.BiomeResources)
 				{
 					if ((HarvestTypes)rsBiome.ResourceType != HarvestTypes.Planetary)
+					{
 						continue;
+					}
 
 					if (body.bodyName != rsBiome.PlanetName)
+					{
 						continue;
+					}
 
 					SCANresourceGlobal currentGlobal = SCANcontroller.getResourceNode(rsBiome.ResourceName);
 
@@ -180,9 +211,13 @@ namespace SCANsat
 							SCANresourceBody newBody = currentGlobal.getBodyConfig(globalBody.bodyName, false);
 
 							if (newBody == null)
+							{
 								currentGlobal.addToBodyConfigs(globalBody.bodyName, new SCANresourceBody(rsBiome.ResourceName, globalBody, 1, 10f, true), false);
+							}
 							else
+							{
 								newBody.DefaultZero = true;
+							}
 						}
 					}
 
@@ -195,36 +230,50 @@ namespace SCANsat
 					}
 
 					if (rsBiome.Distribution.MinAbundance < currentBody.DefaultMinValue)
+					{
 						currentBody.DefaultMinValue = rsBiome.Distribution.MinAbundance;
+					}
 
 					if (rsBiome.Distribution.MaxAbundance > currentBody.DefaultMaxValue)
+					{
 						currentBody.DefaultMaxValue = rsBiome.Distribution.MaxAbundance;
+					}
 
 					if (rsBiome.Distribution.PresenceChance > 0)
+					{
 						currentBody.DefaultZero = false;
+					}
 
 					SCANcontroller.addToLoadedResourceNames(rsBiome.ResourceName, false);
 				}
 			}
 
 			foreach (SCANresourceGlobal global in SCANcontroller.setLoadedResourceList())
-            {
+			{
 				if (global == null)
+				{
 					continue;
+				}
 
 				foreach (CelestialBody body in FlightGlobals.Bodies)
-                {
+				{
 					SCANresourceBody newBody = global.getBodyConfig(body.bodyName, false);
 
 					if (newBody == null)
+					{
 						global.addToBodyConfigs(body.bodyName, new SCANresourceBody(global.Name, body, global.DefaultMinValue, global.DefaultMaxValue, true), false);
+					}
 				}
-            }
+			}
 
 			if (SCANcontroller.MasterResourceCount == 0)
+			{
 				globalResource = false;
+			}
 			else
+			{
 				globalResource = true;
+			}
 		}
 	}
 }

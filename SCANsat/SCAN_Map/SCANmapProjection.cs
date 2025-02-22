@@ -24,7 +24,10 @@ namespace SCANsat.SCAN_Map
 			MapProjection[] v = (MapProjection[])Enum.GetValues(typeof(MapProjection));
 			string[] r = new string[v.Length];
 			for (int i = 0; i < v.Length; ++i)
+			{
 				r[i] = v[i].ToString();
+			}
+
 			return r;
 		}
 	}

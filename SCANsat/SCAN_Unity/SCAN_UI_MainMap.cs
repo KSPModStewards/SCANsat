@@ -29,7 +29,7 @@ namespace SCANsat.SCAN_Unity
 	public class SCAN_UI_MainMap : ISCAN_MainMap
 	{
 		private bool _isVisible;
-		
+
 		private Vessel v;
 		private SCANdata data;
 		private SCANtype sensors;
@@ -49,7 +49,7 @@ namespace SCANsat.SCAN_Unity
 		double gamma;
 
 		private SCAN_MainMap uiElement;
-		
+
 		private static SCAN_UI_MainMap instance;
 
 		public static SCAN_UI_MainMap Instance
@@ -69,7 +69,9 @@ namespace SCANsat.SCAN_Unity
 			{
 				palette.small_redline = new Color32[360];
 				for (int i = 0; i < 360; i++)
+				{
 					palette.small_redline[i] = palette.Red;
+				}
 			}
 
 			GameEvents.onVesselSOIChanged.Add(soiChange);
@@ -77,7 +79,9 @@ namespace SCANsat.SCAN_Unity
 			GameEvents.onVesselWasModified.Add(vesselChange);
 
 			if (SCANcontroller.controller.mainMapVisible)
+			{
 				Open();
+			}
 		}
 
 		public void OnDestroy()
@@ -89,10 +93,10 @@ namespace SCANsat.SCAN_Unity
 			}
 
 			if (map_small != null)
-            {
+			{
 				GameObject.Destroy(map_small);
 				map_small = null;
-            }
+			}
 
 			GameEvents.onVesselSOIChanged.Remove(soiChange);
 			GameEvents.onVesselChange.Remove(vesselChange);
@@ -114,7 +118,9 @@ namespace SCANsat.SCAN_Unity
 			resetImages();
 
 			if (uiElement != null)
+			{
 				uiElement.RefreshVessels();
+			}
 		}
 
 		private void vesselChange(Vessel V)
@@ -132,50 +138,66 @@ namespace SCANsat.SCAN_Unity
 			resetImages();
 
 			if (uiElement != null)
+			{
 				uiElement.RefreshVessels();
+			}
 		}
 
 		public void SetScale(float scale)
 		{
 			if (uiElement != null)
+			{
 				uiElement.SetScale(scale);
+			}
 		}
 
 		public void ProcessTooltips()
 		{
 			if (uiElement != null)
+			{
 				uiElement.ProcessTooltips();
+			}
 		}
 
 		public void Update()
 		{
 			if (!_isVisible || data == null)
+			{
 				return;
+			}
 
 			sensors = SCANcontroller.controller.activeSensorsOnVessel(v.id, false);
 
 			if (!SCANcontroller.controller.mainMapBiome)
 			{
 				if (SCAN_Settings_Config.Instance.MapGenerationSpeed > 1)
+				{
 					drawPartialMap(sensors, false);
+				}
 
 				drawPartialMap(sensors, true);
 			}
 			else
 			{
 				if (SCAN_Settings_Config.Instance.MapGenerationSpeed > 1)
+				{
 					drawBiomeMap(sensors, false);
-					
+				}
+
 				drawBiomeMap(sensors, true);
 			}
 
 			lastUpdate++;
 
 			if (uiElement == null)
+			{
 				return;
+			}
 
 			if (lastUpdate < updateInterval)
+			{
 				return;
+			}
 
 			lastUpdate = 0;
 			flip = !flip;
@@ -184,95 +206,169 @@ namespace SCANsat.SCAN_Unity
 
 			s = SCANcontroller.controller.getSensorStatus(v, SCANtype.AltimetryLoRes);
 			if (s == null)
+			{
 				uiElement.UpdateLoColor(palette.grey);
-            else if (s.inDarkness)
-                uiElement.UpdateLoColor(palette.c_bad);
-            else if (!s.inRange)
+			}
+			else if (s.inDarkness)
+			{
 				uiElement.UpdateLoColor(palette.c_bad);
+			}
+			else if (!s.inRange)
+			{
+				uiElement.UpdateLoColor(palette.c_bad);
+			}
 			else if (!s.bestRange && flip)
+			{
 				uiElement.UpdateLoColor(palette.c_bad);
+			}
 			else
+			{
 				uiElement.UpdateLoColor(palette.c_good);
+			}
 
 			s = SCANcontroller.controller.getSensorStatus(v, SCANtype.AltimetryHiRes);
 			if (s == null)
+			{
 				uiElement.UpdateHiColor(palette.grey);
-            else if (s.inDarkness)
-                uiElement.UpdateHiColor(palette.c_bad);
-            else if (!s.inRange)
+			}
+			else if (s.inDarkness)
+			{
 				uiElement.UpdateHiColor(palette.c_bad);
+			}
+			else if (!s.inRange)
+			{
+				uiElement.UpdateHiColor(palette.c_bad);
+			}
 			else if (!s.bestRange && flip)
+			{
 				uiElement.UpdateHiColor(palette.c_bad);
+			}
 			else
+			{
 				uiElement.UpdateHiColor(palette.c_good);
+			}
 
 			s = SCANcontroller.controller.getSensorStatus(v, SCANtype.Biome);
 			if (s == null)
+			{
 				uiElement.UpdateMultiColor(palette.grey);
-            else if (s.inDarkness)
-                uiElement.UpdateMultiColor(palette.c_bad);
-            else if (!s.inRange)
+			}
+			else if (s.inDarkness)
+			{
 				uiElement.UpdateMultiColor(palette.c_bad);
+			}
+			else if (!s.inRange)
+			{
+				uiElement.UpdateMultiColor(palette.c_bad);
+			}
 			else if (!s.bestRange && flip)
+			{
 				uiElement.UpdateMultiColor(palette.c_bad);
+			}
 			else
+			{
 				uiElement.UpdateMultiColor(palette.c_good);
+			}
 
-            s = SCANcontroller.controller.getSensorStatus(v, SCANtype.VisualLoRes);
-            if (s == null)
-                uiElement.UpdateVisLoColor(palette.grey);
-            else if (s.inDarkness)
-                uiElement.UpdateVisHiColor(palette.c_bad);
-            else if (!s.inRange)
-                uiElement.UpdateVisLoColor(palette.c_bad);
-            else if (!s.bestRange && flip)
-                uiElement.UpdateVisLoColor(palette.c_bad);
-            else
-                uiElement.UpdateVisLoColor(palette.c_good);
+			s = SCANcontroller.controller.getSensorStatus(v, SCANtype.VisualLoRes);
+			if (s == null)
+			{
+				uiElement.UpdateVisLoColor(palette.grey);
+			}
+			else if (s.inDarkness)
+			{
+				uiElement.UpdateVisHiColor(palette.c_bad);
+			}
+			else if (!s.inRange)
+			{
+				uiElement.UpdateVisLoColor(palette.c_bad);
+			}
+			else if (!s.bestRange && flip)
+			{
+				uiElement.UpdateVisLoColor(palette.c_bad);
+			}
+			else
+			{
+				uiElement.UpdateVisLoColor(palette.c_good);
+			}
 
-            s = SCANcontroller.controller.getSensorStatus(v, SCANtype.VisualHiRes);
-            if (s == null)
-                uiElement.UpdateVisHiColor(palette.grey);
-            else if (s.inDarkness)
-                uiElement.UpdateVisHiColor(palette.c_bad);
-            else if (!s.inRange)
-                uiElement.UpdateVisHiColor(palette.c_bad);
-            else if (!s.bestRange && flip)
-                uiElement.UpdateVisHiColor(palette.c_bad);
-            else
-                uiElement.UpdateVisHiColor(palette.c_good);
+			s = SCANcontroller.controller.getSensorStatus(v, SCANtype.VisualHiRes);
+			if (s == null)
+			{
+				uiElement.UpdateVisHiColor(palette.grey);
+			}
+			else if (s.inDarkness)
+			{
+				uiElement.UpdateVisHiColor(palette.c_bad);
+			}
+			else if (!s.inRange)
+			{
+				uiElement.UpdateVisHiColor(palette.c_bad);
+			}
+			else if (!s.bestRange && flip)
+			{
+				uiElement.UpdateVisHiColor(palette.c_bad);
+			}
+			else
+			{
+				uiElement.UpdateVisHiColor(palette.c_good);
+			}
 
-   //         if (ResourcesOn)
+			//         if (ResourcesOn)
 			//{
-				s = SCANcontroller.controller.getSensorStatus(v, SCANtype.ResourceLoRes);
-				if (s == null)
-					uiElement.UpdateM700Color(palette.grey);
-                else if (s.inDarkness)
-                    uiElement.UpdateM700Color(palette.c_bad);
-                else if (!s.inRange)
-					uiElement.UpdateM700Color(palette.c_bad);
-				else if (!s.bestRange && flip)
-					uiElement.UpdateM700Color(palette.c_bad);
-				else
-					uiElement.UpdateM700Color(palette.c_good);
+			s = SCANcontroller.controller.getSensorStatus(v, SCANtype.ResourceLoRes);
+			if (s == null)
+			{
+				uiElement.UpdateM700Color(palette.grey);
+			}
+			else if (s.inDarkness)
+			{
+				uiElement.UpdateM700Color(palette.c_bad);
+			}
+			else if (!s.inRange)
+			{
+				uiElement.UpdateM700Color(palette.c_bad);
+			}
+			else if (!s.bestRange && flip)
+			{
+				uiElement.UpdateM700Color(palette.c_bad);
+			}
+			else
+			{
+				uiElement.UpdateM700Color(palette.c_good);
+			}
 
-				s = SCANcontroller.controller.getSensorStatus(v, SCANtype.ResourceHiRes);
-				if (s == null)
-					uiElement.UpdateOreColor(palette.grey);
-                else if (s.inDarkness)
-                    uiElement.UpdateOreColor(palette.c_bad);
-                else if (!s.inRange)
-					uiElement.UpdateOreColor(palette.c_bad);
-				else if (!s.bestRange && flip)
-					uiElement.UpdateOreColor(palette.c_bad);
-				else
-					uiElement.UpdateOreColor(palette.c_good);
+			s = SCANcontroller.controller.getSensorStatus(v, SCANtype.ResourceHiRes);
+			if (s == null)
+			{
+				uiElement.UpdateOreColor(palette.grey);
+			}
+			else if (s.inDarkness)
+			{
+				uiElement.UpdateOreColor(palette.c_bad);
+			}
+			else if (!s.inRange)
+			{
+				uiElement.UpdateOreColor(palette.c_bad);
+			}
+			else if (!s.bestRange && flip)
+			{
+				uiElement.UpdateOreColor(palette.c_bad);
+			}
+			else
+			{
+				uiElement.UpdateOreColor(palette.c_good);
+			}
 			//}
 
 			if (sensors != SCANtype.Nothing)
+			{
 				uiElement.UpdatePercentage(string.Format("{0}%", SCANUtil.getCoveragePercentage(data, sensors).ToString("N1")));
+			}
 			else
+			{
 				uiElement.UpdatePercentage("0%");
+			}
 		}
 
 		public string Version
@@ -301,7 +397,9 @@ namespace SCANsat.SCAN_Unity
 			uiElement = GameObject.Instantiate(SCAN_UI_Loader.MainMapPrefab).GetComponent<SCAN_MainMap>();
 
 			if (uiElement == null)
+			{
 				return;
+			}
 
 			uiElement.transform.SetParent(UIMasterController.Instance.dialogCanvas.transform, false);
 
@@ -319,12 +417,16 @@ namespace SCANsat.SCAN_Unity
 				if (SCAN_Settings_Config.Instance.ToolbarMenu)
 				{
 					if (SCANappLauncher.Instance != null && SCANappLauncher.Instance.UIElement != null)
+					{
 						SCANappLauncher.Instance.UIElement.SetMainMapToggle(true);
+					}
 				}
 				else
 				{
 					if (SCANappLauncher.Instance != null && SCANappLauncher.Instance.SCANAppButton != null)
+					{
 						SCANappLauncher.Instance.SCANAppButton.SetTrue(false);
+					}
 				}
 			}
 		}
@@ -335,7 +437,9 @@ namespace SCANsat.SCAN_Unity
 			SCANcontroller.controller.mainMapVisible = false;
 
 			if (uiElement == null)
+			{
 				return;
+			}
 
 			uiElement.FadeOut();
 
@@ -344,12 +448,16 @@ namespace SCANsat.SCAN_Unity
 				if (SCAN_Settings_Config.Instance.ToolbarMenu)
 				{
 					if (SCANappLauncher.Instance != null && SCANappLauncher.Instance.UIElement != null)
+					{
 						SCANappLauncher.Instance.UIElement.SetMainMapToggle(false);
+					}
 				}
 				else
 				{
 					if (SCANappLauncher.Instance != null && SCANappLauncher.Instance.SCANAppButton != null)
+					{
 						SCANappLauncher.Instance.SCANAppButton.SetFalse(false);
+					}
 				}
 			}
 
@@ -364,7 +472,9 @@ namespace SCANsat.SCAN_Unity
 				_isVisible = value;
 
 				if (!value)
+				{
 					Close();
+				}
 			}
 		}
 
@@ -443,19 +553,27 @@ namespace SCANsat.SCAN_Unity
 			SCANcontroller.SCANvessel v;
 
 			if (!SCANcontroller.controller.knownVessels.TryGetValue(id, out v))
+			{
 				v = null;
+			}
 
 			Vessel sv;
 
 			if (v == null)
 			{
 				if (FlightGlobals.ActiveVessel.id == id)
+				{
 					sv = FlightGlobals.ActiveVessel;
+				}
 				else
+				{
 					return SCAN_UI_Loader.MysteryIcon;
+				}
 			}
 			else
+			{
 				sv = v.vessel;
+			}
 
 			return SCAN_UI_Loader.VesselIcon(sv.vesselType);
 		}
@@ -465,23 +583,31 @@ namespace SCANsat.SCAN_Unity
 			SCANcontroller.SCANvessel v;
 
 			if (!SCANcontroller.controller.knownVessels.TryGetValue(id, out v))
+			{
 				v = null;
+			}
 
 			Vessel sv;
 
 			if (v == null)
 			{
 				if (FlightGlobals.ActiveVessel.id == id)
+				{
 					sv = FlightGlobals.ActiveVessel;
+				}
 				else
+				{
 					return new Vector2();
+				}
 			}
 			else
+			{
 				sv = v.vessel;
+			}
 
 			double lon = SCANUtil.fixLon(sv.longitude);
 			double lat = SCANUtil.fixLat(sv.latitude);
-			
+
 			return new Vector2((float)lon, (float)lat);
 		}
 
@@ -511,10 +637,14 @@ namespace SCANsat.SCAN_Unity
 					SCANcontroller.SCANvessel sv = SCANcontroller.controller.knownVessels.At(i);
 
 					if (sv.vessel == v)
+					{
 						continue;
+					}
 
 					if (sv.vessel.mainBody != v.mainBody)
+					{
 						continue;
+					}
 
 					vessels.Add(sv.vessel.id, new MapLabelInfo()
 					{
@@ -543,63 +673,93 @@ namespace SCANsat.SCAN_Unity
 		public void OpenBigMap()
 		{
 			if (SCAN_UI_BigMap.Instance.IsVisible)
+			{
 				SCAN_UI_BigMap.Instance.Close();
+			}
 			else
+			{
 				SCAN_UI_BigMap.Instance.Open();
+			}
 		}
 
 		public void OpenZoomMap()
 		{
 			if (SCAN_UI_ZoomMap.Instance.IsVisible)
+			{
 				SCAN_UI_ZoomMap.Instance.Close();
+			}
 			else
+			{
 				SCAN_UI_ZoomMap.Instance.Open(true);
+			}
 		}
 
 		public void OpenOverlay()
 		{
 			if (SCAN_UI_Overlay.Instance.IsVisible)
+			{
 				SCAN_UI_Overlay.Instance.Close();
+			}
 			else
+			{
 				SCAN_UI_Overlay.Instance.Open();
+			}
 		}
 
 		public void OpenInstruments()
 		{
 			if (SCAN_UI_Instruments.Instance.IsVisible)
+			{
 				SCAN_UI_Instruments.Instance.Close();
+			}
 			else
+			{
 				SCAN_UI_Instruments.Instance.Open();
+			}
 		}
 
 		public void OpenSettings()
 		{
 			if (SCAN_UI_Settings.Instance.IsVisible)
+			{
 				SCAN_UI_Settings.Instance.Close();
+			}
 			else
+			{
 				SCAN_UI_Settings.Instance.Open();
+			}
 		}
 
 		public void ChangeToVessel(Guid id)
 		{
 			if (v == null || v.id == id)
+			{
 				return;
+			}
 
 			SCANcontroller.SCANvessel sv;
 
 			if (!SCANcontroller.controller.knownVessels.TryGetValue(id, out sv))
+			{
 				sv = null;
+			}
 
 			if (sv == null)
+			{
 				return;
+			}
 
 			if (!HighLogic.CurrentGame.Parameters.Flight.CanSwitchVesselsFar)
+			{
 				return;
+			}
 
 			if (FlightGlobals.SetActiveVessel(sv.vessel))
 			{
 				if (MapView.MapIsEnabled)
+				{
 					MapView.ExitMapView();
+				}
 
 				FlightInputHandler.SetNeutralControls();
 			}
@@ -610,19 +770,27 @@ namespace SCANsat.SCAN_Unity
 			SCANcontroller.SCANvessel sv;
 
 			if (!SCANcontroller.controller.knownVessels.TryGetValue(id, out sv))
+			{
 				sv = null;
+			}
 
 			Vessel ves;
 
 			if (sv == null)
 			{
 				if (FlightGlobals.ActiveVessel.id == id)
+				{
 					ves = FlightGlobals.ActiveVessel;
+				}
 				else
+				{
 					return "";
+				}
 			}
 			else
+			{
 				ves = sv.vessel;
+			}
 
 			float lon = (float)SCANUtil.fixLonShift(ves.longitude);
 			float lat = (float)SCANUtil.fixLatShift(ves.latitude);
@@ -631,7 +799,9 @@ namespace SCANsat.SCAN_Unity
 			if (SCANcontroller.controller.mainMapBiome)
 			{
 				if (SCANUtil.isCovered(lon, lat, data, SCANtype.Biome))
+				{
 					units = string.Format("; {0}", SCANUtil.getBiomeDisplayName(data.Body, lon, lat));
+				}
 			}
 			else
 			{
@@ -642,7 +812,9 @@ namespace SCANsat.SCAN_Unity
 						float alt = ves.heightFromTerrain;
 
 						if (alt < 0)
+						{
 							alt = (float)ves.altitude;
+						}
 
 						units = string.Format("; {0}", SCANuiUtil.distanceString(alt, 100000, 100000000));
 					}
@@ -651,7 +823,9 @@ namespace SCANsat.SCAN_Unity
 						float alt = ves.heightFromTerrain;
 
 						if (alt < 0)
+						{
 							alt = (float)ves.altitude;
+						}
 
 						alt = ((int)(alt / 500)) * 500;
 
@@ -668,7 +842,9 @@ namespace SCANsat.SCAN_Unity
 			bool pqsController = data.Body.pqsController != null;
 
 			if (data.ControllerBuilding || data.OverlayBuilding)
+			{
 				return;
+			}
 
 			if (!data.Built)
 			{
@@ -691,9 +867,13 @@ namespace SCANsat.SCAN_Unity
 				sunLatCenter = SCANUtil.fixLatShift(sunLat);
 
 				if (sunLatCenter >= 0)
+				{
 					sunLonCenter = SCANUtil.fixLonShift(sunLon + 90);
+				}
 				else
+				{
 					sunLonCenter = SCANUtil.fixLonShift(sunLon - 90);
+				}
 
 				gamma = Math.Abs(sunLatCenter) < 0.55 ? 100 : Math.Tan(Mathf.Deg2Rad * (90 - Math.Abs(sunLatCenter)));
 			}
@@ -711,9 +891,13 @@ namespace SCANsat.SCAN_Unity
 				if (SCANUtil.isCovered(ilon, scanline, data, SCANtype.Altimetry))
 				{
 					if (SCANUtil.isCovered(ilon, scanline, data, SCANtype.AltimetryHiRes))
+					{
 						c = palette.heightToColor(val, Color, data.TerrainConfig);
+					}
 					else
+					{
 						c = palette.heightToColor(val, false, data.TerrainConfig);
+					}
 				}
 				else
 				{
@@ -734,12 +918,16 @@ namespace SCANsat.SCAN_Unity
 					if (sunLatCenter >= 0)
 					{
 						if (scanline - 90 < crossingLat * Mathf.Rad2Deg)
+						{
 							c = palette.lerp(c, palette.Black, 0.5f);
+						}
 					}
 					else
 					{
 						if (scanline - 90 > crossingLat * Mathf.Rad2Deg)
+						{
 							c = palette.lerp(c, palette.Black, 0.5f);
+						}
 					}
 				}
 				else
@@ -747,7 +935,9 @@ namespace SCANsat.SCAN_Unity
 					if (type != SCANtype.Nothing)
 					{
 						if (!SCANUtil.isCoveredByAll(ilon, scanline, data, type))
+						{
 							c = palette.lerp(c, palette.Black, 0.5f);
+						}
 					}
 				}
 
@@ -759,16 +949,22 @@ namespace SCANsat.SCAN_Unity
 			if (apply)
 			{
 				if (scanline < 179)
+				{
 					map_small.SetPixels32(0, scanline + 1, 360, 1, palette.small_redline);
+				}
 			}
 
 			scanline++;
 
 			if (apply || scanline >= 180)
+			{
 				map_small.Apply();
+			}
 
 			if (scanline >= 180)
+			{
 				scanline = 0;
+			}
 		}
 
 		private void drawBiomeMap(SCANtype type, bool apply)
@@ -776,7 +972,9 @@ namespace SCANsat.SCAN_Unity
 			bool biomeMap = data.Body.BiomeMap != null;
 
 			if (biomeBuilding && biomeMap)
+			{
 				buildBiomeCache();
+			}
 
 			if (scanline == 0 && TerminatorToggle)
 			{
@@ -786,9 +984,13 @@ namespace SCANsat.SCAN_Unity
 				sunLatCenter = SCANUtil.fixLatShift(sunLat);
 
 				if (sunLatCenter >= 0)
+				{
 					sunLonCenter = SCANUtil.fixLonShift(sunLon + 90);
+				}
 				else
+				{
 					sunLonCenter = SCANUtil.fixLonShift(sunLon - 90);
+				}
 
 				gamma = Math.Abs(sunLatCenter) < 0.55 ? 100 : Math.Tan(Mathf.Deg2Rad * (90 - Math.Abs(sunLatCenter)));
 			}
@@ -814,12 +1016,16 @@ namespace SCANsat.SCAN_Unity
 					if (sunLatCenter >= 0)
 					{
 						if (scanline - 90 < crossingLat * Mathf.Rad2Deg)
+						{
 							c = palette.lerp(c, palette.Black, 0.5f);
+						}
 					}
 					else
 					{
 						if (scanline - 90 > crossingLat * Mathf.Rad2Deg)
+						{
 							c = palette.lerp(c, palette.Black, 0.5f);
+						}
 					}
 				}
 				else
@@ -827,7 +1033,9 @@ namespace SCANsat.SCAN_Unity
 					if (type != SCANtype.Nothing)
 					{
 						if (!SCANUtil.isCoveredByAll(ilon, scanline, data, type))
+						{
 							c = palette.lerp(c, palette.Black, 0.5f);
+						}
 					}
 				}
 
@@ -839,16 +1047,22 @@ namespace SCANsat.SCAN_Unity
 			if (apply)
 			{
 				if (scanline < 179)
+				{
 					map_small.SetPixels32(0, scanline + 1, 360, 1, palette.small_redline);
+				}
 			}
 
 			scanline++;
 
 			if (apply || scanline >= 180)
+			{
 				map_small.Apply();
+			}
 
 			if (scanline >= 180)
+			{
 				scanline = 0;
+			}
 		}
 
 		private void buildBiomeCache()
@@ -859,11 +1073,17 @@ namespace SCANsat.SCAN_Unity
 				Color32 c = palette.Grey;
 
 				if (SCAN_Settings_Config.Instance.SmallMapBiomeBorder && ((i > 0 && biomeIndex[i - 1] != index) || (scanline > 0 && biomeIndex[i] != index)))
+				{
 					c = palette.White;
+				}
 				else if (SCAN_Settings_Config.Instance.SmallMapStockBiomes)
+				{
 					c = SCANUtil.getBiome(data.Body, i - 180, scanline - 90).mapColor;
+				}
 				else
+				{
 					c = palette.lerp(SCANcontroller.controller.lowBiomeColor32, SCANcontroller.controller.highBiomeColor32, (float)index);
+				}
 
 				biomeCache[scanline * 360 + i] = c;
 
@@ -871,7 +1091,9 @@ namespace SCANsat.SCAN_Unity
 			}
 
 			if (scanline >= 179)
+			{
 				biomeBuilding = false;
+			}
 		}
 
 		internal void resetImages()
@@ -905,7 +1127,9 @@ namespace SCANsat.SCAN_Unity
 			SCAN_Settings_Config.Instance.MainMapPosition = new Vector2(100, -200);
 
 			if (uiElement != null)
+			{
 				uiElement.SetPosition(SCAN_Settings_Config.Instance.MainMapPosition);
+			}
 		}
 	}
 }

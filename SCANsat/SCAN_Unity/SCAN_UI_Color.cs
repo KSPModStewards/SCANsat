@@ -31,8 +31,8 @@ namespace SCANsat.SCAN_Unity
 		private string _terrainPalette;
 		private string _terrainPaletteStyle;
 
-        private bool _mapVignette;
-        private bool _biomeBigMapStockColor;
+		private bool _mapVignette;
+		private bool _biomeBigMapStockColor;
 		private bool _biomeBigMapWhiteBorder;
 		private bool _biomeZoomMapWhiteBorder;
 		private bool _biomeSmallMapStockColor;
@@ -42,26 +42,26 @@ namespace SCANsat.SCAN_Unity
 		private bool _terrainDiscrete;
 
 
-        private int _mapWidth;
+		private int _mapWidth;
 
-        private bool _useMapWidth;
-        private bool _pixelFiltering;
-        private bool _normalMap;
-        private bool _colorMap;
+		private bool _useMapWidth;
+		private bool _pixelFiltering;
+		private bool _normalMap;
+		private bool _colorMap;
 
-        private float _normalOpacity;
-        private float _luminanceReduction;
+		private float _normalOpacity;
+		private float _luminanceReduction;
 
-        private static SCAN_UI_Color instance;
+		private static SCAN_UI_Color instance;
 
-        public static SCAN_UI_Color Instance
-        {
-            get { return instance; }
-        }
+		public static SCAN_UI_Color Instance
+		{
+			get { return instance; }
+		}
 
-        private float _unscannedTransparency;
-        private float _backgroundTransparency;
-        private float _biomeTransparency;
+		private float _unscannedTransparency;
+		private float _backgroundTransparency;
+		private float _biomeTransparency;
 		private float _slopeCutoff;
 		private float _resourceMin;
 		private float _resourceMax;
@@ -79,12 +79,16 @@ namespace SCANsat.SCAN_Unity
 		private List<SCANresourceGlobal> loadedResources;
 
 		public SCAN_UI_Color()
-        {
-            instance = this;
-            if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedScene == GameScenes.TRACKSTATION)
+		{
+			instance = this;
+			if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedScene == GameScenes.TRACKSTATION)
+			{
 				_resourcePlanet = Planetarium.fetch.Home.bodyName;
+			}
 			else if (HighLogic.LoadedSceneIsFlight)
+			{
 				_resourcePlanet = FlightGlobals.currentMainBody.bodyName;
+			}
 
 			loadedResources = SCANcontroller.setLoadedResourceList();
 
@@ -117,14 +121,14 @@ namespace SCANsat.SCAN_Unity
 				_resourceMax = currentResource.CurrentBody.MaxValue;
 				_resourceTransparency = currentResource.Transparency;
 			}
-			
+
 			currentTerrain = SCANcontroller.getTerrainNode(_terrainPlanet);
 
 			if (currentTerrain != null)
 			{
 				palette.CurrentPalettes = palette.SetCurrentPalettesType(currentTerrain.ColorPal.Kind);
 
-				currentPalette = palette.CurrentPalettes.GetPaletteGroup(currentTerrain.ColorPal.Name); 
+				currentPalette = palette.CurrentPalettes.GetPaletteGroup(currentTerrain.ColorPal.Name);
 
 				_terrainPalette = currentTerrain.ColorPal.Name;
 				_terrainPaletteStyle = currentTerrain.ColorPal.Kind.ToString();
@@ -172,14 +176,18 @@ namespace SCANsat.SCAN_Unity
 						SCANresourceGlobal res = loadedResources[i];
 
 						if (res.DisplayName != value)
+						{
 							continue;
+						}
 
 						currentResource = res;
 						break;
 					}
 
 					if (currentResource == null)
+					{
 						currentResource = SCANcontroller.GetFirstResource;
+					}
 
 					if (currentResource != null)
 					{
@@ -209,7 +217,7 @@ namespace SCANsat.SCAN_Unity
 				{
 					palette.CurrentPalettes = palette.SetCurrentPalettesType(currentTerrain.ColorPal.Kind);
 
-					currentPalette = palette.CurrentPalettes.GetPaletteGroup(currentTerrain.ColorPal.Name); 
+					currentPalette = palette.CurrentPalettes.GetPaletteGroup(currentTerrain.ColorPal.Name);
 
 					_terrainPalette = currentTerrain.ColorPal.Name;
 					_terrainPaletteStyle = currentTerrain.ColorPal.Kind.ToString();
@@ -244,7 +252,7 @@ namespace SCANsat.SCAN_Unity
 				_terrainPaletteStyle = value;
 
 				SCANPaletteKind kind = SCANPaletteKind.Diverging;
-				
+
 				try
 				{
 					kind = (SCANPaletteKind)Enum.Parse(typeof(SCANPaletteKind), value);
@@ -262,11 +270,11 @@ namespace SCANsat.SCAN_Unity
 			}
 		}
 
-        public bool MapVignette
-        {
-            get { return _mapVignette; }
-            set { _mapVignette = value; }
-        }
+		public bool MapVignette
+		{
+			get { return _mapVignette; }
+			set { _mapVignette = value; }
+		}
 
 		public bool BiomeBigMapStockColor
 		{
@@ -322,62 +330,62 @@ namespace SCANsat.SCAN_Unity
 		}
 
 
-        public int MapWidth
-        {
-            get { return _mapWidth; }
-            set { _mapWidth = value; }
-        }
+		public int MapWidth
+		{
+			get { return _mapWidth; }
+			set { _mapWidth = value; }
+		}
 
-        public bool UseMapWidth
-        {
-            get { return _useMapWidth; }
-            set { _useMapWidth = value; }
-        }
+		public bool UseMapWidth
+		{
+			get { return _useMapWidth; }
+			set { _useMapWidth = value; }
+		}
 
-        public bool PixelFiltering
-        {
-            get { return _pixelFiltering; }
-            set { _pixelFiltering = value; }
-        }
+		public bool PixelFiltering
+		{
+			get { return _pixelFiltering; }
+			set { _pixelFiltering = value; }
+		}
 
-        public bool NormalMap
-        {
-            get { return _normalMap; }
-            set { _normalMap = value; }
-        }
+		public bool NormalMap
+		{
+			get { return _normalMap; }
+			set { _normalMap = value; }
+		}
 
-        public bool ColorMap
-        {
-            get { return _colorMap; }
-            set { _colorMap = value; }
-        }
+		public bool ColorMap
+		{
+			get { return _colorMap; }
+			set { _colorMap = value; }
+		}
 
-        public float NormalOpacity
-        {
-            get { return _normalOpacity; }
-            set { _normalOpacity = value; }
-        }
+		public float NormalOpacity
+		{
+			get { return _normalOpacity; }
+			set { _normalOpacity = value; }
+		}
 
-        public float LuminanceReduction
-        {
-            get { return _luminanceReduction; }
-            set { _luminanceReduction = value; }
-        }
+		public float LuminanceReduction
+		{
+			get { return _luminanceReduction; }
+			set { _luminanceReduction = value; }
+		}
 
 
-        public float UnscannedTransparency
-        {
-            get { return _unscannedTransparency; }
-            set { _unscannedTransparency = value; }
-        }
+		public float UnscannedTransparency
+		{
+			get { return _unscannedTransparency; }
+			set { _unscannedTransparency = value; }
+		}
 
-        public float BackgroundTransparency
-        {
-            get { return _backgroundTransparency; }
-            set { _backgroundTransparency = value; }
-        }
+		public float BackgroundTransparency
+		{
+			get { return _backgroundTransparency; }
+			set { _backgroundTransparency = value; }
+		}
 
-        public float BiomeTransparency
+		public float BiomeTransparency
 		{
 			get { return _biomeTransparency; }
 			set { _biomeTransparency = value; }
@@ -453,7 +461,7 @@ namespace SCANsat.SCAN_Unity
 		{
 			get
 			{
-				switch(currentTerrain.ColorPal.Kind)
+				switch (currentTerrain.ColorPal.Kind)
 				{
 					case SCANPaletteKind.Diverging:
 						return 11;
@@ -467,17 +475,17 @@ namespace SCANsat.SCAN_Unity
 			}
 		}
 
-        public Color MapBackgroundColor
-        {
-            get { return SCAN_Settings_Config.Instance.MapBackgroundColor; }
-        }
+		public Color MapBackgroundColor
+		{
+			get { return SCAN_Settings_Config.Instance.MapBackgroundColor; }
+		}
 
-        public Color UnscannedColor
-        {
-            get { return SCAN_Settings_Config.Instance.UnscannedColor; }
-        }
+		public Color UnscannedColor
+		{
+			get { return SCAN_Settings_Config.Instance.UnscannedColor; }
+		}
 
-        public Color BiomeColorOne
+		public Color BiomeColorOne
 		{
 			get { return SCAN_Settings_Config.Instance.LowBiomeColor; }
 		}
@@ -529,7 +537,9 @@ namespace SCANsat.SCAN_Unity
 				Color32[] c = currentPalette.GetPalette(_terrainSize).ColorsArray;
 
 				if (_terrainReverse)
+				{
 					c = currentPalette.GetPalette(_terrainSize).ColorsReverse;
+				}
 
 				return SCANmapLegend.getStaticLegend(_terrainCurrentMax, _terrainCurrentMin, _terrainCurrentMax - _terrainCurrentMin, _terrainClampOn ? (float?)_terrainClamp : null, _terrainDiscrete, c);
 			}
@@ -596,7 +606,9 @@ namespace SCANsat.SCAN_Unity
 						string b = bodyList[i];
 
 						if (b != FlightGlobals.currentMainBody.displayName.LocalizeBodyName())
+						{
 							continue;
+						}
 
 						bodyList.RemoveAt(i);
 						bodyList.Insert(0, b);
@@ -615,41 +627,49 @@ namespace SCANsat.SCAN_Unity
 			get { return new List<string>(palette.GetPaletteKindNames()); }
 		}
 
-        public void MapApply(Color background, Color unscanned)
-        {
-            SCAN_Settings_Config.Instance.MapBackgroundColor = background;
-            SCAN_Settings_Config.Instance.UnscannedColor = unscanned;
+		public void MapApply(Color background, Color unscanned)
+		{
+			SCAN_Settings_Config.Instance.MapBackgroundColor = background;
+			SCAN_Settings_Config.Instance.UnscannedColor = unscanned;
 
-            SCAN_Settings_Config.Instance.MapVignette = _mapVignette;
-            SCAN_Settings_Config.Instance.BackgroundTransparency = _backgroundTransparency / 100;
-            SCAN_Settings_Config.Instance.UnscannedTransparency = _unscannedTransparency / 100;
+			SCAN_Settings_Config.Instance.MapVignette = _mapVignette;
+			SCAN_Settings_Config.Instance.BackgroundTransparency = _backgroundTransparency / 100;
+			SCAN_Settings_Config.Instance.UnscannedTransparency = _unscannedTransparency / 100;
 
-            if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible)
-                SCAN_UI_BigMap.Instance.RefreshMap();
+			if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible)
+			{
+				SCAN_UI_BigMap.Instance.RefreshMap();
+			}
 
-            if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible)
-                SCAN_UI_ZoomMap.Instance.RefreshMap();
-        }
+			if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible)
+			{
+				SCAN_UI_ZoomMap.Instance.RefreshMap();
+			}
+		}
 
-        public void MapDefault()
-        {
-            SCAN_Settings_Config.Instance.MapBackgroundColor = palette.grey;
-            SCAN_Settings_Config.Instance.UnscannedColor = palette.grey;
+		public void MapDefault()
+		{
+			SCAN_Settings_Config.Instance.MapBackgroundColor = palette.grey;
+			SCAN_Settings_Config.Instance.UnscannedColor = palette.grey;
 
-            SCAN_Settings_Config.Instance.MapVignette = false;
-            SCAN_Settings_Config.Instance.BackgroundTransparency = 0.4f;
-            SCAN_Settings_Config.Instance.UnscannedTransparency = 0.4f;            
+			SCAN_Settings_Config.Instance.MapVignette = false;
+			SCAN_Settings_Config.Instance.BackgroundTransparency = 0.4f;
+			SCAN_Settings_Config.Instance.UnscannedTransparency = 0.4f;
 
-            _mapVignette = false;
-            _backgroundTransparency = 40;
-            _unscannedTransparency = 100;
+			_mapVignette = false;
+			_backgroundTransparency = 40;
+			_unscannedTransparency = 100;
 
-            if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible)
-                SCAN_UI_BigMap.Instance.RefreshMap();
-            
-            if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible)
-                SCAN_UI_ZoomMap.Instance.RefreshMap();
-        }
+			if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible)
+			{
+				SCAN_UI_BigMap.Instance.RefreshMap();
+			}
+
+			if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible)
+			{
+				SCAN_UI_ZoomMap.Instance.RefreshMap();
+			}
+		}
 
 		public void BiomeApply(Color one, Color two)
 		{
@@ -666,13 +686,19 @@ namespace SCANsat.SCAN_Unity
 			SCAN_Settings_Config.Instance.BiomeTransparency = _biomeTransparency / 100;
 
 			if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible && SCAN_UI_BigMap.Instance.CurrentMapType == "Biome")
+			{
 				SCAN_UI_BigMap.Instance.RefreshMap();
+			}
 
 			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && SCAN_UI_MainMap.Instance.MapType)
+			{
 				SCAN_UI_MainMap.Instance.resetImages();
+			}
 
 			if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible && SCAN_UI_ZoomMap.Instance.CurrentMapType == "Biome")
+			{
 				SCAN_UI_ZoomMap.Instance.RefreshMap();
+			}
 		}
 
 		public void BiomeDefault()
@@ -697,13 +723,19 @@ namespace SCANsat.SCAN_Unity
 			_biomeTransparency = 40;
 
 			if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible && SCAN_UI_BigMap.Instance.CurrentMapType == "Biome")
+			{
 				SCAN_UI_BigMap.Instance.RefreshMap();
+			}
 
 			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && SCAN_UI_MainMap.Instance.MapType)
+			{
 				SCAN_UI_MainMap.Instance.resetImages();
+			}
 
 			if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible && SCAN_UI_ZoomMap.Instance.CurrentMapType == "Biome")
+			{
 				SCAN_UI_ZoomMap.Instance.RefreshMap();
+			}
 		}
 
 		public void SlopeApply(Color oneLow, Color oneHigh, Color twoLow, Color twoHigh)
@@ -720,10 +752,14 @@ namespace SCANsat.SCAN_Unity
 			SCAN_Settings_Config.Instance.SlopeCutoff = _slopeCutoff;
 
 			if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible && SCAN_UI_BigMap.Instance.CurrentMapType == "Slope")
+			{
 				SCAN_UI_BigMap.Instance.RefreshMap();
+			}
 
 			if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible && SCAN_UI_ZoomMap.Instance.CurrentMapType == "Slope")
+			{
 				SCAN_UI_ZoomMap.Instance.RefreshMap();
+			}
 		}
 
 		public void SlopeDefault()
@@ -738,12 +774,16 @@ namespace SCANsat.SCAN_Unity
 			SCANcontroller.controller.highSlopeColorTwo32 = palette.xkcd_OrangeRed;
 
 			SCAN_Settings_Config.Instance.SlopeCutoff = 1;
-			
+
 			if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible && SCAN_UI_BigMap.Instance.CurrentMapType == "Slope")
+			{
 				SCAN_UI_BigMap.Instance.RefreshMap();
+			}
 
 			if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible && SCAN_UI_ZoomMap.Instance.CurrentMapType == "Slope")
+			{
 				SCAN_UI_ZoomMap.Instance.RefreshMap();
+			}
 		}
 
 		public void ResourceApply(Color one, Color two)
@@ -757,13 +797,19 @@ namespace SCANsat.SCAN_Unity
 			SCANcontroller.updateSCANresource(currentResource, false);
 
 			if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible && SCAN_UI_BigMap.Instance.ResourceToggle)
+			{
 				SCAN_UI_BigMap.Instance.RefreshMap();
+			}
 
 			if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible && SCAN_UI_ZoomMap.Instance.ResourceToggle)
+			{
 				SCAN_UI_ZoomMap.Instance.RefreshMap();
+			}
 
 			if (SCANcontroller.controller.overlaySelection == 2 && SCAN_UI_Overlay.Instance != null && SCAN_UI_Overlay.Instance.DrawOverlay)
+			{
 				SCAN_UI_Overlay.Instance.Refresh();
+			}
 		}
 
 		public void ResourceApplyToAll(Color one, Color two)
@@ -777,13 +823,19 @@ namespace SCANsat.SCAN_Unity
 			SCANcontroller.updateSCANresource(currentResource, true);
 
 			if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible && SCAN_UI_BigMap.Instance.ResourceToggle)
+			{
 				SCAN_UI_BigMap.Instance.RefreshMap();
+			}
 
 			if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible && SCAN_UI_ZoomMap.Instance.ResourceToggle)
+			{
 				SCAN_UI_ZoomMap.Instance.RefreshMap();
+			}
 
 			if (SCANcontroller.controller.overlaySelection == 2 && SCAN_UI_Overlay.Instance != null && SCAN_UI_Overlay.Instance.DrawOverlay)
+			{
 				SCAN_UI_Overlay.Instance.Refresh();
+			}
 		}
 
 		public void ResourceDefault()
@@ -801,13 +853,19 @@ namespace SCANsat.SCAN_Unity
 			SCANcontroller.updateSCANresource(currentResource, false);
 
 			if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible && SCAN_UI_BigMap.Instance.ResourceToggle)
+			{
 				SCAN_UI_BigMap.Instance.RefreshMap();
+			}
 
 			if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible && SCAN_UI_ZoomMap.Instance.ResourceToggle)
+			{
 				SCAN_UI_ZoomMap.Instance.RefreshMap();
+			}
 
 			if (SCANcontroller.controller.overlaySelection == 2 && SCAN_UI_Overlay.Instance != null && SCAN_UI_Overlay.Instance.DrawOverlay)
+			{
 				SCAN_UI_Overlay.Instance.Refresh();
+			}
 		}
 
 		public void ResourceDefaultToAll()
@@ -825,13 +883,19 @@ namespace SCANsat.SCAN_Unity
 			SCANcontroller.updateSCANresource(currentResource, true);
 
 			if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible && SCAN_UI_BigMap.Instance.ResourceToggle)
+			{
 				SCAN_UI_BigMap.Instance.RefreshMap();
+			}
 
 			if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible && SCAN_UI_ZoomMap.Instance.ResourceToggle)
+			{
 				SCAN_UI_ZoomMap.Instance.RefreshMap();
+			}
 
 			if (SCANcontroller.controller.overlaySelection == 2 && SCAN_UI_Overlay.Instance != null && SCAN_UI_Overlay.Instance.DrawOverlay)
+			{
 				SCAN_UI_Overlay.Instance.Refresh();
+			}
 		}
 
 		public void ResourceSaveToConfig(Color one, Color two)
@@ -845,13 +909,19 @@ namespace SCANsat.SCAN_Unity
 			SCANcontroller.updateSCANresource(currentResource, false);
 
 			if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible && SCAN_UI_BigMap.Instance.ResourceToggle)
+			{
 				SCAN_UI_BigMap.Instance.RefreshMap();
+			}
 
 			if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible && SCAN_UI_ZoomMap.Instance.ResourceToggle)
+			{
 				SCAN_UI_ZoomMap.Instance.RefreshMap();
+			}
 
 			if (SCANcontroller.controller.overlaySelection == 2 && SCAN_UI_Overlay.Instance != null && SCAN_UI_Overlay.Instance.DrawOverlay)
+			{
 				SCAN_UI_Overlay.Instance.Refresh();
+			}
 
 			SCANconfigLoader.SCANNode.Save();
 		}
@@ -870,16 +940,24 @@ namespace SCANsat.SCAN_Unity
 			SCANcontroller.updateTerrainConfig(currentTerrain);
 
 			if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible && SCAN_UI_BigMap.Instance.CurrentMapType == "Altimetry")
+			{
 				SCAN_UI_BigMap.Instance.RefreshMap();
+			}
 
 			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && !SCAN_UI_MainMap.Instance.MapType)
+			{
 				SCAN_UI_MainMap.Instance.resetImages();
+			}
 
 			if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible && SCAN_UI_ZoomMap.Instance.CurrentMapType == "Altimetry")
+			{
 				SCAN_UI_ZoomMap.Instance.RefreshMap();
+			}
 
 			if (SCANcontroller.controller.overlaySelection == 1 && SCAN_UI_Overlay.Instance != null && SCAN_UI_Overlay.Instance.DrawOverlay)
+			{
 				SCAN_UI_Overlay.Instance.Refresh();
+			}
 		}
 
 		public void TerrainDefault()
@@ -897,16 +975,24 @@ namespace SCANsat.SCAN_Unity
 			Refresh();
 
 			if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible && SCAN_UI_BigMap.Instance.CurrentMapType == "Altimetry")
+			{
 				SCAN_UI_BigMap.Instance.RefreshMap();
+			}
 
 			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && !SCAN_UI_MainMap.Instance.MapType)
+			{
 				SCAN_UI_MainMap.Instance.resetImages();
+			}
 
 			if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible && SCAN_UI_ZoomMap.Instance.CurrentMapType == "Altimetry")
+			{
 				SCAN_UI_ZoomMap.Instance.RefreshMap();
+			}
 
 			if (SCANcontroller.controller.overlaySelection == 1 && SCAN_UI_Overlay.Instance != null && SCAN_UI_Overlay.Instance.DrawOverlay)
+			{
 				SCAN_UI_Overlay.Instance.Refresh();
+			}
 		}
 
 		public void TerrainSaveToConfig()
@@ -923,16 +1009,24 @@ namespace SCANsat.SCAN_Unity
 			SCANconfigLoader.SCANNode.Save();
 
 			if (SCAN_UI_BigMap.Instance != null && SCAN_UI_BigMap.Instance.IsVisible && SCAN_UI_BigMap.Instance.CurrentMapType == "Altimetry")
+			{
 				SCAN_UI_BigMap.Instance.RefreshMap();
+			}
 
 			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && !SCAN_UI_MainMap.Instance.MapType)
+			{
 				SCAN_UI_MainMap.Instance.resetImages();
+			}
 
 			if (SCAN_UI_ZoomMap.Instance != null && SCAN_UI_ZoomMap.Instance.IsVisible && SCAN_UI_ZoomMap.Instance.CurrentMapType == "Altimetry")
+			{
 				SCAN_UI_ZoomMap.Instance.RefreshMap();
+			}
 
 			if (SCANcontroller.controller.overlaySelection == 1 && SCAN_UI_Overlay.Instance != null && SCAN_UI_Overlay.Instance.DrawOverlay)
+			{
 				SCAN_UI_Overlay.Instance.Refresh();
+			}
 		}
 	}
 }

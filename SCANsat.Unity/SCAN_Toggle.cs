@@ -37,10 +37,14 @@ namespace SCANsat.Unity
 			base.OnPointerClick(eventData);
 
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (inToggle)
+			{
 				((Image)graphic).sprite = HoverCheckmark;
+			}
 		}
 
 		new public void OnPointerEnter(PointerEventData eventData)
@@ -50,9 +54,9 @@ namespace SCANsat.Unity
 			inToggle = true;
 
 			if (!isOn)
+			{
 				return;
-
-			((Image)graphic).sprite = HoverCheckmark;
+			} ((Image)graphic).sprite = HoverCheckmark;
 		}
 
 		new public void OnPointerExit(PointerEventData eventData)
@@ -62,9 +66,9 @@ namespace SCANsat.Unity
 			inToggle = false;
 
 			if (!isOn)
+			{
 				return;
-
-			((Image)graphic).sprite = normalImage;
+			} ((Image)graphic).sprite = normalImage;
 		}
 	}
 }

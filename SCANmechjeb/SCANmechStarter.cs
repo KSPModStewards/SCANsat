@@ -28,7 +28,9 @@ namespace SCANmechjeb
 				SCANmechjebInt = gameObject.AddComponent<SCANmechjeb>();
 			}
 			else
+			{
 				Destroy(gameObject);
+			}
 		}
 	}
 }

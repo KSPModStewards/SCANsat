@@ -70,39 +70,57 @@ namespace SCANsat.Unity
 		public void Setup(Color one, Color two, bool reset)
 		{
 			if (picker != null && reset)
+			{
 				picker.CurrentColor = one;
+			}
 
 			if (m_ColorOne != null)
 			{
 				m_ColorOne.SetColor(one);
 
 				if (reset)
+				{
 					m_ColorOne.IsActive = true;
+				}
 			}
 
 			if (m_ColorTwo != null)
+			{
 				m_ColorTwo.SetColor(two);
+			}
 
 			if (m_OldColorOne != null)
+			{
 				m_OldColorOne.color = one;
+			}
 
 			if (m_OldColorTwo != null)
+			{
 				m_OldColorTwo.color = two;
+			}
 
 			if (m_RInputField != null)
+			{
 				m_RInputField.OnTextUpdate.Invoke("");
+			}
 
 			if (m_GInputField != null)
+			{
 				m_GInputField.OnTextUpdate.Invoke("");
+			}
 
 			if (m_BInputField != null)
+			{
 				m_BInputField.OnTextUpdate.Invoke("");
+			}
 		}
 
 		public void ColorOne(bool isOn)
 		{
 			if (m_ColorOne == null)
+			{
 				return;
+			}
 
 			m_ColorOne.IsActive = isOn;
 
@@ -111,20 +129,28 @@ namespace SCANsat.Unity
 				picker.CurrentColor = m_ColorOne.CurrentColor;
 
 				if (m_RInputField != null)
+				{
 					m_RInputField.OnTextUpdate.Invoke("");
+				}
 
 				if (m_GInputField != null)
+				{
 					m_GInputField.OnTextUpdate.Invoke("");
+				}
 
 				if (m_BInputField != null)
+				{
 					m_BInputField.OnTextUpdate.Invoke("");
+				}
 			}
 		}
 
 		public void ColorTwo(bool isOn)
 		{
 			if (m_ColorTwo == null)
+			{
 				return;
+			}
 
 			m_ColorTwo.IsActive = isOn;
 
@@ -133,13 +159,19 @@ namespace SCANsat.Unity
 				picker.CurrentColor = m_ColorTwo.CurrentColor;
 
 				if (m_RInputField != null)
+				{
 					m_RInputField.OnTextUpdate.Invoke("");
+				}
 
 				if (m_GInputField != null)
+				{
 					m_GInputField.OnTextUpdate.Invoke("");
+				}
 
 				if (m_BInputField != null)
+				{
 					m_BInputField.OnTextUpdate.Invoke("");
+				}
 			}
 		}
 

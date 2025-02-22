@@ -21,10 +21,10 @@ using SCANsat.Unity.Interfaces;
 namespace SCANsat.Unity.Unity
 {
 	public class SCAN_ColorControl : SettingsPage
-    {
-        [SerializeField]
-        private GameObject m_MapPrefab = null;
-        [SerializeField]
+	{
+		[SerializeField]
+		private GameObject m_MapPrefab = null;
+		[SerializeField]
 		private GameObject m_AltimetryPrefab = null;
 		[SerializeField]
 		private GameObject m_SlopePrefab = null;
@@ -51,7 +51,9 @@ namespace SCANsat.Unity.Unity
 						if (colorInterface.ResourcePlanet == body)
 						{
 							if (colorInterface.ResourceCurrent == resource)
+							{
 								return true;
+							}
 						}
 					}
 				}
@@ -63,60 +65,82 @@ namespace SCANsat.Unity.Unity
 		public void setup(ISCAN_Settings settings, ISCAN_Color color, bool resource)
 		{
 			if (settings == null || color == null)
+			{
 				return;
+			}
 
 			settingsInterface = settings;
 			colorInterface = color;
 
 			if (resource)
+			{
 				ResourceSettings(true);
+			}
 			else
-	            AltimetrySettings(true);
+			{
+				AltimetrySettings(true);
+			}
 		}
 
 		public override void OnPointerDown(PointerEventData eventData)
 		{
 			if (currentPage != null)
+			{
 				currentPage.OnPointerDown(eventData);
+			}
 		}
 
-        public void MapSettings(bool isOn)
-        {
-            if (!isOn)
-                return;
+		public void MapSettings(bool isOn)
+		{
+			if (!isOn)
+			{
+				return;
+			}
 
-            if (currentPage != null)
-            {
-                currentPage.gameObject.SetActive(false);
-                DestroyImmediate(currentPage.gameObject);
-            }
+			if (currentPage != null)
+			{
+				currentPage.gameObject.SetActive(false);
+				DestroyImmediate(currentPage.gameObject);
+			}
 
-            if (m_ContentTransform == null || m_MapPrefab == null || settingsInterface == null)
-                return;
+			if (m_ContentTransform == null || m_MapPrefab == null || settingsInterface == null)
+			{
+				return;
+			}
 
-            if (settingsInterface.LockInput)
-                settingsInterface.LockInput = false;
+			if (settingsInterface.LockInput)
+			{
+				settingsInterface.LockInput = false;
+			}
 
-            currentPage = Instantiate(m_MapPrefab).GetComponent<SettingsPage>();
+			currentPage = Instantiate(m_MapPrefab).GetComponent<SettingsPage>();
 
-            if (currentPage == null)
-                return;
+			if (currentPage == null)
+			{
+				return;
+			}
 
-            currentPage.transform.SetParent(m_ContentTransform, false);
+			currentPage.transform.SetParent(m_ContentTransform, false);
 
-            ((SCAN_ColorMap)currentPage).SetMap(colorInterface, settingsInterface);
+			((SCAN_ColorMap)currentPage).SetMap(colorInterface, settingsInterface);
 
-            if (SCAN_Settings.Instance != null)
-                SCAN_Settings.Instance.ProcessTooltips();
+			if (SCAN_Settings.Instance != null)
+			{
+				SCAN_Settings.Instance.ProcessTooltips();
+			}
 
-            if (SCAN_Settings.Instance != null)
-                SCAN_Settings.Instance.ClearWarningsAndDropDown();
-        }
+			if (SCAN_Settings.Instance != null)
+			{
+				SCAN_Settings.Instance.ClearWarningsAndDropDown();
+			}
+		}
 
 		public void AltimetrySettings(bool isOn)
 		{
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (currentPage != null)
 			{
@@ -125,31 +149,43 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_ContentTransform == null || m_AltimetryPrefab == null || settingsInterface == null)
+			{
 				return;
+			}
 
 			if (settingsInterface.LockInput)
+			{
 				settingsInterface.LockInput = false;
+			}
 
 			currentPage = Instantiate(m_AltimetryPrefab).GetComponent<SettingsPage>();
 
 			if (currentPage == null)
+			{
 				return;
+			}
 
 			currentPage.transform.SetParent(m_ContentTransform, false);
 
 			((SCAN_ColorAltimetry)currentPage).SetTerrain(colorInterface, settingsInterface);
 
 			if (SCAN_Settings.Instance != null)
+			{
 				SCAN_Settings.Instance.ProcessTooltips();
+			}
 
 			if (SCAN_Settings.Instance != null)
+			{
 				SCAN_Settings.Instance.ClearWarningsAndDropDown();
+			}
 		}
 
 		public void SlopeSettings(bool isOn)
 		{
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (currentPage != null)
 			{
@@ -158,31 +194,43 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_ContentTransform == null || m_SlopePrefab == null || settingsInterface == null)
+			{
 				return;
+			}
 
 			if (settingsInterface.LockInput)
+			{
 				settingsInterface.LockInput = false;
+			}
 
 			currentPage = Instantiate(m_SlopePrefab).GetComponent<SettingsPage>();
 
 			if (currentPage == null)
+			{
 				return;
+			}
 
 			currentPage.transform.SetParent(m_ContentTransform, false);
 
 			((SCAN_ColorSlope)currentPage).SetSlope(colorInterface, settingsInterface);
 
 			if (SCAN_Settings.Instance != null)
+			{
 				SCAN_Settings.Instance.ProcessTooltips();
+			}
 
 			if (SCAN_Settings.Instance != null)
+			{
 				SCAN_Settings.Instance.ClearWarningsAndDropDown();
+			}
 		}
 
 		public void BiomeSettings(bool isOn)
 		{
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (currentPage != null)
 			{
@@ -191,31 +239,43 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_ContentTransform == null || m_BiomePrefab == null || settingsInterface == null)
+			{
 				return;
+			}
 
 			if (settingsInterface.LockInput)
+			{
 				settingsInterface.LockInput = false;
+			}
 
 			currentPage = Instantiate(m_BiomePrefab).GetComponent<SettingsPage>();
 
 			if (currentPage == null)
+			{
 				return;
+			}
 
 			currentPage.transform.SetParent(m_ContentTransform, false);
 
 			((SCAN_ColorBiome)currentPage).SetBiome(colorInterface, settingsInterface);
 
 			if (SCAN_Settings.Instance != null)
+			{
 				SCAN_Settings.Instance.ProcessTooltips();
+			}
 
 			if (SCAN_Settings.Instance != null)
+			{
 				SCAN_Settings.Instance.ClearWarningsAndDropDown();
+			}
 		}
 
 		public void ResourceSettings(bool isOn)
 		{
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (currentPage != null)
 			{
@@ -224,25 +284,35 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_ContentTransform == null || m_ResourcePrefab == null || settingsInterface == null)
+			{
 				return;
+			}
 
 			if (settingsInterface.LockInput)
+			{
 				settingsInterface.LockInput = false;
+			}
 
 			currentPage = Instantiate(m_ResourcePrefab).GetComponent<SettingsPage>();
 
 			if (currentPage == null)
+			{
 				return;
+			}
 
 			currentPage.transform.SetParent(m_ContentTransform, false);
 
 			((SCAN_ColorResource)currentPage).SetResource(colorInterface, settingsInterface);
 
 			if (SCAN_Settings.Instance != null)
+			{
 				SCAN_Settings.Instance.ProcessTooltips();
+			}
 
 			if (SCAN_Settings.Instance != null)
+			{
 				SCAN_Settings.Instance.ClearWarningsAndDropDown();
+			}
 		}
 
 		public static float ParseInput(string input, float original, float min, float max, int digits)
@@ -250,12 +320,18 @@ namespace SCANsat.Unity.Unity
 			float f = original;
 
 			if (!float.TryParse(input, out f))
+			{
 				return f;
+			}
 
 			if (f < min)
+			{
 				return original;
+			}
 			else if (f > max)
+			{
 				return original;
+			}
 
 			f = (float)Math.Round(f, digits);
 

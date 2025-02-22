@@ -10,7 +10,7 @@ namespace SCANsat.SCAN_Platform
 
 		Func<string> timeNow = () => string.Format("{0:ddMMyyyy-HHmmss}", DateTime.Now);
 
-		public SCAN_ConfigNodeStorage() { }	// FIXME: should be private?
+		public SCAN_ConfigNodeStorage() { } // FIXME: should be private?
 		public SCAN_ConfigNodeStorage(string filePath) { FilePath = filePath; } // FIXME: should be private?
 
 		private string _FilePath;

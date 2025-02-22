@@ -27,7 +27,7 @@ namespace SCANsat.SCAN_Palettes
 		public static SCANPalette blackForest()
 		{
 			Color32[] c;
-			c = new[] { RGB(176, 243, 190), RGB(224, 251, 178), RGB(184, 222, 118), RGB(39, 165, 42), RGB(52, 136, 60), RGB(156,164,41), RGB(248,176,4), RGB(192,74,2), RGB(135,8,0), RGB(116,24,5), RGB(108,42,10), RGB(125,74,43), RGB(156,129,112), RGB(181,181,181), RGB(218,216,218)};
+			c = new[] { RGB(176, 243, 190), RGB(224, 251, 178), RGB(184, 222, 118), RGB(39, 165, 42), RGB(52, 136, 60), RGB(156, 164, 41), RGB(248, 176, 4), RGB(192, 74, 2), RGB(135, 8, 0), RGB(116, 24, 5), RGB(108, 42, 10), RGB(125, 74, 43), RGB(156, 129, 112), RGB(181, 181, 181), RGB(218, 216, 218) };
 			return new SCANPalette(c, "blackForest", SCANPaletteKind.Fixed, c.Length);
 		}
 

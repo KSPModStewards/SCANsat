@@ -37,13 +37,17 @@ namespace SCANsat.SCAN_Unity
 		private void Update()
 		{
 			if (_handler != null)
+			{
 				_handler.IsFocused = isFocused;
+			}
 		}
 
 		private void valueChanged(string s)
 		{
 			if (_handler == null)
+			{
 				return;
+			}
 
 			_handler.Text = s;
 

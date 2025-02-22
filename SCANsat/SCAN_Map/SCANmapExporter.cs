@@ -23,10 +23,14 @@ namespace SCANsat.SCAN_Map
 			exporting = true;
 
 			if (map == null)
+			{
 				return;
+			}
 
 			if (data == null)
+			{
 				return;
+			}
 
 			string path = Path.Combine(new DirectoryInfo(KSPUtil.ApplicationRootPath).FullName, "GameData/SCANsat/PluginData/").Replace("\\", "/");
 			string mode = "";
@@ -36,18 +40,25 @@ namespace SCANsat.SCAN_Map
 				case mapType.Altimetry: mode = "elevation"; break;
 				case mapType.Slope: mode = "slope"; break;
 				case mapType.Biome: mode = "biome"; break;
-                case mapType.Visual: mode = "visual"; break;
+				case mapType.Visual: mode = "visual"; break;
 			}
 
 			if (map.ResourceActive && SCANconfigLoader.GlobalResource && !string.IsNullOrEmpty(SCANcontroller.controller.bigMapResource))
+			{
 				mode += "-" + SCANcontroller.controller.bigMapResource;
+			}
+
 			if (!SCANcontroller.controller.bigMapColor)
+			{
 				mode += "-grey";
+			}
 
 			string baseFileName = string.Format("{0}_{1}_{2}x{3}", map.Body.bodyName, mode, map.Map.width, map.Map.height);
 
 			if (map.Projection != MapProjection.Rectangular)
+			{
 				baseFileName += "_" + map.Projection.ToString();
+			}
 
 			string filename = baseFileName;
 
@@ -62,9 +73,13 @@ namespace SCANsat.SCAN_Map
 			SCANUtil.SCANlog("Map of [{0}] saved\nMap Size: {1} X {2}\nMinimum Altitude: {3:F0}m; Maximum Altitude: {4:F0}m\nPixel Width At Equator: {5:F6}m", map.Body.displayName.LocalizeBodyName(), map.Map.width, map.Map.height, data.TerrainConfig.MinTerrain, data.TerrainConfig.MaxTerrain, (map.Body.Radius * 2 * Math.PI) / (map.Map.width * 1f));
 
 			if (SCAN_Settings_Config.Instance.ExportCSV && map.MType == mapType.Altimetry)
+			{
 				StartCoroutine(exportCSV(path, baseFileName, map, data));
+			}
 			else
+			{
 				exporting = false;
+			}
 		}
 
 		private IEnumerator exportCSV(string filePath, string fileName, SCANmap map, SCANdata data)
@@ -132,10 +147,14 @@ namespace SCANsat.SCAN_Map
 							lon = map.unprojectLongitude(lo, la);
 
 							if (double.IsNaN(lat) || double.IsNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180)
+							{
 								continue;
+							}
 
 							if (!SCANUtil.isCovered(lon, lat, copyData, SCANtype.Altimetry))
+							{
 								continue;
+							}
 
 							float terrain = map.terrainElevation(lon, lat, w, h, copyMap, copyData, true);
 

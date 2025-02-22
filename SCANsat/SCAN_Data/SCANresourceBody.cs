@@ -96,13 +96,21 @@ namespace SCANsat.SCAN_Data
 			internal set
 			{
 				if (value < 0)
+				{
 					lowResourceCutoff = 0;
+				}
 				else if (value >= highResourceCutoff)
+				{
 					lowResourceCutoff = highResourceCutoff - 1;
+				}
 				else if (value >= 100)
+				{
 					lowResourceCutoff = 99;
+				}
 				else
+				{
 					lowResourceCutoff = value;
+				}
 			}
 		}
 
@@ -112,13 +120,21 @@ namespace SCANsat.SCAN_Data
 			internal set
 			{
 				if (value <= lowResourceCutoff)
+				{
 					highResourceCutoff = lowResourceCutoff + 1;
+				}
 				else if (value <= 0)
+				{
 					highResourceCutoff = 1;
+				}
 				else if (value > 100)
+				{
 					highResourceCutoff = 100;
+				}
 				else
+				{
 					highResourceCutoff = value;
+				}
 			}
 		}
 
@@ -128,13 +144,21 @@ namespace SCANsat.SCAN_Data
 			internal set
 			{
 				if (value < 0)
+				{
 					defaultMinValue = 0;
+				}
 				else if (value >= defaultMaxValue)
+				{
 					defaultMinValue = defaultMaxValue - 1;
+				}
 				else if (value >= 100)
+				{
 					defaultMinValue = 99;
+				}
 				else
+				{
 					defaultMinValue = value;
+				}
 			}
 		}
 
@@ -144,13 +168,21 @@ namespace SCANsat.SCAN_Data
 			internal set
 			{
 				if (value <= defaultMinValue)
+				{
 					defaultMaxValue = defaultMinValue + 1;
+				}
 				else if (value <= 0)
+				{
 					defaultMaxValue = 1;
+				}
 				else if (value > 100)
+				{
 					defaultMaxValue = 100;
+				}
 				else
+				{
 					defaultMaxValue = value;
+				}
 			}
 		}
 

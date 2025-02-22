@@ -35,13 +35,17 @@ namespace SCANsat.Unity.Unity
 		public void SetResource(string name, SCAN_Overlay p, bool isOn)
 		{
 			if (p == null)
+			{
 				return;
+			}
 
 			parent = p;
 			resource = name;
 
 			if (m_ResourceName != null)
+			{
 				m_ResourceName.OnTextUpdate.Invoke(name);
+			}
 
 			if (isOn && p.OverlayInterface.DrawResource)
 			{
@@ -53,7 +57,9 @@ namespace SCANsat.Unity.Unity
 		public void DrawResource()
 		{
 			if (parent == null)
+			{
 				return;
+			}
 
 			active = !active;
 

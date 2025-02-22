@@ -33,7 +33,10 @@ namespace SCANsat
 		public static double MaximumTrueAnomaly(this Orbit o)
 		{
 			if (o.eccentricity < 1)
+			{
 				return 180;
+			}
+
 			return 180 / Math.PI * Math.Acos(-1 / o.eccentricity);
 		}
 		//normalized vector perpendicular to the orbital plane
@@ -92,7 +95,10 @@ namespace SCANsat
 			double currentMeanAnomaly = o.MeanAnomalyAtUT(UT);
 			double meanDifference = meanAnomaly - currentMeanAnomaly;
 			if (o.eccentricity < 1)
+			{
 				meanDifference = JUtil.ClampRadiansTwoPi(meanDifference);
+			}
+
 			return UT + meanDifference / o.MeanMotion();
 		}
 		//Converts an eccentric anomaly into a mean anomaly.
@@ -124,7 +130,9 @@ namespace SCANsat
 				double cosE = (e + Math.Cos(trueAnomaly)) / (1 + e * Math.Cos(trueAnomaly));
 				double sinE = Math.Sqrt(1 - (cosE * cosE));
 				if (trueAnomaly > Math.PI)
+				{
 					sinE *= -1;
+				}
 
 				return JUtil.ClampRadiansTwoPi(Math.Atan2(sinE, cosE));
 			}
@@ -132,11 +140,15 @@ namespace SCANsat
 			{  //hyperbolic orbits
 				double coshE = (e + Math.Cos(trueAnomaly)) / (1 + e * Math.Cos(trueAnomaly));
 				if (coshE < 1)
+				{
 					throw new ArgumentException("OrbitExtensions.GetEccentricAnomalyAtTrueAnomaly: True anomaly of " + trueAnomaly + " radians is not attained by orbit with eccentricity " + o.eccentricity);
+				}
 
 				double E = JUtil.Acosh(coshE);
 				if (trueAnomaly > Math.PI)
+				{
 					E *= -1;
+				}
 
 				return E;
 			}
@@ -148,7 +160,10 @@ namespace SCANsat
 		{
 			double ret = o.meanAnomalyAtEpoch + o.MeanMotion() * (UT - o.epoch);
 			if (o.eccentricity < 1)
+			{
 				ret = JUtil.ClampRadiansTwoPi(ret);
+			}
+
 			return ret;
 		}
 		//mean motion is rate of increase of the mean anomaly

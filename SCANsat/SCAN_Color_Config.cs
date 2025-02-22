@@ -49,7 +49,9 @@ namespace SCANsat
 				LoadSavedCopy();
 			}
 			else
+			{
 				SCANUtil.SCANlog("Color File Loaded...");
+			}
 		}
 
 		public override void OnDecodeFromConfigNode()

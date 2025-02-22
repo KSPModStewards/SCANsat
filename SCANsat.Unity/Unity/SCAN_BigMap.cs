@@ -198,18 +198,24 @@ namespace SCANsat.Unity.Unity
 		private void Update()
 		{
 			if (bigInterface == null || !bigInterface.IsVisible)
+			{
 				return;
+			}
 
 			if (bigInterface.LockInput)
 			{
 				if (m_WaypointInput != null && !m_WaypointInput.IsFocused)
+				{
 					bigInterface.LockInput = false;
+				}
 			}
 
 			bigInterface.Update();
 
 			if (vesselLabel != null)
+			{
 				vesselLabel.UpdatePosition(bigInterface.VesselPosition());
+			}
 
 			if (inMap && m_MapImage != null && m_ReadoutText != null)
 			{
@@ -234,12 +240,16 @@ namespace SCANsat.Unity.Unity
 			else if (waypointSelecting)
 			{
 				if (hoverWaypointLabel != null)
+				{
 					hoverWaypointLabel.UpdateActive(false);
+				}
 
 				SetStatusText(0, true);
 			}
 			else
+			{
 				SetStatusText(0, true);
+			}
 
 			if (tooltipOn)
 			{
@@ -250,16 +260,18 @@ namespace SCANsat.Unity.Unity
 				float legendXPos = (rectPos.x + halfWidth) / m_LegendImage.rectTransform.rect.width;
 
 				if (_tooltip != null)
+				{
 					_tooltip.UpdateText(bigInterface.TooltipText(legendXPos));
+				}
 			}
-			
+
 			if (statusTooltipOn)
 			{
-				if(_statusTooltip != null)
+				if (_statusTooltip != null)
 				{
 					string status = "0%";
 
-					switch(statusTooltipType)
+					switch (statusTooltipType)
 					{
 						case 0:
 							status = (bigInterface.LoAltScan / 100).ToString("P1");
@@ -426,56 +438,88 @@ namespace SCANsat.Unity.Unity
 		public void setMap(ISCAN_BigMap map)
 		{
 			if (map == null)
+			{
 				return;
+			}
 
 			bigInterface = map;
 
 			if (m_Version != null)
+			{
 				m_Version.OnTextUpdate.Invoke(map.Version);
+			}
 
 			if (m_ColorToggle != null)
+			{
 				m_ColorToggle.isOn = map.ColorToggle;
+			}
 
 			if (m_TerminatorToggle != null)
+			{
 				m_TerminatorToggle.isOn = map.TerminatorToggle;
+			}
 
 			if (m_GridToggle != null)
+			{
 				m_GridToggle.isOn = map.GridToggle;
+			}
 
 			if (m_OrbitToggle != null)
+			{
 				m_OrbitToggle.isOn = map.OrbitToggle;
+			}
 
 			if (m_WaypointToggle != null)
+			{
 				m_WaypointToggle.isOn = map.WaypointToggle;
+			}
 
 			if (m_AnomalyToggle != null)
+			{
 				m_AnomalyToggle.isOn = map.AnomalyToggle;
+			}
 
 			if (m_FlagToggle != null)
+			{
 				m_FlagToggle.isOn = map.FlagToggle;
+			}
 
 			if (m_LegendToggle != null)
+			{
 				m_LegendToggle.isOn = map.LegendToggle;
+			}
 
 			if (m_ResourcesToggle != null)
+			{
 				m_ResourcesToggle.isOn = map.ResourceToggle;
+			}
 
 			if (m_ResourceBar != null)
+			{
 				m_ResourceBar.SetActive(map.ResourceToggle);
+			}
 
 			if (!map.OrbitAvailable && m_OrbitObject != null)
+			{
 				m_OrbitObject.SetActive(false);
+			}
 
 			if (!map.ShowWaypoint && m_WaypointObject != null)
+			{
 				m_WaypointObject.SetActive(false);
+			}
 
 			if (!map.ShowResource && m_Resources != null)
+			{
 				m_Resources.gameObject.SetActive(false);
-			
+			}
+
 			SetLegend(map.LegendToggle);
 
 			if (map.ResourceToggle)
+			{
 				SetResourceLegend();
+			}
 
 			SetButtons(map.CurrentScene);
 
@@ -515,27 +559,37 @@ namespace SCANsat.Unity.Unity
 		public void Close()
 		{
 			if (bigInterface != null)
+			{
 				bigInterface.IsVisible = false;
+			}
 		}
 
 		public void ProcessTooltips()
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			TooltipHandler[] handlers = gameObject.GetComponentsInChildren<TooltipHandler>(true);
 
 			if (handlers == null)
+			{
 				return;
+			}
 
 			for (int j = 0; j < handlers.Length; j++)
+			{
 				ProcessTooltip(handlers[j], bigInterface.TooltipsOn, bigInterface.TooltipCanvas, bigInterface.Scale);
+			}
 		}
 
 		private void ProcessTooltip(TooltipHandler handler, bool isOn, Canvas c, float scale)
 		{
 			if (handler == null)
+			{
 				return;
+			}
 
 			handler.IsActive = isOn && !handler.HelpTip;
 			handler._Canvas = c;
@@ -545,47 +599,89 @@ namespace SCANsat.Unity.Unity
 		private void SetNorthSouth()
 		{
 			if (bigInterface == null || m_NorthSouthMarkers == null)
+			{
 				return;
+			}
 
 			if (bigInterface.CurrentProjection == "Polar")
+			{
 				m_NorthSouthMarkers.SetActive(true);
+			}
 			else
+			{
 				m_NorthSouthMarkers.SetActive(false);
+			}
 		}
 
 		private void SetButtons(int i)
 		{
-			switch(i)
+			switch (i)
 			{
 				case -1:
 					if (m_SmallMapButton != null)
+					{
 						m_SmallMapButton.SetActive(false);
+					}
+
 					if (m_ZoomMapButton != null)
+					{
 						m_ZoomMapButton.SetActive(false);
+					}
+
 					if (m_OverlayButton != null)
+					{
 						m_OverlayButton.SetActive(false);
+					}
+
 					if (m_InstrumentsButton != null)
+					{
 						m_InstrumentsButton.SetActive(false);
+					}
+
 					if (m_SettingsButton != null)
+					{
 						m_SettingsButton.SetActive(false);
+					}
+
 					break;
 				case 1:
 					if (m_SmallMapButton != null)
+					{
 						m_SmallMapButton.SetActive(false);
+					}
+
 					if (m_InstrumentsButton != null)
+					{
 						m_InstrumentsButton.SetActive(false);
+					}
+
 					if (m_ZoomMapButton != null)
+					{
 						m_ZoomMapButton.SetActive(false);
+					}
+
 					break;
 				case 2:
 					if (m_SmallMapButton != null)
+					{
 						m_SmallMapButton.SetActive(false);
+					}
+
 					if (m_OverlayButton != null)
+					{
 						m_OverlayButton.SetActive(false);
+					}
+
 					if (m_InstrumentsButton != null)
+					{
 						m_InstrumentsButton.SetActive(false);
+					}
+
 					if (m_ZoomMapButton != null)
+					{
 						m_ZoomMapButton.SetActive(false);
+					}
+
 					break;
 			}
 		}
@@ -598,7 +694,9 @@ namespace SCANsat.Unity.Unity
 		public void SetPosition(Vector2 pos)
 		{
 			if (rect == null)
+			{
 				return;
+			}
 
 			rect.anchoredPosition = new Vector3(pos.x, pos.y, 0);
 		}
@@ -606,35 +704,49 @@ namespace SCANsat.Unity.Unity
 		public void SetSize(Vector2 size)
 		{
 			if (m_MapLayout == null)
+			{
 				return;
+			}
 
 			if (size.x + 8 < m_MapLayout.minWidth)
+			{
 				size.x = m_MapLayout.minWidth - 8;
+			}
 			else if (size.x > 8192)
+			{
 				size.x = 8192;
+			}
 
 			if (size.x % 2 != 0)
+			{
 				size.x += 1;
+			}
 
 			m_MapLayout.preferredWidth = size.x + 8;
 			m_MapLayout.preferredHeight = m_MapLayout.preferredWidth / 2 + 8;
 		}
 
 		public void SetLegends(bool isOn)
-        {
+		{
 			SetLegend(isOn);
 
 			if (bigInterface.ResourceToggle)
+			{
 				SetResourceLegend();
-        }
+			}
+		}
 
 		private void SetLegend(bool isOn)
 		{
 			if (m_LegendObject == null)
+			{
 				return;
+			}
 
 			if (bigInterface.LegendAvailable)
+			{
 				m_LegendObject.SetActive(isOn);
+			}
 			else
 			{
 				m_LegendObject.SetActive(false);
@@ -642,28 +754,40 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (m_LegendImage != null)
+			{
 				m_LegendImage.texture = bigInterface.LegendImage;
+			}
 
 			if (bigInterface.CurrentMapType == "Biome")
 			{
 				if (m_LegendLabelOne != null)
+				{
 					m_LegendLabelOne.gameObject.SetActive(false);
+				}
 
 				if (m_LegendLabelTwo != null)
+				{
 					m_LegendLabelTwo.gameObject.SetActive(false);
+				}
 
 				if (m_LegendLabelThree != null)
+				{
 					m_LegendLabelThree.gameObject.SetActive(false);
+				}
 			}
 			else
 			{
 				IList<string> labels = bigInterface.LegendLabels;
 
 				if (labels == null || labels.Count != 3)
+				{
 					return;
+				}
 
 				if (m_LegendLabelOne != null)
 				{
@@ -686,31 +810,41 @@ namespace SCANsat.Unity.Unity
 		}
 
 		public void SetResourceLegend()
-        {
+		{
 			if (m_ResourceLegendImage != null)
+			{
 				m_ResourceLegendImage.texture = bigInterface.ResourceLegendImage;
+			}
 
 			Vector2 res = bigInterface.ResourceLegendLabels;
 
 			if (m_ResourceLegendLabelOne != null)
+			{
 				m_ResourceLegendLabelOne.OnTextUpdate.Invoke(res.x.ToString(res.x < 0.1 ? "P1" : "P0"));
+			}
 
 			if (m_ResourceLegendLabelTwo != null)
+			{
 				m_ResourceLegendLabelTwo.OnTextUpdate.Invoke(res.y.ToString(res.y < 0.1 ? "P1" : "P0"));
+			}
 		}
 
 		private void SetFlagIcons(IList<MapLabelInfo> flags)
 		{
 			if (flags == null)
+			{
 				return;
+			}
 
 			if (bigInterface == null || m_MapLabelPrefab == null || m_MapImage == null)
+			{
 				return;
+			}
 
 			for (int i = 0; i < flags.Count; i++)
 			{
 				MapLabelInfo info = flags[i];
-                
+
 				createFlag(info);
 			}
 		}
@@ -720,7 +854,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_MapLabel mapLabel = Instantiate(m_MapLabelPrefab).GetComponent<SCAN_MapLabel>();
 
 			if (mapLabel == null)
+			{
 				return;
+			}
 
 			mapLabel.transform.SetParent(m_MapImage.transform, false);
 
@@ -732,10 +868,14 @@ namespace SCANsat.Unity.Unity
 		private void SetAnomalyIcons(Dictionary<string, MapLabelInfo> anomalies)
 		{
 			if (anomalies == null)
+			{
 				return;
+			}
 
 			if (bigInterface == null || m_MapLabelPrefab == null || m_MapImage == null)
+			{
 				return;
+			}
 
 			for (int i = 0; i < anomalies.Count; i++)
 			{
@@ -744,7 +884,9 @@ namespace SCANsat.Unity.Unity
 				MapLabelInfo info;
 
 				if (!anomalies.TryGetValue(id, out info))
+				{
 					continue;
+				}
 
 				createAnomaly(id, info);
 			}
@@ -755,7 +897,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_MapLabel mapLabel = Instantiate(m_MapLabelPrefab).GetComponent<SCAN_MapLabel>();
 
 			if (mapLabel == null)
+			{
 				return;
+			}
 
 			mapLabel.transform.SetParent(m_MapImage.transform, false);
 
@@ -767,10 +911,14 @@ namespace SCANsat.Unity.Unity
 		private void SetWaypointIcons(Dictionary<int, MapLabelInfo> waypoints)
 		{
 			if (waypoints == null)
+			{
 				return;
+			}
 
 			if (bigInterface == null || m_MapLabelPrefab == null || m_MapImage == null)
+			{
 				return;
+			}
 
 			for (int i = 0; i < waypoints.Count; i++)
 			{
@@ -779,7 +927,9 @@ namespace SCANsat.Unity.Unity
 				MapLabelInfo info;
 
 				if (!waypoints.TryGetValue(id, out info))
+				{
 					continue;
+				}
 
 				createWaypoint(id, info);
 			}
@@ -790,14 +940,18 @@ namespace SCANsat.Unity.Unity
 			SCAN_MapLabel mapLabel = Instantiate(m_MapLabelPrefab).GetComponent<SCAN_MapLabel>();
 
 			if (mapLabel == null)
+			{
 				return null;
+			}
 
 			mapLabel.transform.SetParent(m_MapImage.transform, false);
 
 			mapLabel.Setup(id, info);
 
 			if (!temp)
+			{
 				waypointLabels.Add(mapLabel);
+			}
 
 			return mapLabel;
 		}
@@ -805,15 +959,21 @@ namespace SCANsat.Unity.Unity
 		private void SetVesselIcon(KeyValuePair<Guid, MapLabelInfo> vessel)
 		{
 			if (vessel.Value.label == "null")
+			{
 				return;
+			}
 
 			if (bigInterface == null || m_MapLabelPrefab == null || m_MapImage == null)
+			{
 				return;
+			}
 
 			SCAN_MapLabel mapLabel = Instantiate(m_MapLabelPrefab).GetComponent<SCAN_MapLabel>();
 
 			if (mapLabel == null)
+			{
 				return;
+			}
 
 			mapLabel.transform.SetParent(m_MapImage.transform, false);
 
@@ -825,7 +985,9 @@ namespace SCANsat.Unity.Unity
 		private void SetOrbitIcons(int count)
 		{
 			if (bigInterface == null || m_MapImage == null)
+			{
 				return;
+			}
 
 			for (int i = 0; i < count; i++)
 			{
@@ -842,7 +1004,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_SimpleLabel label = labelObj.AddComponent<SCAN_SimpleLabel>();
 
 			if (label == null)
+			{
 				return;
+			}
 
 			label.transform.SetParent(m_MapImage.transform, false);
 
@@ -854,10 +1018,14 @@ namespace SCANsat.Unity.Unity
 		private void SetOrbitMapIcons(Dictionary<string, MapLabelInfo> orbitLabels)
 		{
 			if (orbitLabels == null)
+			{
 				return;
+			}
 
 			if (bigInterface == null || m_MapLabelPrefab == null || m_MapImage == null)
+			{
 				return;
+			}
 
 			for (int i = 0; i < orbitLabels.Count; i++)
 			{
@@ -866,7 +1034,9 @@ namespace SCANsat.Unity.Unity
 				MapLabelInfo info;
 
 				if (!orbitLabels.TryGetValue(id, out info))
+				{
 					continue;
+				}
 
 				CreateOrbitMapIcon(id, info);
 			}
@@ -877,7 +1047,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_MapLabel mapLabel = Instantiate(m_MapLabelPrefab).GetComponent<SCAN_MapLabel>();
 
 			if (mapLabel == null)
+			{
 				return;
+			}
 
 			mapLabel.transform.SetParent(m_MapImage.transform, false);
 
@@ -954,16 +1126,24 @@ namespace SCANsat.Unity.Unity
 		private void SetIcons()
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			if (bigInterface.FlagToggle)
+			{
 				SetFlagIcons(bigInterface.FlagInfoList);
+			}
 
 			if (bigInterface.AnomalyToggle)
+			{
 				SetAnomalyIcons(bigInterface.AnomalyInfoList);
+			}
 
 			if (bigInterface.WaypointToggle && bigInterface.ShowWaypoint)
+			{
 				SetWaypointIcons(bigInterface.WaypointInfoList);
+			}
 
 			if (bigInterface.OrbitToggle && bigInterface.ShowOrbit)
 			{
@@ -977,7 +1157,9 @@ namespace SCANsat.Unity.Unity
 		public void OnEnterLoStatus(BaseEventData eventData)
 		{
 			if (_statusTooltip != null)
+			{
 				CloseStatusTooltip();
+			}
 
 			statusTooltipOn = true;
 			statusTooltipType = 0;
@@ -993,7 +1175,9 @@ namespace SCANsat.Unity.Unity
 		public void OnEnterHiStatus(BaseEventData eventData)
 		{
 			if (_statusTooltip != null)
+			{
 				CloseStatusTooltip();
+			}
 
 			statusTooltipOn = true;
 			statusTooltipType = 1;
@@ -1009,7 +1193,9 @@ namespace SCANsat.Unity.Unity
 		public void OnEnterMultiStatus(BaseEventData eventData)
 		{
 			if (_statusTooltip != null)
+			{
 				CloseStatusTooltip();
+			}
 
 			statusTooltipOn = true;
 			statusTooltipType = 2;
@@ -1025,7 +1211,9 @@ namespace SCANsat.Unity.Unity
 		public void OnEnterLoVisStatus(BaseEventData eventData)
 		{
 			if (_statusTooltip != null)
+			{
 				CloseStatusTooltip();
+			}
 
 			statusTooltipOn = true;
 			statusTooltipType = 3;
@@ -1041,7 +1229,9 @@ namespace SCANsat.Unity.Unity
 		public void OnEnterHiVisStatus(BaseEventData eventData)
 		{
 			if (_statusTooltip != null)
+			{
 				CloseStatusTooltip();
+			}
 
 			statusTooltipOn = true;
 			statusTooltipType = 4;
@@ -1057,7 +1247,9 @@ namespace SCANsat.Unity.Unity
 		public void OnEnterAnomalyStatus(BaseEventData eventData)
 		{
 			if (_statusTooltip != null)
+			{
 				CloseStatusTooltip();
+			}
 
 			statusTooltipOn = true;
 			statusTooltipType = 5;
@@ -1073,7 +1265,9 @@ namespace SCANsat.Unity.Unity
 		public void OnEnterLoResStatus(BaseEventData eventData)
 		{
 			if (_statusTooltip != null)
+			{
 				CloseStatusTooltip();
+			}
 
 			statusTooltipOn = true;
 			statusTooltipType = 6;
@@ -1089,7 +1283,9 @@ namespace SCANsat.Unity.Unity
 		public void OnEnterHiResStatus(BaseEventData eventData)
 		{
 			if (_statusTooltip != null)
+			{
 				CloseStatusTooltip();
+			}
 
 			statusTooltipOn = true;
 			statusTooltipType = 7;
@@ -1105,12 +1301,16 @@ namespace SCANsat.Unity.Unity
 		private void OpenStatusTooltip()
 		{
 			if (m_TooltipPrefab == null || bigInterface.TooltipCanvas == null)
+			{
 				return;
+			}
 
 			_statusTooltip = Instantiate(m_TooltipPrefab).GetComponent<SCAN_Tooltip>();
 
 			if (_statusTooltip == null)
+			{
 				return;
+			}
 
 			_statusTooltip.transform.SetParent(bigInterface.TooltipCanvas.transform, false);
 			_statusTooltip.transform.SetAsLastSibling();
@@ -1121,7 +1321,9 @@ namespace SCANsat.Unity.Unity
 		private void CloseStatusTooltip()
 		{
 			if (_statusTooltip == null)
+			{
 				return;
+			}
 
 			_statusTooltip.gameObject.SetActive(false);
 			Destroy(_statusTooltip.gameObject);
@@ -1131,10 +1333,14 @@ namespace SCANsat.Unity.Unity
 		public void OnEnterLegend(BaseEventData eventData)
 		{
 			if (bigInterface == null || !bigInterface.LegendToggle || !bigInterface.LegendTooltips)
+			{
 				return;
+			}
 
 			if (_tooltip != null)
+			{
 				CloseTooltip();
+			}
 
 			tooltipOn = true;
 			OpenTooltip();
@@ -1143,7 +1349,9 @@ namespace SCANsat.Unity.Unity
 		public void OnExitLegend(BaseEventData eventData)
 		{
 			if (bigInterface == null || !bigInterface.LegendToggle || !bigInterface.LegendTooltips)
+			{
 				return;
+			}
 
 			tooltipOn = false;
 			CloseTooltip();
@@ -1152,12 +1360,16 @@ namespace SCANsat.Unity.Unity
 		private void OpenTooltip()
 		{
 			if (m_TooltipPrefab == null || bigInterface.TooltipCanvas == null)
+			{
 				return;
+			}
 
 			_tooltip = Instantiate(m_TooltipPrefab).GetComponent<SCAN_Tooltip>();
 
 			if (_tooltip == null)
+			{
 				return;
+			}
 
 			_tooltip.transform.SetParent(bigInterface.TooltipCanvas.transform, false);
 			_tooltip.transform.SetAsLastSibling();
@@ -1168,7 +1380,9 @@ namespace SCANsat.Unity.Unity
 		private void CloseTooltip()
 		{
 			if (_tooltip == null)
+			{
 				return;
+			}
 
 			_tooltip.gameObject.SetActive(false);
 			Destroy(_tooltip.gameObject);
@@ -1185,13 +1399,17 @@ namespace SCANsat.Unity.Unity
 			inMap = false;
 
 			if (m_ReadoutText != null)
+			{
 				m_ReadoutText.OnTextUpdate.Invoke("");
+			}
 		}
 
 		public void OnBeginDrag(PointerEventData eventData)
 		{
 			if (rect == null)
+			{
 				return;
+			}
 
 			mouseStart = eventData.position;
 			windowStart = rect.position;
@@ -1200,7 +1418,9 @@ namespace SCANsat.Unity.Unity
 		public void OnDrag(PointerEventData eventData)
 		{
 			if (rect == null)
+			{
 				return;
+			}
 
 			rect.position = windowStart + (Vector3)(eventData.position - mouseStart);
 		}
@@ -1208,7 +1428,9 @@ namespace SCANsat.Unity.Unity
 		public void OnEndDrag(PointerEventData eventData)
 		{
 			if (rect == null || bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.Position = new Vector2(rect.anchoredPosition.x, rect.anchoredPosition.y);
 		}
@@ -1216,7 +1438,9 @@ namespace SCANsat.Unity.Unity
 		public void OnStartResize(BaseEventData eventData)
 		{
 			if (!(eventData is PointerEventData))
+			{
 				return;
+			}
 
 			ClearIcons();
 		}
@@ -1224,20 +1448,30 @@ namespace SCANsat.Unity.Unity
 		public void OnResize(BaseEventData eventData)
 		{
 			if (m_MapLayout == null)
+			{
 				return;
+			}
 
 			if (!(eventData is PointerEventData))
+			{
 				return;
+			}
 
 			m_MapLayout.preferredWidth += ((PointerEventData)eventData).delta.x;
 
 			if (m_MapLayout.preferredWidth < m_MapLayout.minWidth)
+			{
 				m_MapLayout.preferredWidth = m_MapLayout.minWidth;
+			}
 			else if (m_MapLayout.preferredWidth > MAXMAPWIDTH)
+			{
 				m_MapLayout.preferredWidth = MAXMAPWIDTH;
+			}
 
 			if (m_MapLayout.preferredWidth % 2 != 0)
+			{
 				m_MapLayout.preferredWidth += 1;
+			}
 
 			m_MapLayout.preferredHeight = m_MapLayout.preferredWidth / 2;
 		}
@@ -1245,7 +1479,9 @@ namespace SCANsat.Unity.Unity
 		public void OnEndResize(BaseEventData eventData)
 		{
 			if (m_MapLayout == null || bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.Size = new Vector2(m_MapLayout.preferredWidth - 8, m_MapLayout.preferredHeight - 8);
 
@@ -1257,27 +1493,37 @@ namespace SCANsat.Unity.Unity
 			transform.SetAsLastSibling();
 
 			if (dropDown == null)
+			{
 				return;
+			}
 
 			RectTransform r = dropDown.GetComponent<RectTransform>();
 
 			if (r == null)
+			{
 				return;
+			}
 
 			if (RectTransformUtility.RectangleContainsScreenPoint(r, eventData.position, eventData.pressEventCamera))
+			{
 				return;
+			}
 
 			dropDown.FadeOut();
 			dropDown = null;
 
 			if (m_DropDownToggles != null)
+			{
 				m_DropDownToggles.SetAllTogglesOff();
+			}
 		}
 
 		public void OnClickMap(BaseEventData eventData)
 		{
 			if (!inMap || bigInterface == null || m_MapImage == null || !(eventData is PointerEventData))
+			{
 				return;
+			}
 
 			OnPointerDown((PointerEventData)eventData);
 
@@ -1292,7 +1538,9 @@ namespace SCANsat.Unity.Unity
 				SetWaypoint(pos);
 			}
 			else if (((PointerEventData)eventData).button == PointerEventData.InputButton.Right)
+			{
 				bigInterface.ClickMap(pos);
+			}
 		}
 
 		private void SetWaypoint(Vector2 p)
@@ -1317,7 +1565,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateTitle(string text)
 		{
 			if (m_Title == null)
+			{
 				return;
+			}
 
 			m_Title.OnTextUpdate.Invoke(text);
 		}
@@ -1325,7 +1575,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateMapTexture(Texture2D map)
 		{
 			if (m_MapImage == null)
+			{
 				return;
+			}
 
 			m_MapImage.texture = map;
 		}
@@ -1333,7 +1585,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateGridTexture(Texture2D grid)
 		{
 			if (m_GridMap == null)
+			{
 				return;
+			}
 
 			m_GridMap.texture = grid;
 		}
@@ -1341,7 +1595,9 @@ namespace SCANsat.Unity.Unity
 		public void UpdateEQMapTexture(Texture2D eq)
 		{
 			if (m_EQMap != null)
+			{
 				m_EQMap.texture = eq;
+			}
 		}
 
 		public void ToggleProjectionSelection(bool isOn)
@@ -1353,15 +1609,21 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (bigInterface == null || m_DropDownPrefab == null || m_Projection == null)
+			{
 				return;
+			}
 
 			dropDown = Instantiate(m_DropDownPrefab).GetComponent<SCAN_DropDown>();
 
 			if (dropDown == null)
+			{
 				return;
+			}
 
 			dropDown.transform.SetParent(m_Projection, false);
 
@@ -1373,7 +1635,9 @@ namespace SCANsat.Unity.Unity
 		private void SetProjection(string selection)
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.CurrentProjection = selection;
 
@@ -1381,7 +1645,9 @@ namespace SCANsat.Unity.Unity
 			dropDown = null;
 
 			if (m_DropDownToggles != null)
+			{
 				m_DropDownToggles.SetAllTogglesOff();
+			}
 
 			RefreshIcons();
 
@@ -1397,15 +1663,21 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (bigInterface == null || m_DropDownPrefab == null || m_MapType == null)
+			{
 				return;
+			}
 
 			dropDown = Instantiate(m_DropDownPrefab).GetComponent<SCAN_DropDown>();
 
 			if (dropDown == null)
+			{
 				return;
+			}
 
 			dropDown.transform.SetParent(m_MapType, false);
 
@@ -1417,7 +1689,9 @@ namespace SCANsat.Unity.Unity
 		private void SetType(string selection)
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.CurrentMapType = selection;
 
@@ -1425,7 +1699,9 @@ namespace SCANsat.Unity.Unity
 			dropDown = null;
 
 			if (m_DropDownToggles != null)
+			{
 				m_DropDownToggles.SetAllTogglesOff();
+			}
 
 			RefreshIcons();
 
@@ -1441,15 +1717,21 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (bigInterface == null || m_DropDownPrefab == null || m_Resources == null)
+			{
 				return;
+			}
 
 			dropDown = Instantiate(m_DropDownPrefab).GetComponent<SCAN_DropDown>();
 
 			if (dropDown == null)
+			{
 				return;
+			}
 
 			dropDown.transform.SetParent(m_Resources, false);
 
@@ -1461,13 +1743,18 @@ namespace SCANsat.Unity.Unity
 		private void SetResource(string selection)
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.CurrentResource = selection;
 
 			loaded = false;
 			if (m_ResourcesToggle != null)
+			{
 				m_ResourcesToggle.isOn = true;
+			}
+
 			loaded = true;
 
 			bigInterface.ResourceToggle = true;
@@ -1478,7 +1765,9 @@ namespace SCANsat.Unity.Unity
 			dropDown = null;
 
 			if (m_DropDownToggles != null)
+			{
 				m_DropDownToggles.SetAllTogglesOff();
+			}
 		}
 
 		public void ToggleCelestialBodySelection(bool isOn)
@@ -1490,15 +1779,21 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (!isOn)
+			{
 				return;
+			}
 
 			if (bigInterface == null || m_DropDownPrefab == null || m_CelestialBody == null)
+			{
 				return;
+			}
 
 			dropDown = Instantiate(m_DropDownPrefab).GetComponent<SCAN_DropDown>();
 
 			if (dropDown == null)
+			{
 				return;
+			}
 
 			dropDown.transform.SetParent(m_CelestialBody, false);
 
@@ -1510,20 +1805,26 @@ namespace SCANsat.Unity.Unity
 		private void SetCelestialBody(string selection)
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.CurrentCelestialBody = selection;
 
 			SetLegend(bigInterface.LegendToggle);
 
 			if (bigInterface.ResourceToggle)
+			{
 				SetResourceLegend();
+			}
 
 			dropDown.FadeOut();
 			dropDown = null;
 
 			if (m_DropDownToggles != null)
+			{
 				m_DropDownToggles.SetAllTogglesOff();
+			}
 
 			RefreshIcons();
 		}
@@ -1531,7 +1832,9 @@ namespace SCANsat.Unity.Unity
 		public void RefreshMap()
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.RefreshMap();
 
@@ -1541,7 +1844,9 @@ namespace SCANsat.Unity.Unity
 		public void ToggleColor(bool isOn)
 		{
 			if (!loaded || bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.ColorToggle = isOn;
 
@@ -1553,7 +1858,9 @@ namespace SCANsat.Unity.Unity
 		public void ToggleTerminator(bool isOn)
 		{
 			if (!loaded || bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.TerminatorToggle = isOn;
 
@@ -1563,7 +1870,9 @@ namespace SCANsat.Unity.Unity
 		public void ToggleGrid(bool isOn)
 		{
 			if (!loaded || bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.GridToggle = isOn;
 		}
@@ -1571,7 +1880,9 @@ namespace SCANsat.Unity.Unity
 		public void ToggleOrbit(bool isOn)
 		{
 			if (!loaded || bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.OrbitToggle = isOn;
 
@@ -1581,12 +1892,16 @@ namespace SCANsat.Unity.Unity
 		public void ToggleWaypoint(bool isOn)
 		{
 			if (!loaded || bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.WaypointToggle = isOn;
 
 			if (isOn && bigInterface.ShowWaypoint)
+			{
 				SetWaypointIcons(bigInterface.WaypointInfoList);
+			}
 			else
 			{
 				for (int i = waypointLabels.Count - 1; i >= 0; i--)
@@ -1604,12 +1919,16 @@ namespace SCANsat.Unity.Unity
 		public void ToggleAnomaly(bool isOn)
 		{
 			if (!loaded || bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.AnomalyToggle = isOn;
 
 			if (isOn)
+			{
 				SetAnomalyIcons(bigInterface.AnomalyInfoList);
+			}
 			else
 			{
 				for (int i = anomalyLabels.Count - 1; i >= 0; i--)
@@ -1627,12 +1946,16 @@ namespace SCANsat.Unity.Unity
 		public void ToggleFlag(bool isOn)
 		{
 			if (!loaded || bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.FlagToggle = isOn;
 
 			if (isOn)
+			{
 				SetFlagIcons(bigInterface.FlagInfoList);
+			}
 			else
 			{
 				for (int i = flagLabels.Count - 1; i >= 0; i--)
@@ -1650,7 +1973,9 @@ namespace SCANsat.Unity.Unity
 		public void ToggleLegend(bool isOn)
 		{
 			if (!loaded || bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.LegendToggle = isOn;
 
@@ -1660,23 +1985,31 @@ namespace SCANsat.Unity.Unity
 		public void ToggleResource(bool isOn)
 		{
 			if (!loaded || bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.ResourceToggle = isOn;
 
 			if (m_ResourceBar != null)
+			{
 				m_ResourceBar.SetActive(isOn);
+			}
 
 			RefreshIcons();
 
 			if (isOn)
+			{
 				SetResourceLegend();
+			}
 		}
 
 		public void ResourceCutoffMinus()
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.DecreaseResourceCutoff();
 
@@ -1686,7 +2019,9 @@ namespace SCANsat.Unity.Unity
 		public void ResourceCutoffPlus()
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.IncreaseResourceCutoff();
 
@@ -1696,7 +2031,9 @@ namespace SCANsat.Unity.Unity
 		public void OpenResourceSettings()
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.OpenResourceSettings();
 		}
@@ -1704,7 +2041,9 @@ namespace SCANsat.Unity.Unity
 		public void OpenSmallMap()
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.OpenMainMap();
 		}
@@ -1712,7 +2051,9 @@ namespace SCANsat.Unity.Unity
 		public void OpenInstruments()
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.OpenInstruments();
 		}
@@ -1720,7 +2061,9 @@ namespace SCANsat.Unity.Unity
 		public void OpenSettings()
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.OpenSettings();
 		}
@@ -1728,7 +2071,9 @@ namespace SCANsat.Unity.Unity
 		public void OpenZoomMap()
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.OpenZoomMap();
 		}
@@ -1736,7 +2081,9 @@ namespace SCANsat.Unity.Unity
 		public void OpenOverlay()
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.OpenOverlay();
 		}
@@ -1744,7 +2091,9 @@ namespace SCANsat.Unity.Unity
 		public void ExportMap()
 		{
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.ExportMap();
 		}
@@ -1757,26 +2106,36 @@ namespace SCANsat.Unity.Unity
 			DestroyWaypoint(hoverWaypointLabel);
 
 			if (bigInterface == null)
+			{
 				return;
+			}
 
 			bigInterface.LockInput = false;
 
 			if (m_WaypointBar != null)
+			{
 				m_WaypointBar.SetActive(waypointSelecting);
+			}
 
 			if (waypointSelecting)
 			{
 				HoverWaypoint();
 
 				if (m_MechJebButton != null)
+				{
 					m_MechJebButton.SetActive(bigInterface.MechJebAvailable);
-				
+				}
+
 				if (m_WaypointInput != null)
 				{
 					if (string.IsNullOrEmpty(waypoint))
+					{
 						m_WaypointInput.OnTextUpdate.Invoke(bigInterface.RandomWaypoint);
+					}
 					else
+					{
 						m_WaypointInput.OnTextUpdate.Invoke(waypoint);
+					}
 				}
 			}
 		}
@@ -1802,10 +2161,14 @@ namespace SCANsat.Unity.Unity
 		public void OnInputClick(BaseEventData eventData)
 		{
 			if (!(eventData is PointerEventData) || bigInterface == null)
+			{
 				return;
+			}
 
 			if (((PointerEventData)eventData).button != PointerEventData.InputButton.Left)
+			{
 				return;
+			}
 
 			bigInterface.LockInput = true;
 		}
@@ -1815,7 +2178,9 @@ namespace SCANsat.Unity.Unity
 			DestroyWaypoint(tempWaypointLabel);
 
 			if (bigInterface == null || m_WaypointInput == null)
+			{
 				return;
+			}
 
 			m_WaypointInput.OnTextUpdate.Invoke(bigInterface.RandomWaypoint);
 
@@ -1825,14 +2190,18 @@ namespace SCANsat.Unity.Unity
 		public void SetWaypoint()
 		{
 			if (bigInterface == null || m_WaypointInput == null)
+			{
 				return;
+			}
 
 			bigInterface.LockInput = false;
 
 			waypoint = "";
 
 			if (tempWaypointLabel != null)
+			{
 				bigInterface.SetWaypoint(m_WaypointInput.Text, tempWaypointLabel.Info.pos);
+			}
 
 			GenerateWaypoint();
 
@@ -1844,7 +2213,9 @@ namespace SCANsat.Unity.Unity
 		public void CancelWaypoint()
 		{
 			if (bigInterface != null)
+			{
 				bigInterface.LockInput = false;
+			}
 
 			GenerateWaypoint();
 
@@ -1856,12 +2227,16 @@ namespace SCANsat.Unity.Unity
 		public void MechJebLanding()
 		{
 			if (bigInterface != null)
+			{
 				bigInterface.LockInput = false;
+			}
 
 			waypoint = "";
 
 			if (tempWaypointLabel != null)
+			{
 				bigInterface.SetMJWaypoint(tempWaypointLabel.Info.pos);
+			}
 
 			GenerateWaypoint();
 

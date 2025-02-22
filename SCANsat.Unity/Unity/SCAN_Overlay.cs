@@ -61,7 +61,7 @@ namespace SCANsat.Unity.Unity
 		private SCAN_Tooltip _tooltip;
 
 		private List<SCAN_ResourceOverlay> resources = new List<SCAN_ResourceOverlay>();
-		
+
 		public Color ActiveColor
 		{
 			get { return m_ActiveColor; }
@@ -89,7 +89,9 @@ namespace SCANsat.Unity.Unity
 		private void Update()
 		{
 			if (overInterface == null || !overInterface.IsVisible)
+			{
 				return;
+			}
 
 			overInterface.Update();
 
@@ -98,14 +100,17 @@ namespace SCANsat.Unity.Unity
 				if (!tooltipOn)
 				{
 					if (_tooltip != null)
+					{
 						CloseTooltip();
+					}
 
 					tooltipOn = true;
 					OpenTooltip();
 				}
 				else if (_tooltip != null)
+				{
 					_tooltip.UpdateText(overInterface.TooltipText);
-					
+				}
 			}
 			else if (tooltipOn)
 			{
@@ -117,12 +122,16 @@ namespace SCANsat.Unity.Unity
 		private void OpenTooltip()
 		{
 			if (m_TooltipPrefab == null || overInterface.TooltipCanvas == null)
+			{
 				return;
+			}
 
 			_tooltip = Instantiate(m_TooltipPrefab).GetComponent<SCAN_Tooltip>();
 
 			if (_tooltip == null)
+			{
 				return;
+			}
 
 			_tooltip.transform.SetParent(overInterface.TooltipCanvas.transform, false);
 			_tooltip.transform.SetAsLastSibling();
@@ -133,7 +142,9 @@ namespace SCANsat.Unity.Unity
 		private void CloseTooltip()
 		{
 			if (_tooltip == null)
+			{
 				return;
+			}
 
 			_tooltip.gameObject.SetActive(false);
 			Destroy(_tooltip.gameObject);
@@ -143,15 +154,21 @@ namespace SCANsat.Unity.Unity
 		public void SetOverlay(ISCAN_Overlay over)
 		{
 			if (over == null)
+			{
 				return;
+			}
 
 			overInterface = over;
 
 			if (m_Version != null)
+			{
 				m_Version.OnTextUpdate.Invoke(over.Version);
+			}
 
 			if (m_OverlayToggle != null)
+			{
 				m_OverlayToggle.isOn = over.DrawOverlay;
+			}
 
 			if (over.DrawBiome)
 			{
@@ -162,7 +179,9 @@ namespace SCANsat.Unity.Unity
 				}
 
 				if (m_ResourceBar != null)
+				{
 					m_ResourceBar.SetActive(false);
+				}
 			}
 			else if (over.DrawTerrain)
 			{
@@ -173,18 +192,24 @@ namespace SCANsat.Unity.Unity
 				}
 
 				if (m_ResourceBar != null)
+				{
 					m_ResourceBar.SetActive(false);
+				}
 			}
 			else if (over.DrawResource)
 			{
 				if (m_ResourceBar != null)
+				{
 					m_ResourceBar.SetActive(true);
+				}
 
 				SetResourceLegend();
 			}
 
 			if (m_RefreshButton != null)
+			{
 				m_RefreshButton.SetActive(over.DrawOverlay);
+			}
 
 			CreateResources(over.Resources);
 
@@ -218,27 +243,37 @@ namespace SCANsat.Unity.Unity
 		public void Close()
 		{
 			if (overInterface != null)
+			{
 				overInterface.IsVisible = false;
+			}
 		}
 
 		public void ProcessTooltips()
 		{
 			if (overInterface == null)
+			{
 				return;
+			}
 
 			TooltipHandler[] handlers = gameObject.GetComponentsInChildren<TooltipHandler>(true);
 
 			if (handlers == null)
+			{
 				return;
+			}
 
 			for (int j = 0; j < handlers.Length; j++)
+			{
 				ProcessTooltip(handlers[j], overInterface.WindowTooltips, overInterface.TooltipCanvas, overInterface.Scale);
+			}
 		}
 
 		private void ProcessTooltip(TooltipHandler handler, bool isOn, Canvas c, float scale)
 		{
 			if (handler == null)
+			{
 				return;
+			}
 
 			handler.IsActive = isOn && !handler.HelpTip;
 			handler._Canvas = c;
@@ -253,7 +288,9 @@ namespace SCANsat.Unity.Unity
 		public void SetPosition(Vector2 pos)
 		{
 			if (rect == null)
+			{
 				return;
+			}
 
 			rect.anchoredPosition = new Vector3(pos.x, pos.y, 0);
 		}
@@ -266,7 +303,9 @@ namespace SCANsat.Unity.Unity
 		public void OnBeginDrag(PointerEventData eventData)
 		{
 			if (rect == null)
+			{
 				return;
+			}
 
 			mouseStart = eventData.position;
 			windowStart = rect.position;
@@ -275,12 +314,16 @@ namespace SCANsat.Unity.Unity
 		public void OnDrag(PointerEventData eventData)
 		{
 			if (rect == null)
+			{
 				return;
+			}
 
 			rect.position = windowStart + (Vector3)(eventData.position - mouseStart);
 
 			if (overInterface == null)
+			{
 				return;
+			}
 
 			overInterface.ClampToScreen(rect);
 		}
@@ -288,7 +331,9 @@ namespace SCANsat.Unity.Unity
 		public void OnEndDrag(PointerEventData eventData)
 		{
 			if (rect == null || overInterface == null)
+			{
 				return;
+			}
 
 			overInterface.Position = new Vector2(rect.anchoredPosition.x, rect.anchoredPosition.y);
 		}
@@ -296,10 +341,14 @@ namespace SCANsat.Unity.Unity
 		private void CreateResources(IList<string> resources)
 		{
 			if (resources == null)
+			{
 				return;
+			}
 
 			if (m_ResourcePrefab == null || m_ResourceTransform == null)
+			{
 				return;
+			}
 
 			for (int i = 0; i < resources.Count; i++)
 			{
@@ -314,7 +363,9 @@ namespace SCANsat.Unity.Unity
 			SCAN_ResourceOverlay res = Instantiate(m_ResourcePrefab).GetComponent<SCAN_ResourceOverlay>();
 
 			if (res == null)
+			{
 				return;
+			}
 
 			res.transform.SetParent(m_ResourceTransform, false);
 
@@ -326,38 +377,52 @@ namespace SCANsat.Unity.Unity
 		public void SetResourceLegend()
 		{
 			if (m_ResourceLegendImage != null)
+			{
 				m_ResourceLegendImage.texture = overInterface.ResourceLegendImage;
+			}
 
 			Vector2 res = overInterface.ResourceLegendLabels;
 
 			if (m_ResourceLegendLabelOne != null)
+			{
 				m_ResourceLegendLabelOne.OnTextUpdate.Invoke(res.x.ToString(res.x < 0.1 ? "P1" : "P0"));
+			}
 
 			if (m_ResourceLegendLabelTwo != null)
+			{
 				m_ResourceLegendLabelTwo.OnTextUpdate.Invoke(res.y.ToString(res.y < 0.1 ? "P1" : "P0"));
+			}
 		}
 
 		public void SetResource(string resource, bool isOn)
 		{
 			if (overInterface == null)
+			{
 				return;
+			}
 
 			overInterface.SetResource(resource, isOn);
 
 			if (isOn)
 			{
 				if (m_RefreshButton != null)
+				{
 					m_RefreshButton.SetActive(true);
+				}
 
 				loaded = false;
 
 				if (m_OverlayToggle != null)
+				{
 					m_OverlayToggle.isOn = true;
+				}
 
 				loaded = true;
 
 				if (m_ResourceBar != null)
+				{
 					m_ResourceBar.SetActive(true);
+				}
 
 				SetResourceLegend();
 			}
@@ -366,17 +431,23 @@ namespace SCANsat.Unity.Unity
 				if (overInterface.DrawResource && overInterface.CurrentResource == resource)
 				{
 					if (m_RefreshButton != null)
+					{
 						m_RefreshButton.SetActive(false);
+					}
 
 					loaded = false;
 
 					if (m_OverlayToggle != null)
+					{
 						m_OverlayToggle.isOn = false;
+					}
 
 					loaded = true;
 
 					if (m_ResourceBar != null)
+					{
 						m_ResourceBar.SetActive(false);
+					}
 				}
 			}
 
@@ -386,7 +457,9 @@ namespace SCANsat.Unity.Unity
 		public void DrawBiome()
 		{
 			if (!loaded || overInterface == null)
+			{
 				return;
+			}
 
 			overInterface.DrawBiome = overInterface.DrawBiome ? !overInterface.DrawOverlay : true;
 
@@ -397,7 +470,9 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_RefreshButton != null)
+			{
 				m_RefreshButton.SetActive(overInterface.DrawOverlay);
+			}
 
 			if (m_OverlayToggle != null)
 			{
@@ -407,7 +482,9 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_ResourceBar != null)
+			{
 				m_ResourceBar.SetActive(false);
+			}
 
 			InactivateOthers();
 		}
@@ -415,7 +492,9 @@ namespace SCANsat.Unity.Unity
 		public void DrawTerrain()
 		{
 			if (!loaded || overInterface == null)
+			{
 				return;
+			}
 
 			overInterface.DrawTerrain = overInterface.DrawTerrain ? !overInterface.DrawOverlay : true;
 
@@ -426,7 +505,9 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_RefreshButton != null)
+			{
 				m_RefreshButton.SetActive(overInterface.DrawOverlay);
+			}
 
 			if (m_OverlayToggle != null)
 			{
@@ -436,7 +517,9 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (m_ResourceBar != null)
+			{
 				m_ResourceBar.SetActive(false);
+			}
 
 			InactivateOthers();
 		}
@@ -444,7 +527,9 @@ namespace SCANsat.Unity.Unity
 		private void InactivateOthers()
 		{
 			if (overInterface == null)
+			{
 				return;
+			}
 
 			if (m_BiomeText != null && !overInterface.DrawBiome)
 			{
@@ -463,38 +548,52 @@ namespace SCANsat.Unity.Unity
 				SCAN_ResourceOverlay resource = resources[i];
 
 				if (resource == null)
+				{
 					continue;
+				}
 
 				if (!overInterface.DrawResource)
+				{
 					resource.Inactivate();
+				}
 				else if (resource.Resource != overInterface.CurrentResource)
+				{
 					resource.Inactivate();
+				}
 			}
 		}
-		
+
 		public void DrawOverlay(bool isOn)
 		{
 			if (!loaded || overInterface == null)
+			{
 				return;
+			}
 
 			overInterface.DrawOverlay = isOn;
 
 			if (m_RefreshButton != null)
+			{
 				m_RefreshButton.SetActive(isOn);
+			}
 		}
 
 		public void Refresh()
 		{
 			if (overInterface == null)
+			{
 				return;
+			}
 
 			overInterface.Refresh();
 		}
 
 		public void IncreaseCutoff()
-        {
+		{
 			if (overInterface == null)
+			{
 				return;
+			}
 
 			overInterface.IncreaseResourceCutoff();
 
@@ -502,9 +601,11 @@ namespace SCANsat.Unity.Unity
 		}
 
 		public void DecreaseCutoff()
-        {
+		{
 			if (overInterface == null)
+			{
 				return;
+			}
 
 			overInterface.DecreaseResourceCutoff();
 
@@ -514,7 +615,9 @@ namespace SCANsat.Unity.Unity
 		public void ColorSettings()
 		{
 			if (overInterface == null)
+			{
 				return;
+			}
 
 			overInterface.OpenResourceSettings();
 		}
@@ -522,7 +625,9 @@ namespace SCANsat.Unity.Unity
 		public void Settings()
 		{
 			if (overInterface == null)
+			{
 				return;
+			}
 
 			overInterface.OpenSettings();
 		}

@@ -34,7 +34,9 @@ namespace SCANsat.Unity.HSVPicker.UI
 			set
 			{
 				if (CurrentColor == value)
+				{
 					return;
+				}
 
 				_red = value.r;
 				_green = value.g;
@@ -61,7 +63,9 @@ namespace SCANsat.Unity.HSVPicker.UI
 			set
 			{
 				if (_hue == value)
+				{
 					return;
+				}
 
 				_hue = value;
 
@@ -80,7 +84,9 @@ namespace SCANsat.Unity.HSVPicker.UI
 			set
 			{
 				if (_saturation == value)
+				{
 					return;
+				}
 
 				_saturation = value;
 
@@ -99,7 +105,9 @@ namespace SCANsat.Unity.HSVPicker.UI
 			set
 			{
 				if (_brightness == value)
+				{
 					return;
+				}
 
 				_brightness = value;
 
@@ -118,7 +126,9 @@ namespace SCANsat.Unity.HSVPicker.UI
 			set
 			{
 				if (_red == value)
+				{
 					return;
+				}
 
 				_red = value;
 
@@ -137,7 +147,9 @@ namespace SCANsat.Unity.HSVPicker.UI
 			set
 			{
 				if (_green == value)
+				{
 					return;
+				}
 
 				_green = value;
 
@@ -156,7 +168,9 @@ namespace SCANsat.Unity.HSVPicker.UI
 			set
 			{
 				if (_blue == value)
+				{
 					return;
+				}
 
 				_blue = value;
 
@@ -175,7 +189,9 @@ namespace SCANsat.Unity.HSVPicker.UI
 			set
 			{
 				if (_alpha == value)
+				{
 					return;
+				}
 
 				_alpha = value;
 

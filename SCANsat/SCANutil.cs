@@ -48,140 +48,172 @@ namespace SCANsat
 		{
 			int ilon = icLON(lon);
 			int ilat = icLAT(lat);
-			if (badLonLat (ilon, ilat)) return false;
+			if (badLonLat(ilon, ilat))
+			{
+				return false;
+			}
 
 			SCANdata data = getData(body.bodyName);
 
 			if (data == null)
+			{
 				return false;
+			}
 
-            if (SCANtype > Int16.MaxValue)
-                return false;
+			if (SCANtype > Int16.MaxValue)
+			{
+				return false;
+			}
 
-            short type = (short)SCANtype;
+			short type = (short)SCANtype;
 
-            return (data.Coverage[ilon, ilat] & type) != 0;
+			return (data.Coverage[ilon, ilat] & type) != 0;
 		}
 
-        /// <summary>
-        /// Determines scanning coverage for a given area with a given scanner type
-        /// </summary>
-        /// <param name="lon">Clamped double in the -180 - 180 degree range</param>
-        /// <param name="lat">Clamped double in the -90 - 90 degree range</param>
-        /// <param name="body">Celestial body in question</param>
-        /// <param name="SCANtype">SCANtype cast as a 16 bit integer</param>
-        /// <returns></returns>
-        public static bool isCoveredShort(double lon, double lat, CelestialBody body, short SCANtype)
-        {
-            int ilon = icLON(lon);
-            int ilat = icLAT(lat);
-            if (badLonLat(ilon, ilat)) return false;
-
-            SCANdata data = getData(body.bodyName);
-
-            if (data == null)
-                return false;
-            
-            return (data.Coverage[ilon, ilat] & SCANtype) != 0;
-        }
-
-        /// <summary>
-        /// Determines scanning coverage for a given area with a given scanner type
-        /// </summary>
-        /// <param name="lon">Clamped integer in the 0-360 degree range</param>
-        /// <param name="lat">Clamped integer in the 0-180 degree range</param>
-        /// <param name="body">Celestial body in question</param>
-        /// <param name="SCANtype">SCANtype cast as an integer</param>
-        /// <returns></returns>
-        public static bool isCovered(int lon, int lat, CelestialBody body, int SCANtype)
+		/// <summary>
+		/// Determines scanning coverage for a given area with a given scanner type
+		/// </summary>
+		/// <param name="lon">Clamped double in the -180 - 180 degree range</param>
+		/// <param name="lat">Clamped double in the -90 - 90 degree range</param>
+		/// <param name="body">Celestial body in question</param>
+		/// <param name="SCANtype">SCANtype cast as a 16 bit integer</param>
+		/// <returns></returns>
+		public static bool isCoveredShort(double lon, double lat, CelestialBody body, short SCANtype)
 		{
-			if (badLonLat(lon, lat)) return false;
+			int ilon = icLON(lon);
+			int ilat = icLAT(lat);
+			if (badLonLat(ilon, ilat))
+			{
+				return false;
+			}
 
 			SCANdata data = getData(body.bodyName);
 
 			if (data == null)
+			{
 				return false;
+			}
 
-            if (SCANtype > Int16.MaxValue)
-                return false;
-
-            short type = (short)SCANtype;
-
-            return (data.Coverage[lon, lat] & type) != 0;
+			return (data.Coverage[ilon, ilat] & SCANtype) != 0;
 		}
 
-        /// <summary>
-        /// Determines scanning coverage for a given area with a given scanner type
-        /// </summary>
-        /// <param name="lon">Clamped integer in the 0-360 degree range</param>
-        /// <param name="lat">Clamped integer in the 0-180 degree range</param>
-        /// <param name="body">Celestial body in question</param>
-        /// <param name="SCANtype">SCANtype cast as a 16 bit integer</param>
-        /// <returns></returns>
-        public static bool isCoveredShort(int lon, int lat, CelestialBody body, short SCANtype)
-        {
-            if (badLonLat(lon, lat)) return false;
+		/// <summary>
+		/// Determines scanning coverage for a given area with a given scanner type
+		/// </summary>
+		/// <param name="lon">Clamped integer in the 0-360 degree range</param>
+		/// <param name="lat">Clamped integer in the 0-180 degree range</param>
+		/// <param name="body">Celestial body in question</param>
+		/// <param name="SCANtype">SCANtype cast as an integer</param>
+		/// <returns></returns>
+		public static bool isCovered(int lon, int lat, CelestialBody body, int SCANtype)
+		{
+			if (badLonLat(lon, lat))
+			{
+				return false;
+			}
 
-            SCANdata data = getData(body.bodyName);
+			SCANdata data = getData(body.bodyName);
 
-            if (data == null)
-                return false;
+			if (data == null)
+			{
+				return false;
+			}
 
-            return (data.Coverage[lon, lat] & SCANtype) != 0;
-        }
+			if (SCANtype > Int16.MaxValue)
+			{
+				return false;
+			}
 
-        /// <summary>
-        /// Public method to return the scanning coverage for a given sensor type on a give body
-        /// </summary>
-        /// <param name="SCANtype">Integer corresponding to the desired SCANtype</param>
-        /// <param name="Body">Desired Celestial Body</param>
-        /// <returns>Scanning percentage as a double from 0-100</returns>
-        public static double GetCoverage(int SCANtype, CelestialBody Body)
+			short type = (short)SCANtype;
+
+			return (data.Coverage[lon, lat] & type) != 0;
+		}
+
+		/// <summary>
+		/// Determines scanning coverage for a given area with a given scanner type
+		/// </summary>
+		/// <param name="lon">Clamped integer in the 0-360 degree range</param>
+		/// <param name="lat">Clamped integer in the 0-180 degree range</param>
+		/// <param name="body">Celestial body in question</param>
+		/// <param name="SCANtype">SCANtype cast as a 16 bit integer</param>
+		/// <returns></returns>
+		public static bool isCoveredShort(int lon, int lat, CelestialBody body, short SCANtype)
+		{
+			if (badLonLat(lon, lat))
+			{
+				return false;
+			}
+
+			SCANdata data = getData(body.bodyName);
+
+			if (data == null)
+			{
+				return false;
+			}
+
+			return (data.Coverage[lon, lat] & SCANtype) != 0;
+		}
+
+		/// <summary>
+		/// Public method to return the scanning coverage for a given sensor type on a give body
+		/// </summary>
+		/// <param name="SCANtype">Integer corresponding to the desired SCANtype</param>
+		/// <param name="Body">Desired Celestial Body</param>
+		/// <returns>Scanning percentage as a double from 0-100</returns>
+		public static double GetCoverage(int SCANtype, CelestialBody Body)
 		{
 			SCANdata data = getData(Body.bodyName);
 
 			if (data == null)
+			{
 				return 0;
+			}
 
-            if (SCANtype > Int16.MaxValue)
-                return 0;
+			if (SCANtype > Int16.MaxValue)
+			{
+				return 0;
+			}
 
-            short type = (short)SCANtype;
+			short type = (short)SCANtype;
 
 			return getCoveragePercentage(data, (SCANtype)type);
 		}
 
-        /// <summary>
-        /// Public method to return the scanning coverage for a given sensor type on a give body
-        /// </summary>
-        /// <param name="SCANtype">16 bit integer corresponding to the desired SCANtype</param>
-        /// <param name="Body">Desired Celestial Body</param>
-        /// <returns>Scanning percentage as a double from 0-100</returns>
-        public static double GetCoverageShort(short SCANtype, CelestialBody Body)
-        {
-            SCANdata data = getData(Body.bodyName);
+		/// <summary>
+		/// Public method to return the scanning coverage for a given sensor type on a give body
+		/// </summary>
+		/// <param name="SCANtype">16 bit integer corresponding to the desired SCANtype</param>
+		/// <param name="Body">Desired Celestial Body</param>
+		/// <returns>Scanning percentage as a double from 0-100</returns>
+		public static double GetCoverageShort(short SCANtype, CelestialBody Body)
+		{
+			SCANdata data = getData(Body.bodyName);
 
-            if (data == null)
-                return 0;
+			if (data == null)
+			{
+				return 0;
+			}
 
-            return getCoveragePercentage(data, (SCANtype)SCANtype);
-        }
+			return getCoveragePercentage(data, (SCANtype)SCANtype);
+		}
 
-        /// <summary>
-        /// Given the name of the SCANtype, returns the int value.
-        /// </summary>
-        /// <param name="SCANname">The name of the SCANtype.</param>
-        /// <returns>The int value that can be used in other public methods.</returns>
-        public static int GetSCANtype(string SCANname)
+		/// <summary>
+		/// Given the name of the SCANtype, returns the int value.
+		/// </summary>
+		/// <param name="SCANname">The name of the SCANtype.</param>
+		/// <returns>The int value that can be used in other public methods.</returns>
+		public static int GetSCANtype(string SCANname)
 		{
 			try
 			{
-                short type = (short)Enum.Parse(typeof(SCANtype), SCANname);
+				short type = (short)Enum.Parse(typeof(SCANtype), SCANname);
 
-                if (type > Int16.MaxValue)
-                    return 0;
+				if (type > Int16.MaxValue)
+				{
+					return 0;
+				}
 
-                return (int)type;
+				return (int)type;
 			}
 			catch (ArgumentException e)
 			{
@@ -190,30 +222,30 @@ namespace SCANsat
 			}
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Given the name of the SCANtype, returns the short value.
 		/// </summary>
 		/// <param name="SCANname">The name of the SCANtype.</param>
 		/// <returns>The short value that can be used in other public methods.</returns>
 		public static short GetSCANtypeShort(string SCANname)
-        {
-            try
-            {
-                return (short)Enum.Parse(typeof(SCANtype), SCANname);
-            }
-            catch (ArgumentException e)
-            {
-                throw new ArgumentException("An invalid SCANtype name was provided.  Valid values are: " +
-                    string.Join(", ", ((IEnumerable<SCANtype>)Enum.GetValues(typeof(SCANtype))).Select<SCANtype, string>(x => x.ToString()).ToArray()) + "\n" + e.ToString());
-            }
-        }
+		{
+			try
+			{
+				return (short)Enum.Parse(typeof(SCANtype), SCANname);
+			}
+			catch (ArgumentException e)
+			{
+				throw new ArgumentException("An invalid SCANtype name was provided.  Valid values are: " +
+					string.Join(", ", ((IEnumerable<SCANtype>)Enum.GetValues(typeof(SCANtype))).Select<SCANtype, string>(x => x.ToString()).ToArray()) + "\n" + e.ToString());
+			}
+		}
 
-        /// <summary>
-        /// For a given Celestial Body this returns the SCANdata instance if it exists in the SCANcontroller master dictionary; return is null if the SCANdata does not exist for that body (ie it has never been visited while SCANsat has been active)
-        /// </summary>
-        /// <param name="body">Celestial Body object</param>
-        /// <returns>SCANdata instance for the given Celestial Body; null if none exists</returns>
-        public static SCANdata getData(CelestialBody body)
+		/// <summary>
+		/// For a given Celestial Body this returns the SCANdata instance if it exists in the SCANcontroller master dictionary; return is null if the SCANdata does not exist for that body (ie it has never been visited while SCANsat has been active)
+		/// </summary>
+		/// <param name="body">Celestial Body object</param>
+		/// <returns>SCANdata instance for the given Celestial Body; null if none exists</returns>
+		public static SCANdata getData(CelestialBody body)
 		{
 			return getData(body.bodyName);
 		}
@@ -226,7 +258,9 @@ namespace SCANsat
 		public static SCANdata getData(string BodyName)
 		{
 			if (SCANcontroller.controller == null)
+			{
 				return null;
+			}
 
 			return SCANcontroller.controller.getData(BodyName);
 		}
@@ -238,7 +272,9 @@ namespace SCANsat
 		public static bool instantResourceScanEnabled()
 		{
 			if (SCAN_Settings_Config.Instance == null)
+			{
 				return true;
+			}
 
 			return SCAN_Settings_Config.Instance.InstantScan;
 		}
@@ -250,7 +286,9 @@ namespace SCANsat
 		public static bool stockResourceScanEnabled()
 		{
 			if (SCAN_Settings_Config.Instance == null)
+			{
 				return false;
+			}
 
 			return !SCAN_Settings_Config.Instance.DisableStockResource;
 		}
@@ -262,7 +300,9 @@ namespace SCANsat
 		public static bool resourceBiomeLockEnabled()
 		{
 			if (SCAN_Settings_Config.Instance == null)
+			{
 				return true;
+			}
 
 			return SCAN_Settings_Config.Instance.BiomeLock;
 		}
@@ -274,7 +314,9 @@ namespace SCANsat
 		public static bool narrowBandResourceRestrictionEnabled()
 		{
 			if (SCAN_Settings_Config.Instance == null)
+			{
 				return true;
+			}
 
 			return SCAN_Settings_Config.Instance.RequireNarrowBand;
 		}
@@ -289,57 +331,73 @@ namespace SCANsat
 		public static bool registerSensorExternal(Vessel v, ProtoPartModuleSnapshot m, Part prefab)
 		{
 			if (v == null)
+			{
 				return false;
+			}
 
 			if (m == null)
+			{
 				return false;
+			}
 
 			if (prefab == null)
+			{
 				return false;
+			}
 
 			if (!(m.moduleName == "SCANsat" || m.moduleName == "ModuleSCANresourceScanner"))
+			{
 				return false;
+			}
 
 			int sensor = 0;
 			double fov = 0;
 			double min = 0;
 			double max = 0;
 			double best = 0;
-            bool light = false;
+			bool light = false;
 
 			if (prefab.Modules.Contains<SCANsat.SCAN_PartModules.SCANsat>())
 			{
 				SCANsat.SCAN_PartModules.SCANsat scan = prefab.Modules.GetModule<SCANsat.SCAN_PartModules.SCANsat>();
 
 				if (scan == null)
+				{
 					return false;
+				}
 
 				sensor = scan.sensorType;
 				fov = scan.fov;
 				min = scan.min_alt;
 				max = scan.max_alt;
 				best = scan.best_alt;
-                light = scan.requireLight;
+				light = scan.requireLight;
 			}
 			else if (prefab.Modules.Contains<ModuleSCANresourceScanner>())
 			{
 				SCANsat.SCAN_PartModules.ModuleSCANresourceScanner scan = prefab.Modules.GetModule<SCANsat.SCAN_PartModules.ModuleSCANresourceScanner>();
 
 				if (scan == null)
+				{
 					return false;
+				}
 
 				sensor = scan.sensorType;
 				fov = scan.fov;
 				min = scan.min_alt;
 				max = scan.max_alt;
 				best = scan.best_alt;
-                light = scan.requireLight;
-            }
+				light = scan.requireLight;
+			}
 			else
+			{
 				return false;
+			}
 
 			if (SCANcontroller.controller == null)
+			{
 				return false;
+			}
 
 			SCANcontroller.controller.registerSensor(v, (SCANtype)sensor, fov, min, max, best, light);
 
@@ -358,57 +416,73 @@ namespace SCANsat
 		public static bool unregisterSensorExternal(Vessel v, ProtoPartModuleSnapshot m, Part prefab)
 		{
 			if (v == null)
+			{
 				return false;
+			}
 
 			if (m == null)
+			{
 				return false;
+			}
 
 			if (prefab == null)
+			{
 				return false;
+			}
 
 			if (!(m.moduleName == "SCANsat" || m.moduleName == "ModuleSCANresourceScanner"))
+			{
 				return false;
+			}
 
 			int sensor = 0;
-            double fov = 0;
-            double min = 0;
-            double max = 0;
-            double best = 0;
-            bool light = false;
+			double fov = 0;
+			double min = 0;
+			double max = 0;
+			double best = 0;
+			bool light = false;
 
-            if (prefab.Modules.Contains<SCANsat.SCAN_PartModules.SCANsat>())
+			if (prefab.Modules.Contains<SCANsat.SCAN_PartModules.SCANsat>())
 			{
 				SCANsat.SCAN_PartModules.SCANsat scan = prefab.Modules.GetModule<SCANsat.SCAN_PartModules.SCANsat>();
 
 				if (scan == null)
+				{
 					return false;
+				}
 
 				sensor = scan.sensorType;
-                fov = scan.fov;
-                min = scan.min_alt;
-                max = scan.max_alt;
-                best = scan.best_alt;
-                light = scan.requireLight;
-            }
+				fov = scan.fov;
+				min = scan.min_alt;
+				max = scan.max_alt;
+				best = scan.best_alt;
+				light = scan.requireLight;
+			}
 			else if (prefab.Modules.Contains<ModuleSCANresourceScanner>())
 			{
 				SCANsat.SCAN_PartModules.ModuleSCANresourceScanner scan = prefab.Modules.GetModule<SCANsat.SCAN_PartModules.ModuleSCANresourceScanner>();
 
 				if (scan == null)
+				{
 					return false;
+				}
 
 				sensor = scan.sensorType;
-                fov = scan.fov;
-                min = scan.min_alt;
-                max = scan.max_alt;
-                best = scan.best_alt;
-                light = scan.requireLight;
-            }
+				fov = scan.fov;
+				min = scan.min_alt;
+				max = scan.max_alt;
+				best = scan.best_alt;
+				light = scan.requireLight;
+			}
 			else
+			{
 				return false;
+			}
 
 			if (SCANcontroller.controller == null)
+			{
 				return false;
+			}
 
 			SCANcontroller.controller.unregisterSensor(v, (SCANtype)sensor, fov, min, max, best, light);
 
@@ -417,102 +491,132 @@ namespace SCANsat
 			return true;
 		}
 
-        public static bool scanTypeValid(int type)
-        {
-            if (type > Int16.MaxValue)
-                return false;
+		public static bool scanTypeValid(int type)
+		{
+			if (type > Int16.MaxValue)
+			{
+				return false;
+			}
 
-            short stype = (short)type;
+			short stype = (short)type;
 
-            if ((stype & (short)SCANtype.Everything_SCAN) != 0)
-                return true;
+			if ((stype & (short)SCANtype.Everything_SCAN) != 0)
+			{
+				return true;
+			}
 
-            return false;
-        }
+			return false;
+		}
 
-        public static bool scanTypeValidShort(short type)
-        {
-            if ((type & (short)SCANtype.Everything_SCAN) != 0)
-                return true;
+		public static bool scanTypeValidShort(short type)
+		{
+			if ((type & (short)SCANtype.Everything_SCAN) != 0)
+			{
+				return true;
+			}
 
-            return false;
-        }
+			return false;
+		}
 
-        public static bool scanTypeValid(SCANtype type)
-        {
-            if ((type & SCANtype.Everything_SCAN) != SCANtype.Nothing)
-                return true;
+		public static bool scanTypeValid(SCANtype type)
+		{
+			if ((type & SCANtype.Everything_SCAN) != SCANtype.Nothing)
+			{
+				return true;
+			}
 
-            return false;
-        }
+			return false;
+		}
 
-        #endregion
+		#endregion
 
-        #region Internal Utilities
+		#region Internal Utilities
 
-        public static double[] cosLookUp = new double[180];
-        public static DictionaryValueList<CelestialBody, string> localizedBodyNames = new DictionaryValueList<CelestialBody, string>();
+		public static double[] cosLookUp = new double[180];
+		public static DictionaryValueList<CelestialBody, string> localizedBodyNames = new DictionaryValueList<CelestialBody, string>();
 
 		internal static bool isCovered(double lon, double lat, SCANdata data, SCANtype type)
 		{
 			int ilon = icLON(lon);
 			int ilat = icLAT(lat);
-			if (badLonLat(ilon, ilat)) return false;
+			if (badLonLat(ilon, ilat))
+			{
+				return false;
+			}
+
 			return (data.Coverage[ilon, ilat] & (Int16)type) != 0;
 		}
 
 		internal static bool isCovered(int lon, int lat, SCANdata data, SCANtype type)
 		{
-			if (badLonLat(lon, lat)) return false;
+			if (badLonLat(lon, lat))
+			{
+				return false;
+			}
+
 			return (data.Coverage[lon, lat] & (Int16)type) != 0;
 		}
 
-		internal static bool isCoveredByAll (int lon, int lat, SCANdata data, SCANtype type)
+		internal static bool isCoveredByAll(int lon, int lat, SCANdata data, SCANtype type)
 		{
-			if (badLonLat(lon,lat)) return false;
+			if (badLonLat(lon, lat))
+			{
+				return false;
+			}
+
 			return (data.Coverage[lon, lat] & (Int16)type) == (Int16)type;
 		}
 
-        internal static double getCoveragePercentage(SCANdata data, SCANtype type )
+		internal static double getCoveragePercentage(SCANdata data, SCANtype type)
 		{
 			if (data == null)
+			{
 				return 0;
+			}
 
 			double cov = 0d;
 
 			if (type == SCANtype.Nothing)
-				type = SCANtype.AltimetryLoRes | SCANtype.AltimetryHiRes | SCANtype.Biome | SCANtype.Anomaly | SCANtype.VisualLoRes | SCANtype.VisualHiRes | SCANtype.ResourceLoRes | SCANtype.ResourceHiRes;   
-            
-			cov = data.getCoverage (type);
+			{
+				type = SCANtype.AltimetryLoRes | SCANtype.AltimetryHiRes | SCANtype.Biome | SCANtype.Anomaly | SCANtype.VisualLoRes | SCANtype.VisualHiRes | SCANtype.ResourceLoRes | SCANtype.ResourceHiRes;
+			}
+
+			cov = data.getCoverage(type);
 
 			if (cov <= 0)
+			{
 				cov = 100;
+			}
 			else
-				cov = Math.Min (99.9d , 100 - cov * 100d / (41251.914 * countBits((int)type)));
+			{
+				cov = Math.Min(99.9d, 100 - cov * 100d / (41251.914 * countBits((int)type)));
+			}
 
-            if (cov < 0)
-                cov = 0;
+			if (cov < 0)
+			{
+				cov = 0;
+			}
 
 			return cov;
 		}
 
 		internal static Func<double, int> icLON = (lon) => ((int)(lon + 360 + 180)) % 360;
 		internal static Func<double, int> icLAT = (lat) => ((int)(lat + 180 + 90)) % 180;
-        internal static Func<int, int, bool> badLonLat = (lon, lat) => (lon < 0 || lat < 0 || lon >= 360 || lat >= 180);
-		internal static Func<double, double, bool> badDLonLat = (lon, lat) => (lon < 0 || lat <0 || lon >= 360 || lat >= 180);
+		internal static Func<int, int, bool> badLonLat = (lon, lat) => (lon < 0 || lat < 0 || lon >= 360 || lat >= 180);
+		internal static Func<double, double, bool> badDLonLat = (lon, lat) => (lon < 0 || lat < 0 || lon >= 360 || lat >= 180);
 		public static Func<double, double, bool> ApproxEq = (a, b) => Math.Abs(a - b) < 0.01;
 
-        internal static int fixLatShiftInt(double lat)
-        {
-            return (int)Math.Floor((lat + 180 + 90) % 180) - 90;
-        }
+		internal static int fixLatShiftInt(double lat)
+		{
+			return (int)Math.Floor((lat + 180 + 90) % 180) - 90;
+		}
 
-        internal static int fixLatInt(double lat)
-        {
-            return (int)Math.Floor((lat + 180 + 90) % 180);
-        }
+		internal static int fixLatInt(double lat)
+		{
+			return (int)Math.Floor((lat + 180 + 90) % 180);
+		}
 
-        internal static double fixLatShift(double lat)
+		internal static double fixLatShift(double lat)
 		{
 			return (lat + 180 + 90) % 180 - 90;
 		}
@@ -522,17 +626,17 @@ namespace SCANsat
 			return (lat + 180 + 90) % 180;
 		}
 
-        internal static int fixLonShiftInt(double lon)
-        {
-            return (int)Math.Floor((lon + 360 + 180) % 360) - 180;
-        }
+		internal static int fixLonShiftInt(double lon)
+		{
+			return (int)Math.Floor((lon + 360 + 180) % 360) - 180;
+		}
 
-        internal static int fixLonInt(double lon)
-        {
-            return (int)Math.Floor((lon + 360 + 180) % 360);
-        }
+		internal static int fixLonInt(double lon)
+		{
+			return (int)Math.Floor((lon + 360 + 180) % 360);
+		}
 
-        internal static double fixLonShift(double lon)
+		internal static double fixLonShift(double lon)
 		{
 			return (lon + 360 + 180) % 360 - 180;
 		}
@@ -542,36 +646,41 @@ namespace SCANsat
 			return (lon + 360 + 180) % 360;
 		}
 
-        internal static bool InDarkness(Vector3d vesselPos, Vector3d pos, Vector3d sun)
-        {
-            if (!SCAN_Settings_Config.Instance.DaylightCheck)
-                return false;
+		internal static bool InDarkness(Vector3d vesselPos, Vector3d pos, Vector3d sun)
+		{
+			if (!SCAN_Settings_Config.Instance.DaylightCheck)
+			{
+				return false;
+			}
 
-            Vector3d solarDirection = pos - sun;
+			Vector3d solarDirection = pos - sun;
 
-            Vector3d surfaceDirection = pos - vesselPos;
+			Vector3d surfaceDirection = pos - vesselPos;
 
-            double angle = Vector3d.Angle(surfaceDirection, solarDirection);
+			double angle = Vector3d.Angle(surfaceDirection, solarDirection);
 
-            return angle > 90;
-        }
+			return angle > 90;
+		}
 
-        internal static CelestialBody LocalSun(CelestialBody body)
-        {
-            while (body.referenceBody != body)
-            {
-                body = body.referenceBody;
-            }
+		internal static CelestialBody LocalSun(CelestialBody body)
+		{
+			while (body.referenceBody != body)
+			{
+				body = body.referenceBody;
+			}
 
-            return body;
-        }
+			return body;
+		}
 
-        internal static Vector2d fixRetardCoordinates(Vector2d coords)
+		internal static Vector2d fixRetardCoordinates(Vector2d coords)
 		{
 			if (coords.y < -90)
 			{
 				while (coords.y < -90)
+				{
 					coords.y += 90;
+				}
+
 				coords.y = -90 + Math.Abs(coords.y);
 				coords.x = fixLonShift(coords.x + 180);
 
@@ -581,7 +690,10 @@ namespace SCANsat
 			if (coords.y > 90)
 			{
 				while (coords.y > 90)
+				{
 					coords.y -= 90;
+				}
+
 				coords.y = 90 - Math.Abs(coords.y);
 				coords.x = fixLonShift(coords.x - 180);
 
@@ -601,42 +713,54 @@ namespace SCANsat
 			{
 				CelestialBody body = bodies[i];
 				if (SCANcontroller.controller.getData(body.bodyName) != null)
+				{
 					bodyList.Add(body.displayName.LocalizeBodyName());
+				}
 
 				for (int j = 0; j < body.orbitingBodies.Count; j++)
 				{
 					CelestialBody moon = body.orbitingBodies[j];
 
 					if (SCANcontroller.controller.getData(moon.bodyName) != null)
+					{
 						bodyList.Add(moon.displayName.LocalizeBodyName());
+					}
 
 					for (int k = 0; k < moon.orbitingBodies.Count; k++)
 					{
 						CelestialBody subMoon = moon.orbitingBodies[k];
 
 						if (SCANcontroller.controller.getData(subMoon.bodyName) != null)
+						{
 							bodyList.Add(subMoon.displayName.LocalizeBodyName());
+						}
 
 						for (int l = 0; l < subMoon.orbitingBodies.Count; l++)
 						{
 							CelestialBody subSubMoon = subMoon.orbitingBodies[l];
 
 							if (SCANcontroller.controller.getData(subSubMoon.bodyName) != null)
+							{
 								bodyList.Add(subSubMoon.displayName.LocalizeBodyName());
+							}
 
 							for (int m = 0; m < subSubMoon.orbitingBodies.Count; m++)
 							{
 								CelestialBody subSubSubMoon = subSubMoon.orbitingBodies[m];
 
 								if (SCANcontroller.controller.getData(subSubSubMoon.bodyName) != null)
+								{
 									bodyList.Add(subSubSubMoon.displayName.LocalizeBodyName());
+								}
 
 								for (int n = 0; n < subSubSubMoon.orbitingBodies.Count; n++)
 								{
 									CelestialBody subSubSubSubMoon = subSubSubMoon.orbitingBodies[n];
 
 									if (SCANcontroller.controller.getData(subSubSubSubMoon.bodyName) != null)
+									{
 										bodyList.Add(subSubSubSubMoon.displayName.LocalizeBodyName());
+									}
 								}
 							}
 						}
@@ -649,7 +773,11 @@ namespace SCANsat
 
 		internal static double getElevation(CelestialBody body, double lon, double lat)
 		{
-			if (body.pqsController == null) return 0;
+			if (body.pqsController == null)
+			{
+				return 0;
+			}
+
 			double rlon = Mathf.Deg2Rad * lon;
 			double rlat = Mathf.Deg2Rad * lat;
 			Vector3d rad = new Vector3d(Math.Cos(rlat) * Math.Cos(rlon), Math.Sin(rlat), Math.Cos(rlat) * Math.Sin(rlon));
@@ -658,7 +786,11 @@ namespace SCANsat
 
 		internal static double getElevation(CelestialBody body, int lon, int lat)
 		{
-			if (body.pqsController == null) return 0;
+			if (body.pqsController == null)
+			{
+				return 0;
+			}
+
 			double rlon = Mathf.Deg2Rad * lon;
 			double rlat = Mathf.Deg2Rad * lat;
 			Vector3d rad = new Vector3d(Math.Cos(rlat) * Math.Cos(rlon), Math.Sin(rlat), Math.Cos(rlat) * Math.Sin(rlon));
@@ -668,11 +800,17 @@ namespace SCANsat
 		internal static double getElevation(this CelestialBody body, Vector3d worldPosition)
 		{
 			if (body.pqsController == null)
+			{
 				return 0;
+			}
+
 			Vector3d pqsRadialVector = QuaternionD.AngleAxis(body.GetLongitude(worldPosition), Vector3d.down) * QuaternionD.AngleAxis(body.GetLatitude(worldPosition), Vector3d.forward) * Vector3d.right;
 			double ret = body.pqsController.GetSurfaceHeight(pqsRadialVector) - body.pqsController.radius;
 			if (ret < 0)
+			{
 				ret = 0;
+			}
+
 			return ret;
 		}
 
@@ -696,111 +834,150 @@ namespace SCANsat
 			return amount;
 		}
 
-		private static int getBiomeIndex(CelestialBody body, double lon , double lat)
+		private static int getBiomeIndex(CelestialBody body, double lon, double lat)
 		{
-			if (body.BiomeMap == null)		return -1;
+			if (body.BiomeMap == null)
+			{
+				return -1;
+			}
+
 			double u = fixLon(lon);
 			double v = fixLat(lat);
 
 			if (badDLonLat(u, v))
+			{
 				return -1;
+			}
 
-			CBAttributeMapSO.MapAttribute att = body.BiomeMap.GetAtt (Mathf.Deg2Rad * lat , Mathf.Deg2Rad * lon);
-			for (int i = 0; i < body.BiomeMap.Attributes.Length; ++i) {
-				if (body.BiomeMap.Attributes [i] == att) {
+			CBAttributeMapSO.MapAttribute att = body.BiomeMap.GetAtt(Mathf.Deg2Rad * lat, Mathf.Deg2Rad * lon);
+			for (int i = 0; i < body.BiomeMap.Attributes.Length; ++i)
+			{
+				if (body.BiomeMap.Attributes[i] == att)
+				{
 					return i;
 				}
 			}
 			return -1;
 		}
 
-		internal static double getBiomeIndexFraction(CelestialBody body, double lon , double lat)
+		internal static double getBiomeIndexFraction(CelestialBody body, double lon, double lat)
 		{
-			if (body.BiomeMap == null) return 0f;
-			return getBiomeIndex (body, lon , lat) * 1.0f / body.BiomeMap.Attributes.Length;
+			if (body.BiomeMap == null)
+			{
+				return 0f;
+			}
+
+			return getBiomeIndex(body, lon, lat) * 1.0f / body.BiomeMap.Attributes.Length;
 		}
 
-		internal static CBAttributeMapSO.MapAttribute getBiome(CelestialBody body, double lon , double lat)
+		internal static CBAttributeMapSO.MapAttribute getBiome(CelestialBody body, double lon, double lat)
 		{
-			if (body.BiomeMap == null) return null;
-			int i = getBiomeIndex(body, lon , lat);
-			if (i == -1)
+			if (body.BiomeMap == null)
+			{
 				return null;
-			return body.BiomeMap.Attributes [i];
+			}
+
+			int i = getBiomeIndex(body, lon, lat);
+			if (i == -1)
+			{
+				return null;
+			}
+
+			return body.BiomeMap.Attributes[i];
 		}
 
 		internal static CBAttributeMapSO.MapAttribute getBiomeCached(CelestialBody body, double lon, double lat)
 		{
-			if (body.BiomeMap == null) return null;
+			if (body.BiomeMap == null)
+			{
+				return null;
+			}
+
 			return body.BiomeMap.GetAtt(lat * Mathf.Deg2Rad, lon * Mathf.Deg2Rad);
 		}
 
-		internal static string getBiomeName(CelestialBody body, double lon , double lat)
-		{
-			CBAttributeMapSO.MapAttribute a = getBiome (body, lon , lat);
-			if (a == null)
-				return "unknown";
-			return a.name;
-		}
-
-		internal static string getBiomeDisplayName(CelestialBody body, double lon , double lat)
+		internal static string getBiomeName(CelestialBody body, double lon, double lat)
 		{
 			CBAttributeMapSO.MapAttribute a = getBiome(body, lon, lat);
 			if (a == null)
+			{
 				return "unknown";
+			}
+
+			return a.name;
+		}
+
+		internal static string getBiomeDisplayName(CelestialBody body, double lon, double lat)
+		{
+			CBAttributeMapSO.MapAttribute a = getBiome(body, lon, lat);
+			if (a == null)
+			{
+				return "unknown";
+			}
+
 			return string.IsNullOrEmpty(a.displayname) ? a.name : Localizer.Format(a.displayname);
 		}
 
-        internal static void getBiomeDisplayName(StringBuilder sb, CelestialBody body, double lon, double lat)
-        {
-            CBAttributeMapSO.MapAttribute a = getBiome(body, lon, lat);
+		internal static void getBiomeDisplayName(StringBuilder sb, CelestialBody body, double lon, double lat)
+		{
+			CBAttributeMapSO.MapAttribute a = getBiome(body, lon, lat);
 
-            if (a == null)
-                return;
+			if (a == null)
+			{
+				return;
+			}
 
-            sb.Append(string.IsNullOrEmpty(a.displayname) ? a.name : Localizer.Format(a.displayname));
-        }
+			sb.Append(string.IsNullOrEmpty(a.displayname) ? a.name : Localizer.Format(a.displayname));
+		}
 
-        internal static int countBits(int i)
+		internal static int countBits(int i)
 		{
 			int count;
 
-            for (count = 0; i != 0; ++count)
-                i &= (i - 1);
+			for (count = 0; i != 0; ++count)
+			{
+				i &= (i - 1);
+			}
 
 			return count;
 		}
 
-        public static void fillLocalizedNames()
-        {
-            localizedBodyNames.Clear();
+		public static void fillLocalizedNames()
+		{
+			localizedBodyNames.Clear();
 
-            for (int i = FlightGlobals.Bodies.Count - 1; i >= 0; i--)
-            {
-                CelestialBody b = FlightGlobals.Bodies[i];
+			for (int i = FlightGlobals.Bodies.Count - 1; i >= 0; i--)
+			{
+				CelestialBody b = FlightGlobals.Bodies[i];
 
-                string name = b.displayName.LocalizeBodyName();
+				string name = b.displayName.LocalizeBodyName();
 
-                if (!localizedBodyNames.Contains(b))
-                    localizedBodyNames.Add(b, name);
-            }
-        }
+				if (!localizedBodyNames.Contains(b))
+				{
+					localizedBodyNames.Add(b, name);
+				}
+			}
+		}
 
-        public static string displayNameFromBody(CelestialBody body)
-        {
-            if (localizedBodyNames.Contains(body))
-                return localizedBodyNames[body];
+		public static string displayNameFromBody(CelestialBody body)
+		{
+			if (localizedBodyNames.Contains(body))
+			{
+				return localizedBodyNames[body];
+			}
 
-            return body.displayName;
-        }
+			return body.displayName;
+		}
 
 		internal static string bodyFromDisplayName(string display)
 		{
-            for (int i = localizedBodyNames.Count - 1; i >= 0; i--)
-            {
-                if (display == localizedBodyNames.At(i))
-                    return localizedBodyNames.KeyAt(i).bodyName;
-            }
+			for (int i = localizedBodyNames.Count - 1; i >= 0; i--)
+			{
+				if (display == localizedBodyNames.At(i))
+				{
+					return localizedBodyNames.KeyAt(i).bodyName;
+				}
+			}
 
 			//for (int i = FlightGlobals.Bodies.Count - 1; i >= 0; i--)
 			//{
@@ -818,7 +995,9 @@ namespace SCANsat
 				CelestialBody b = FlightGlobals.Bodies[i];
 
 				if (b.bodyName == body)
+				{
 					return b.displayName.LocalizeBodyName();
+				}
 			}
 
 			return body;
@@ -833,7 +1012,9 @@ namespace SCANsat
 				SCANresourceGlobal r = resources[i];
 
 				if (r.DisplayName == display)
+				{
 					return r.Name;
+				}
 			}
 
 			return display;
@@ -848,7 +1029,9 @@ namespace SCANsat
 				SCANresourceGlobal r = resources[i];
 
 				if (r.Name == resource)
+				{
 					return r.DisplayName;
+				}
 			}
 
 			return resource;
@@ -857,19 +1040,25 @@ namespace SCANsat
 		internal static SCANPalette PaletteLoader(string name, int size)
 		{
 			if (name == "Default" || string.IsNullOrEmpty(name))
+			{
 				return SCAN_Palette_Config.DefaultPalette.GetPalette(0);
+			}
 			else
 			{
 				SCANPaletteGroup group = SCANconfigLoader.SCANPalettes.GetPaletteGroup(name);
 
 				if (group == null)
+				{
 					return SCAN_Palette_Config.DefaultPalette.GetPalette(0);
-				
+				}
+
 				SCANPalette pal = group.GetPalette(size);
 
 				if (pal == null)
+				{
 					return SCAN_Palette_Config.DefaultPalette.GetPalette(0);
-				
+				}
+
 				return pal;
 			}
 		}
@@ -903,7 +1092,9 @@ namespace SCANsat
 			}
 
 			if (data.Count <= 0)
+			{
 				return;
+			}
 
 			List<ScienceSubject> subjects = ResearchAndDevelopment.GetSubjects();
 
@@ -914,7 +1105,9 @@ namespace SCANsat
 				ScienceSubject sub = subjects[i];
 
 				if (sub.id.StartsWith("SCAN"))
+				{
 					SCANsubjects.Add(sub);
+				}
 			}
 
 			for (int i = SCANsubjects.Count - 1; i >= 0; i--)
@@ -928,10 +1121,12 @@ namespace SCANsat
 					ScienceData d = data[j];
 
 					if (d.subjectID != sub.id)
+					{
 						continue;
+					}
 
 					//SCANlog("Original Data: [{0}] - Amount: {1:N2} : New Subject: {2} - Adjusted Amount: {3:N0}"
-						//, d.title, d.dataAmount, sub.title, Math.Max(0.0000001f, d.dataAmount - submittedData));
+					//, d.title, d.dataAmount, sub.title, Math.Max(0.0000001f, d.dataAmount - submittedData));
 
 					d.dataAmount = Math.Max(0.0000001f, d.dataAmount - submittedData);
 				}
@@ -952,7 +1147,9 @@ namespace SCANsat
 			}
 
 			if (data.Count <= 0)
+			{
 				return;
+			}
 
 			float submittedData = (sub.science / sub.subjectValue) * sub.dataScale;
 
@@ -961,7 +1158,9 @@ namespace SCANsat
 				ScienceData d = data[i];
 
 				if (d.subjectID != sub.id)
+				{
 					continue;
+				}
 
 				SCANlog("Original Data: [{0}] - Amount: {1:N2} : New Subject: {2} - Adjusted Amount: {3:N0}"
 					, d.title, d.dataAmount, sub.title, Math.Max(0.0000001f, d.dataAmount - submittedData));
@@ -1009,14 +1208,16 @@ namespace SCANsat
 				for (int i = 0; i < 9; i++)
 				{
 					if (e[i] < 0)
+					{
 						e[i] = 0;
+					}
 				}
 			}
 
 			return slope(e, 5);
 		}
 
-		internal static double slope (double[] elevations, double distance)
+		internal static double slope(double[] elevations, double distance)
 		{
 			double[] s = new double[8];
 
@@ -1055,7 +1256,9 @@ namespace SCANsat
 		internal static bool MouseIsOverWindow()
 		{
 			if (SCANcontroller.controller == null)
+			{
 				return false;
+			}
 
 			Vector2 pos = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
 
@@ -1149,207 +1352,240 @@ namespace SCANsat
 
 	}
 
-		#region JUtil
+	#region JUtil
 
-		public static class JUtil
+	public static class JUtil
+	{
+
+		private static readonly int ClosestApproachRefinementInterval = 16;
+
+		public static bool OrbitMakesSense(Vessel thatVessel)
 		{
+			if (thatVessel == null)
+			{
+				return false;
+			}
 
-				private static readonly int ClosestApproachRefinementInterval = 16;
-
-				public static bool OrbitMakesSense(Vessel thatVessel)
-				{
-						if (thatVessel == null)
-								return false;
-						if (thatVessel.situation == Vessel.Situations.FLYING ||
+			if (thatVessel.situation == Vessel.Situations.FLYING ||
 								thatVessel.situation == Vessel.Situations.SUB_ORBITAL ||
 								thatVessel.situation == Vessel.Situations.ORBITING ||
 								thatVessel.situation == Vessel.Situations.ESCAPING ||
 								thatVessel.situation == Vessel.Situations.DOCKED) // Not sure about this last one.
-								return true;
-						return false;
-				}
-				// Closest Approach algorithms based on Protractor mod
-				public static double GetClosestApproach(Orbit vesselOrbit, CelestialBody targetCelestial, out double timeAtClosestApproach)
+			{
+				return true;
+			}
+
+			return false;
+		}
+		// Closest Approach algorithms based on Protractor mod
+		public static double GetClosestApproach(Orbit vesselOrbit, CelestialBody targetCelestial, out double timeAtClosestApproach)
+		{
+			Orbit closestorbit = GetClosestOrbit(vesselOrbit, targetCelestial);
+			if (closestorbit.referenceBody == targetCelestial)
+			{
+				timeAtClosestApproach = closestorbit.StartUT + ((closestorbit.eccentricity < 1.0) ?
+						closestorbit.timeToPe :
+						-closestorbit.meanAnomaly / (2 * Math.PI / closestorbit.period));
+				return closestorbit.PeA;
+			}
+			if (closestorbit.referenceBody == targetCelestial.referenceBody)
+			{
+				return MinTargetDistance(closestorbit, targetCelestial.orbit, closestorbit.StartUT, closestorbit.EndUT, out timeAtClosestApproach) - targetCelestial.Radius;
+			}
+			return MinTargetDistance(closestorbit, targetCelestial.orbit, Planetarium.GetUniversalTime(), Planetarium.GetUniversalTime() + closestorbit.period, out timeAtClosestApproach) - targetCelestial.Radius;
+		}
+		public static double GetClosestApproach(Orbit vesselOrbit, CelestialBody targetCelestial, Vector3d srfTarget, out double timeAtClosestApproach)
+		{
+			Orbit closestorbit = GetClosestOrbit(vesselOrbit, targetCelestial);
+			if (closestorbit.referenceBody == targetCelestial)
+			{
+				double t0 = Planetarium.GetUniversalTime();
+				Func<double, Vector3d> fn = delegate (double t)
 				{
-						Orbit closestorbit = GetClosestOrbit(vesselOrbit, targetCelestial);
-						if (closestorbit.referenceBody == targetCelestial) {
-								timeAtClosestApproach = closestorbit.StartUT + ((closestorbit.eccentricity < 1.0) ?
-										closestorbit.timeToPe :
-										-closestorbit.meanAnomaly / (2 * Math.PI / closestorbit.period));
-								return closestorbit.PeA;
-						}
-						if (closestorbit.referenceBody == targetCelestial.referenceBody) {
-								return MinTargetDistance(closestorbit, targetCelestial.orbit, closestorbit.StartUT, closestorbit.EndUT, out timeAtClosestApproach) - targetCelestial.Radius;
-						}
-						return MinTargetDistance(closestorbit, targetCelestial.orbit, Planetarium.GetUniversalTime(), Planetarium.GetUniversalTime() + closestorbit.period, out timeAtClosestApproach) - targetCelestial.Radius;
-				}
-				public static double GetClosestApproach(Orbit vesselOrbit, CelestialBody targetCelestial, Vector3d srfTarget, out double timeAtClosestApproach)
+					double angle = targetCelestial.rotates ? (t - t0) * 360.0 / targetCelestial.rotationPeriod : 0;
+					return targetCelestial.position + QuaternionD.AngleAxis(angle, Vector3d.down) * srfTarget;
+				};
+				double d = MinTargetDistance(closestorbit, fn, closestorbit.StartUT, closestorbit.EndUT, out timeAtClosestApproach);
+				// When just passed over the target, some look ahead may be needed
+				if ((timeAtClosestApproach <= closestorbit.StartUT || timeAtClosestApproach >= closestorbit.EndUT) &&
+						closestorbit.eccentricity < 1 && closestorbit.patchEndTransition == Orbit.PatchTransitionType.FINAL)
 				{
-						Orbit closestorbit = GetClosestOrbit(vesselOrbit, targetCelestial);
-						if (closestorbit.referenceBody == targetCelestial) {
-								double t0 = Planetarium.GetUniversalTime();
-								Func<double,Vector3d> fn = delegate(double t) {
-										double angle = targetCelestial.rotates ? (t - t0) * 360.0 / targetCelestial.rotationPeriod : 0;
-										return targetCelestial.position + QuaternionD.AngleAxis(angle, Vector3d.down) * srfTarget;
-								};
-								double d = MinTargetDistance(closestorbit, fn, closestorbit.StartUT, closestorbit.EndUT, out timeAtClosestApproach);
-								// When just passed over the target, some look ahead may be needed
-								if ((timeAtClosestApproach <= closestorbit.StartUT || timeAtClosestApproach >= closestorbit.EndUT) &&
-										closestorbit.eccentricity < 1 && closestorbit.patchEndTransition == Orbit.PatchTransitionType.FINAL) {
-										d = MinTargetDistance(closestorbit, fn, closestorbit.EndUT, closestorbit.EndUT + closestorbit.period / 2, out timeAtClosestApproach);
-								}
-								return d;
-						}
-						return GetClosestApproach(vesselOrbit, targetCelestial, out timeAtClosestApproach);
+					d = MinTargetDistance(closestorbit, fn, closestorbit.EndUT, closestorbit.EndUT + closestorbit.period / 2, out timeAtClosestApproach);
 				}
+				return d;
+			}
+			return GetClosestApproach(vesselOrbit, targetCelestial, out timeAtClosestApproach);
+		}
 
-				public static double GetClosestApproach(Orbit vesselOrbit, Orbit targetOrbit, out double timeAtClosestApproach)
+		public static double GetClosestApproach(Orbit vesselOrbit, Orbit targetOrbit, out double timeAtClosestApproach)
+		{
+			Orbit closestorbit = GetClosestOrbit(vesselOrbit, targetOrbit);
+
+			double startTime = Planetarium.GetUniversalTime();
+			double endTime;
+			if (closestorbit.patchEndTransition != Orbit.PatchTransitionType.FINAL)
+			{
+				endTime = closestorbit.EndUT;
+			}
+			else
+			{
+				endTime = startTime + Math.Max(closestorbit.period, targetOrbit.period);
+			}
+
+			return MinTargetDistance(closestorbit, targetOrbit, startTime, endTime, out timeAtClosestApproach);
+		}
+
+		// Closest Approach support methods
+		private static Orbit GetClosestOrbit(Orbit vesselOrbit, CelestialBody targetCelestial)
+		{
+			Orbit checkorbit = vesselOrbit;
+			int orbitcount = 0;
+
+			while (checkorbit.nextPatch != null && checkorbit.patchEndTransition != Orbit.PatchTransitionType.FINAL && orbitcount < 3)
+			{
+				checkorbit = checkorbit.nextPatch;
+				orbitcount += 1;
+				if (checkorbit.referenceBody == targetCelestial)
 				{
-						Orbit closestorbit = GetClosestOrbit(vesselOrbit, targetOrbit);
-
-						double startTime = Planetarium.GetUniversalTime();
-						double endTime;
-						if (closestorbit.patchEndTransition != Orbit.PatchTransitionType.FINAL) {
-								endTime = closestorbit.EndUT;
-						} else {
-								endTime = startTime + Math.Max(closestorbit.period, targetOrbit.period);
-						}
-
-						return MinTargetDistance(closestorbit, targetOrbit, startTime, endTime, out timeAtClosestApproach);
+					return checkorbit;
 				}
 
-				// Closest Approach support methods
-				private static Orbit GetClosestOrbit(Orbit vesselOrbit, CelestialBody targetCelestial)
+			}
+			checkorbit = vesselOrbit;
+			orbitcount = 0;
+
+			while (checkorbit.nextPatch != null && checkorbit.patchEndTransition != Orbit.PatchTransitionType.FINAL && orbitcount < 3)
+			{
+				checkorbit = checkorbit.nextPatch;
+				orbitcount += 1;
+				if (checkorbit.referenceBody == targetCelestial.orbit.referenceBody)
 				{
-						Orbit checkorbit = vesselOrbit;
-						int orbitcount = 0;
-
-						while (checkorbit.nextPatch != null && checkorbit.patchEndTransition != Orbit.PatchTransitionType.FINAL && orbitcount < 3) {
-								checkorbit = checkorbit.nextPatch;
-								orbitcount += 1;
-								if (checkorbit.referenceBody == targetCelestial) {
-										return checkorbit;
-								}
-
-						}
-						checkorbit = vesselOrbit;
-						orbitcount = 0;
-
-						while (checkorbit.nextPatch != null && checkorbit.patchEndTransition != Orbit.PatchTransitionType.FINAL && orbitcount < 3) {
-								checkorbit = checkorbit.nextPatch;
-								orbitcount += 1;
-								if (checkorbit.referenceBody == targetCelestial.orbit.referenceBody) {
-										return checkorbit;
-								}
-						}
-
-						return vesselOrbit;
+					return checkorbit;
 				}
+			}
 
-				private static Orbit GetClosestOrbit(Orbit vesselOrbit, Orbit targetOrbit)
+			return vesselOrbit;
+		}
+
+		private static Orbit GetClosestOrbit(Orbit vesselOrbit, Orbit targetOrbit)
+		{
+			Orbit checkorbit = vesselOrbit;
+			int orbitcount = 0;
+
+			while (checkorbit.nextPatch != null && checkorbit.patchEndTransition != Orbit.PatchTransitionType.FINAL && orbitcount < 3)
+			{
+				checkorbit = checkorbit.nextPatch;
+				orbitcount += 1;
+				if (checkorbit.referenceBody == targetOrbit.referenceBody)
 				{
-						Orbit checkorbit = vesselOrbit;
-						int orbitcount = 0;
-
-						while (checkorbit.nextPatch != null && checkorbit.patchEndTransition != Orbit.PatchTransitionType.FINAL && orbitcount < 3) {
-								checkorbit = checkorbit.nextPatch;
-								orbitcount += 1;
-								if (checkorbit.referenceBody == targetOrbit.referenceBody) {
-										return checkorbit;
-								}
-
-						}
-
-						return vesselOrbit;
+					return checkorbit;
 				}
 
-				private static double MinTargetDistance(Orbit vesselOrbit, Orbit targetOrbit, double startTime, double endTime, out double timeAtClosestApproach)
-				{
-						return MinTargetDistance(vesselOrbit, t => targetOrbit.getPositionAtUT(t), startTime, endTime, out timeAtClosestApproach);
-				}
+			}
 
-				private static double MinTargetDistance(Orbit vesselOrbit, Func<double,Vector3d> targetOrbit, double startTime, double endTime, out double timeAtClosestApproach)
-				{
-						var dist_at_int = new double[ClosestApproachRefinementInterval + 1];
-						double step = startTime;
-						double dt = (endTime - startTime) / (double)ClosestApproachRefinementInterval;
-						for (int i = 0; i <= ClosestApproachRefinementInterval; i++) {
-								dist_at_int[i] = (targetOrbit(step) - vesselOrbit.getPositionAtUT(step)).magnitude;
-								step += dt;
-						}
-						double mindist = dist_at_int.Min();
-						double maxdist = dist_at_int.Max();
-						int minindex = Array.IndexOf(dist_at_int, mindist);
-						if ((maxdist - mindist) / maxdist >= 0.00001) {
-								// Don't allow negative times.  Clamp the startTime to the current startTime.
-								mindist = MinTargetDistance(vesselOrbit, targetOrbit, startTime + (Math.Max(minindex - 1, 0) * dt), startTime + ((minindex + 1) * dt), out timeAtClosestApproach);
-						} else {
-								timeAtClosestApproach = startTime + minindex * dt;
-						}
+			return vesselOrbit;
+		}
 
-						return mindist;
-				}
-				// Some snippets from MechJeb...
-				public static double ClampDegrees360(double angle)
-				{
-						angle = angle % 360.0;
-						if (angle < 0)
-								return angle + 360.0;
-						return angle;
-				}
-				//keeps angles in the range -180 to 180
-				public static double ClampDegrees180(double angle)
-				{
-						angle = ClampDegrees360(angle);
-						if (angle > 180)
-								angle -= 360;
-						return angle;
-				}
-				//acosh(x) = log(x + sqrt(x^2 - 1))
-				public static double Acosh(double x)
-				{
-						return Math.Log(x + Math.Sqrt(x * x - 1));
-				}
-				public static double ClampRadiansTwoPi(double angle)
-				{
-						angle = angle % (2 * Math.PI);
-						if (angle < 0)
-								return angle + 2 * Math.PI;
-						return angle;
-				}
+		private static double MinTargetDistance(Orbit vesselOrbit, Orbit targetOrbit, double startTime, double endTime, out double timeAtClosestApproach)
+		{
+			return MinTargetDistance(vesselOrbit, t => targetOrbit.getPositionAtUT(t), startTime, endTime, out timeAtClosestApproach);
+		}
 
-				public static Material LineMat;
+		private static double MinTargetDistance(Orbit vesselOrbit, Func<double, Vector3d> targetOrbit, double startTime, double endTime, out double timeAtClosestApproach)
+		{
+			var dist_at_int = new double[ClosestApproachRefinementInterval + 1];
+			double step = startTime;
+			double dt = (endTime - startTime) / (double)ClosestApproachRefinementInterval;
+			for (int i = 0; i <= ClosestApproachRefinementInterval; i++)
+			{
+				dist_at_int[i] = (targetOrbit(step) - vesselOrbit.getPositionAtUT(step)).magnitude;
+				step += dt;
+			}
+			double mindist = dist_at_int.Min();
+			double maxdist = dist_at_int.Max();
+			int minindex = Array.IndexOf(dist_at_int, mindist);
+			if ((maxdist - mindist) / maxdist >= 0.00001)
+			{
+				// Don't allow negative times.  Clamp the startTime to the current startTime.
+				mindist = MinTargetDistance(vesselOrbit, targetOrbit, startTime + (Math.Max(minindex - 1, 0) * dt), startTime + ((minindex + 1) * dt), out timeAtClosestApproach);
+			}
+			else
+			{
+				timeAtClosestApproach = startTime + minindex * dt;
+			}
 
-				public static Material DrawLineMaterial()
-				{
-					if (LineMat == null)
-					{
-						//var lineMaterial = new Material("Shader \"Lines/Colored Blended\" {" +
-						//		"SubShader { Pass {" +
-						//		"   BindChannels {" + 
-						//		"     Bind \"color\", color }" +
-						//		"   Blend SrcAlpha OneMinusSrcAlpha" +
-						//		"   ZWrite Off Cull Off Fog { Mode Off }" +
-						//		"} } }");
-						var lineMaterial = new Material(Shader.Find("KSP/Particles/Alpha Blended"));
-						lineMaterial.hideFlags = HideFlags.HideAndDontSave;
-						lineMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
+			return mindist;
+		}
+		// Some snippets from MechJeb...
+		public static double ClampDegrees360(double angle)
+		{
+			angle = angle % 360.0;
+			if (angle < 0)
+			{
+				return angle + 360.0;
+			}
 
-						LineMat = lineMaterial;
-					}
+			return angle;
+		}
+		//keeps angles in the range -180 to 180
+		public static double ClampDegrees180(double angle)
+		{
+			angle = ClampDegrees360(angle);
+			if (angle > 180)
+			{
+				angle -= 360;
+			}
 
-					return LineMat;
-				}
+			return angle;
+		}
+		//acosh(x) = log(x + sqrt(x^2 - 1))
+		public static double Acosh(double x)
+		{
+			return Math.Log(x + Math.Sqrt(x * x - 1));
+		}
+		public static double ClampRadiansTwoPi(double angle)
+		{
+			angle = angle % (2 * Math.PI);
+			if (angle < 0)
+			{
+				return angle + 2 * Math.PI;
+			}
 
-				public static bool IsActiveVessel(Vessel thatVessel)
-				{
-						return (HighLogic.LoadedSceneIsFlight && thatVessel != null	&& thatVessel.isActiveVessel);
-				}
-				public static bool IsInIVA()
-				{
-						return CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.IVA || CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.Internal;
-				}
+			return angle;
+		}
+
+		public static Material LineMat;
+
+		public static Material DrawLineMaterial()
+		{
+			if (LineMat == null)
+			{
+				//var lineMaterial = new Material("Shader \"Lines/Colored Blended\" {" +
+				//		"SubShader { Pass {" +
+				//		"   BindChannels {" + 
+				//		"     Bind \"color\", color }" +
+				//		"   Blend SrcAlpha OneMinusSrcAlpha" +
+				//		"   ZWrite Off Cull Off Fog { Mode Off }" +
+				//		"} } }");
+				var lineMaterial = new Material(Shader.Find("KSP/Particles/Alpha Blended"));
+				lineMaterial.hideFlags = HideFlags.HideAndDontSave;
+				lineMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
+
+				LineMat = lineMaterial;
+			}
+
+			return LineMat;
+		}
+
+		public static bool IsActiveVessel(Vessel thatVessel)
+		{
+			return (HighLogic.LoadedSceneIsFlight && thatVessel != null && thatVessel.isActiveVessel);
+		}
+		public static bool IsInIVA()
+		{
+			return CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.IVA || CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.Internal;
 		}
 	}
-		#endregion
+}
+#endregion
 

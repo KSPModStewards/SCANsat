@@ -65,7 +65,9 @@ namespace SCANsat.Unity.Unity
 			}
 
 			if (c == null || string.IsNullOrEmpty(t) || _rectTransform == null || _handler == null)
+			{
 				return;
+			}
 
 			var _canvas = c;
 			_guiCamera = _canvas.worldCamera;
@@ -90,14 +92,18 @@ namespace SCANsat.Unity.Unity
 		public void UpdateText(string text)
 		{
 			if (_handler != null)
+			{
 				_handler.OnTextUpdate.Invoke(text);
+			}
 		}
 
 		// Update is called once per frame
 		void FixedUpdate()
 		{
 			if (_inside && _guiMode == RenderMode.ScreenSpaceCamera)
+			{
 				OnScreenSpaceCamera();
+			}
 		}
 
 		//main tooltip edge of screen guard and movement

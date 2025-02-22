@@ -35,7 +35,9 @@ namespace SCANsat
 			get
 			{
 				if (_defaultPalette == null)
+				{
 					_defaultPalette = GenerateDefaultPalette();
+				}
 
 				return _defaultPalette;
 			}
@@ -55,7 +57,9 @@ namespace SCANsat
 				LoadSavedCopy();
 			}
 			else
+			{
 				SCANUtil.SCANlog("Palette File Loaded");
+			}
 		}
 
 		private static SCANPaletteGroup GenerateDefaultPalette()
@@ -81,7 +85,9 @@ namespace SCANsat
 			PaletteTypes.Add(new SCANPaletteType("Fixed"));
 
 			for (int i = 0; i < PaletteTypes.Count; i++)
+			{
 				PaletteTypes[i].SaveDefaultPalettes();
+			}
 
 			OnDecodeFromConfigNode();
 		}
@@ -89,10 +95,14 @@ namespace SCANsat
 		public SCANPaletteType GetPaletteType(SCANPaletteKind kind)
 		{
 			if (MasterPaletteTypeList.Contains(kind))
+			{
 				return MasterPaletteTypeList[kind];
+			}
 
 			if (MasterPaletteTypeList.Count > 0)
+			{
 				return MasterPaletteTypeList.At(0);
+			}
 
 			return null;
 		}
@@ -104,7 +114,9 @@ namespace SCANsat
 				SCANPaletteType type = MasterPaletteTypeList.At(i);
 
 				if (type.Kind != kind)
+				{
 					continue;
+				}
 
 				SCANPaletteGroup group = type.GetPaletteGroup(name);
 
@@ -123,7 +135,9 @@ namespace SCANsat
 				SCANPaletteGroup group = type.GetPaletteGroup(name);
 
 				if (group != null)
+				{
 					return group;
+				}
 			}
 
 			return null;
@@ -136,7 +150,9 @@ namespace SCANsat
 				SCANPaletteType type = MasterPaletteTypeList.At(i);
 
 				if (type.Kind != kind)
+				{
 					continue;
+				}
 
 				return type.GetPaletteList(length);
 			}
@@ -153,10 +169,14 @@ namespace SCANsat
 					SCANPaletteType p = PaletteTypes[i];
 
 					if (p == null)
+					{
 						continue;
+					}
 
 					if (!MasterPaletteTypeList.Contains(p.Kind))
+					{
 						MasterPaletteTypeList.Add(p.Kind, p);
+					}
 				}
 			}
 			catch (Exception e)
