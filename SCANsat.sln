@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
@@ -25,26 +25,19 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Default|Any CPU = Default|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3AE13948-477D-4375-8AB4-B45664966D9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3AE13948-477D-4375-8AB4-B45664966D9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3AE13948-477D-4375-8AB4-B45664966D9E}.Default|Any CPU.ActiveCfg = Debug|Any CPU
-		{3AE13948-477D-4375-8AB4-B45664966D9E}.Default|Any CPU.Build.0 = Debug|Any CPU
 		{3AE13948-477D-4375-8AB4-B45664966D9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AE13948-477D-4375-8AB4-B45664966D9E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A2B942AF-3AB2-4A9F-9211-FFC47364128D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A2B942AF-3AB2-4A9F-9211-FFC47364128D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A2B942AF-3AB2-4A9F-9211-FFC47364128D}.Default|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2B942AF-3AB2-4A9F-9211-FFC47364128D}.Default|Any CPU.Build.0 = Debug|Any CPU
 		{A2B942AF-3AB2-4A9F-9211-FFC47364128D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2B942AF-3AB2-4A9F-9211-FFC47364128D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4ED5E40D-273A-4643-9009-04C1DD02F3E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4ED5E40D-273A-4643-9009-04C1DD02F3E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4ED5E40D-273A-4643-9009-04C1DD02F3E2}.Default|Any CPU.ActiveCfg = Debug|Any CPU
-		{4ED5E40D-273A-4643-9009-04C1DD02F3E2}.Default|Any CPU.Build.0 = Debug|Any CPU
 		{4ED5E40D-273A-4643-9009-04C1DD02F3E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4ED5E40D-273A-4643-9009-04C1DD02F3E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
