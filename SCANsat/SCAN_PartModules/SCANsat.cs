@@ -84,17 +84,20 @@ namespace SCANsat.SCAN_PartModules
 
 		protected bool UpdateScannerInfo = true;
 
-		/* SAT: KSP entry points */
-		public override void OnStart(StartState state)
+		public override void OnAwake()
 		{
+			base.OnAwake();
 			scanInfoStatus = Fields["scanStatus"];
 			scanInfoAltitude = Fields["scanAltitude"];
 			scanInfoType = Fields["scanType"];
 			scanInfoFOV = Fields["scanFOV"];
 			scanInfoPower = Fields["scanPower"];
 			scanInfoDaylight = Fields["scanDaylight"];
+		}
 
-
+		/* SAT: KSP entry points */
+		public override void OnStart(StartState state)
+		{
 			if (state == StartState.Editor)
 			{
 				print("[SCANsat] start: in editor");

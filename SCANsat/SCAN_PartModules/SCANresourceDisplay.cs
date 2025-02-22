@@ -59,14 +59,18 @@ namespace SCANsat.SCAN_PartModules
 			get { return maxAbundanceAltitude; }
 		}
 
+		public override void OnAwake()
+		{
+			base.OnAwake();
+			abundanceField = Fields["abundance"];
+		}
+
 		public override void OnStart(PartModule.StartState state)
 		{
 			if (state == StartState.Editor)
 			{
 				return;
 			}
-
-			abundanceField = Fields["abundance"];
 
 			GameEvents.onVesselSOIChanged.Add(onSOIChange);
 
