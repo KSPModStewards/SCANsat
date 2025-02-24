@@ -1080,6 +1080,11 @@ namespace SCANsat
 
 		internal static void UpdateAllVesselData(Vessel v)
 		{
+			if (ResearchAndDevelopment.Instance == null)
+			{
+				return;
+			}
+
 			List<ScienceData> data = new List<ScienceData>();
 
 			var science = v.FindPartModulesImplementing<IScienceDataContainer>();
