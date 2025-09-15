@@ -1,6 +1,6 @@
 # SCANsat Changelog
 
-## Unreleased
+## 21.0 - 2025-09-15
 
 - Added Chinese localization (thanks @AmazingWood)
 - Fixed usages of .material in favor of .sharedMaterial (thanks @Gameslinx)
@@ -16,6 +16,7 @@
 - Fix tooltip bug when ContractConfigurator is installed (thanks @abel1502 for pinpointing the issue)
 - Remove "enhanced for ground activity" from orbital scanners
 - Moved all start/stop event buttons into the PAW group
+
 
 ## 20.4 - 2020-9-9
 
@@ -413,9 +414,11 @@
 
 - Fix compatibility with Kerbalism
 
+
 ## 16.5 - 2016-8-10
 
 - Fix bug in electricity usage that was preventing scanning
+
 
 ## 16.4 - 2016-8-9
 
@@ -426,11 +429,13 @@
     - Add "cheatMapFill = True" to the SCANcolors.cfg file
 - Fix potential Toolbar related errors (bssthu)
 
+
 ## 16.3 - 2016-6-27
 
 - Adds new resource types and Module Manager scanner configs for KSP Interstellar Extended Version 1.9
      - Deprecated unused He-3 and Thorium resource types
 - Updated for Mechjeb 2.5.8
+
 
 ## 16.2 - 2016-6-21
 
@@ -444,11 +449,13 @@
 - Allow planetary resource configs to be loaded if no global config is defined
 - Some GUI performance and garbage creation optimizations
 
+
 ## 16.1 - 2016-5-2
 
 - Update for KSP 1.1.2
 - Update API for Kerbalism support
 - Fixed an error that prevented the UI from opening after exiting the Mission Control building
+
 
 ## 16.0 - 2016-4-19
 
@@ -471,6 +478,7 @@
 	- Fixed potential error with ground tracks
 	- Fixed potential error with .csv exporter
 
+
 ## 14.9 - 2016-3-6
 
 - Add new zoom map buttons to small map, big map and toolbar
@@ -490,14 +498,17 @@
 - Some changes in how data is loaded from the save file; no end-user effect
 - Fixed error that prevented SCANsat contracts from generating before the player left the Kerbin system
 
+
 ## 14.8 - 2016-2-10
 
 - Fix RPM and Kopernicus incompatibility
 - Add new CRP resources and configs
 
+
 ## 14.7 - 2016-1-16
 
 -Fix Contract config error
+
 
 ## 14.6 - 2016-1-15
 
@@ -508,6 +519,7 @@
 - Allow for included contracts to be disabled through the ScanSatOfficial Contract Type (Thanks DBT85)
 - Fix a bug that was preventing loading of the color config file when additional planets are installed
 - Add MetalOre as a SCANsat resource and MetalOre scanner modules to EPL scanner parts
+
 
 ## 14.5 - 2015-12-22
 
