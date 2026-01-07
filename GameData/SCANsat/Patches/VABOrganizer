@@ -1,0 +1,15 @@
+ORGANIZERSUBCATEGORY:NEEDS[SCANsat]
+{
+  name = orbitalScanners
+  Label = Orbital Scanners
+  Priority = 35
+  CategoryPriority = 70
+}
+
+@PART[scansat*]:AFTER[SCANsat]
+{
+  %VABORGANIZER
+  {
+    %organizerSubcategory = orbitalScanners
+  }
+}
