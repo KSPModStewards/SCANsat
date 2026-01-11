@@ -214,8 +214,8 @@ namespace SCANmechjeb
 				return;
 			}
 
-			target = mjCore.target;
-
+			target = mjCore.Target;
+			
 			if (target == null)
 			{
 				SCANcontroller.controller.MechJebLoaded = false;
@@ -243,7 +243,7 @@ namespace SCANmechjeb
 
 				guidanceModule.UnlockCheck();
 
-				if (guidanceModule.hidden)
+				if (guidanceModule.Hidden)
 				{
 					SCANcontroller.controller.MechJebLoaded = false;
 					way = null;
