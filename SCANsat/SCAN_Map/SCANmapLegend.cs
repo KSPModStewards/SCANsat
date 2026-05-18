@@ -118,7 +118,7 @@ namespace SCANsat.SCAN_Map
 
 					if (stock && color)
 					{
-						pix[current] = biomes[i].mapColor;
+						pix[current] = SCANUtil.getBiomeDisplayColor(data.Body, i);
 					}
 					else if (color)
 					{
@@ -145,7 +145,7 @@ namespace SCANsat.SCAN_Map
 
 				if (SCAN_Settings_Config.Instance.BigMapStockBiomes && color)
 				{
-					pix[256 - backCount] = biomes[count - 1].mapColor;
+					pix[256 - backCount] = SCANUtil.getBiomeDisplayColor(data.Body, count - 1);
 				}
 				else if (color)
 				{
