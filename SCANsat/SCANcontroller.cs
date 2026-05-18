@@ -158,6 +158,17 @@ namespace SCANsat
 		private Dictionary<CelestialBody, Texture2D> readableScaledSpaceNormalMaps = new Dictionary<CelestialBody, Texture2D>();
 		private CelestialBody bigMapBodyScaledSpace;
 		private CelestialBody zoomMapBodyScaledSpace;
+		
+		/* Normal Map Encoding Data */
+		public enum NormalMapEncoding
+		{
+			RGBA,	// RGB Normal: .b is Z
+			DXT5NM,	// X in A, Y in G, Z Reconstructed
+			BC5		// X in R, Y in G, Z Reconstructed
+		}
+
+		private Dictionary<CelestialBody, NormalMapEncoding> normalMapEncodings =
+			new Dictionary<CelestialBody, NormalMapEncoding>();
 
 		private SCAN_UI_MainMap _mainMap;
 		private SCAN_UI_Instruments _instruments;
@@ -1599,6 +1610,12 @@ namespace SCANsat
 		{
 
 		}
+		
+		public NormalMapEncoding GetNormalMapEncoding(CelestialBody b)
+		{
+			if (b == null) return NormalMapEncoding.RGBA;
+			return normalMapEncodings.TryGetValue(b, out var enc) ? enc : NormalMapEncoding.RGBA;
+		}
 
 		void GetVisualMapTexturesForBody(CelestialBody b, out Material material, out bool useMaterialForColorMap, out string colorMapTextureName, out string normalMapTextureName)
 		{
@@ -1633,7 +1650,7 @@ namespace SCANsat
 				SCANparallaxContinued.LoadParallax(b, ref material);
 				useMaterialForColorMap = false;
 				colorMapTextureName = "_ColorMap";
-				normalMapTextureName = null; // for whatever reason, the logic in ScANmap that uses the normal map doesn't work with parallax's normal maps
+				normalMapTextureName = "_BumpMap";
 				return;
 			}
 			else if (material.HasProperty("_MainTex"))
@@ -1655,7 +1672,7 @@ namespace SCANsat
 			}
 		}
 
-		void CacheScaledSpaceTexture(Dictionary<CelestialBody, Texture2D> cache, CelestialBody b, Material material, string textureName, bool useMaterial)
+		void CacheScaledSpaceTexture(Dictionary<CelestialBody, Texture2D> cache, CelestialBody b, Material material, string textureName, bool useMaterial, bool isNormalMap)
 		{
 			if (cache.GetValueOrDefault(b) == null && textureName != null)
 			{
@@ -1663,12 +1680,30 @@ namespace SCANsat
 				if (sourceTexture == null)
 				{
 					Log.Error($"GetTexture returned a null texture for body {b.name}, material {material.name} and texture name {textureName}");
+					return;
 				}
-				else
+
+				if (isNormalMap)
 				{
-					var colorMap = sourceTexture.isReadable ? sourceTexture : readableTexture(sourceTexture, useMaterial ? material : null);
-					cache.Add(b, colorMap);
+					NormalMapEncoding encoding;
+					switch (sourceTexture.format)
+					{
+						case TextureFormat.BC5:
+							encoding = NormalMapEncoding.BC5;
+							break;
+						case TextureFormat.DXT5:
+							encoding = NormalMapEncoding.DXT5NM;
+							break;
+						default:
+							encoding = NormalMapEncoding.RGBA;
+							break;
+					}
+
+					normalMapEncodings[b] = encoding;
 				}
+
+				var colorMap = sourceTexture.isReadable ? sourceTexture : readableTexture(sourceTexture, useMaterial ? material : null, isNormalMap);
+				cache.Add(b, colorMap);
 			}
 		}
 
@@ -1692,8 +1727,8 @@ namespace SCANsat
 			}
 			else
 			{
-				CacheScaledSpaceTexture(readableScaledSpaceMaps, b, material, colorMapTextureName, useMaterialForColorMap);
-				CacheScaledSpaceTexture(readableScaledSpaceNormalMaps, b, material, normalMapTextureName, false);
+				CacheScaledSpaceTexture(readableScaledSpaceMaps, b, material, colorMapTextureName, useMaterialForColorMap, false);
+				CacheScaledSpaceTexture(readableScaledSpaceNormalMaps, b, material, normalMapTextureName, false, true);
 			}
 
 			switch (s)
@@ -1753,10 +1788,11 @@ namespace SCANsat
 				GameObject.Destroy(readableScaledSpaceNormalMaps[b]);
 				readableScaledSpaceNormalMaps[b] = null;
 				readableScaledSpaceNormalMaps.Remove(b);
+				normalMapEncodings.Remove(b);
 			}
 		}
 
-		private Texture2D readableTexture(Texture tex, Material mat)
+		private Texture2D readableTexture(Texture tex, Material mat, bool isNormalMap = false)
 		{
 			if (tex == null)
 			{
@@ -1765,7 +1801,10 @@ namespace SCANsat
 
 			Texture2D readable = new Texture2D(tex.width, tex.height);
 
-			var rt = RenderTexture.GetTemporary(tex.width, tex.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB, 1);
+			var readWrite = isNormalMap
+				? RenderTextureReadWrite.Linear
+				: RenderTextureReadWrite.sRGB;
+			var rt = RenderTexture.GetTemporary(tex.width, tex.height, 0, RenderTextureFormat.ARGB32, readWrite, 1);
 
 			if (mat != null)
 			{
