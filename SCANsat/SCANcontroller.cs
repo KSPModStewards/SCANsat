@@ -1628,7 +1628,7 @@ namespace SCANsat
 				normalMapTextureName = "_NormalMap";
 				return;
 			}
-			else if (shaderName.Contains("ParallaxScaled"))
+			else if (shaderName.Contains("ParallaxScaled") || shaderName.Contains("HapkeScaled")) // HapkeScaled is the Sol shader which is also a Parallax-dependent instance
 			{
 				SCANparallaxContinued.LoadParallax(b, ref material);
 				useMaterialForColorMap = false;
