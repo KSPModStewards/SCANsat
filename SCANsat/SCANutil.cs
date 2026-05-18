@@ -534,6 +534,10 @@ namespace SCANsat
 
 		public static double[] cosLookUp = new double[180];
 		public static DictionaryValueList<CelestialBody, string> localizedBodyNames = new DictionaryValueList<CelestialBody, string>();
+		
+		/* Biome Map Encoding Data */
+		private static Dictionary<string, CBAttributeMapSO.MapAttribute[]> _scanBiomePaletteCache
+			= new Dictionary<string, CBAttributeMapSO.MapAttribute[]>();
 
 		internal static bool isCovered(double lon, double lat, SCANdata data, SCANtype type)
 		{
@@ -834,6 +838,48 @@ namespace SCANsat
 			return amount;
 		}
 
+		private static bool IsGrayscaleEncoded(CBAttributeMapSO.MapAttribute[] attrs)
+		{
+			foreach (var a in attrs)
+			{
+				if (a == null) continue;
+				if (Mathf.Abs(a.mapColor.g - 1f) > 0.01f) return false;
+				if (Mathf.Abs(a.mapColor.b - 1f) > 0.01f) return false;
+			}
+			return true;
+		}
+
+		private static CBAttributeMapSO.MapAttribute[] GetOrBuildPalette(CelestialBody body)
+		{
+			if (_scanBiomePaletteCache.TryGetValue(body.name, out var cached))
+				return cached;
+
+			var src = body.BiomeMap.Attributes;
+			if (!IsGrayscaleEncoded(src))
+			{
+				// Pack ships proper RGBA mapColors. Cache a null sentinel so we
+				// never re-detect, and never substitute.
+				_scanBiomePaletteCache[body.name] = null;
+				return null;
+			}
+
+			// Build replacements with categorical hues via golden-ratio HSV
+			var replacements = new CBAttributeMapSO.MapAttribute[src.Length];
+			for (int i = 0; i < src.Length; i++)
+			{
+				if (src[i] == null) continue;
+				var clone = new CBAttributeMapSO.MapAttribute
+				{
+					name = src[i].name,
+					value = src[i].value,
+					mapColor = Color.HSVToRGB((i * 0.61803398875f) % 1f, 1f, 1f)
+				};
+				replacements[i] = clone;
+			}
+			_scanBiomePaletteCache[body.name] = replacements;
+			return replacements;
+		}
+		
 		private static int getBiomeIndex(CelestialBody body, double lon, double lat)
 		{
 			if (body.BiomeMap == null)
@@ -850,6 +896,7 @@ namespace SCANsat
 			}
 
 			CBAttributeMapSO.MapAttribute att = body.BiomeMap.GetAtt(Mathf.Deg2Rad * lat, Mathf.Deg2Rad * lon);
+
 			for (int i = 0; i < body.BiomeMap.Attributes.Length; ++i)
 			{
 				if (body.BiomeMap.Attributes[i] == att)
@@ -882,6 +929,10 @@ namespace SCANsat
 			{
 				return null;
 			}
+			
+			var palette = GetOrBuildPalette(body);
+			if (palette != null && i < palette.Length && palette[i] != null)
+				return palette[i];
 
 			return body.BiomeMap.Attributes[i];
 		}
@@ -928,6 +979,19 @@ namespace SCANsat
 			}
 
 			sb.Append(string.IsNullOrEmpty(a.displayname) ? a.name : Localizer.Format(a.displayname));
+		}
+		internal static Color getBiomeDisplayColor(CelestialBody body, int idx)
+		{
+			if (body == null || body.BiomeMap == null) 
+				return Color.gray;
+			if (idx < 0 || idx >= body.BiomeMap.Attributes.Length) 
+				return Color.gray;
+
+			var palette = GetOrBuildPalette(body);
+			if (palette != null && palette[idx] != null)
+				return palette[idx].mapColor;
+
+			return body.BiomeMap.Attributes[idx].mapColor;
 		}
 
 		internal static int countBits(int i)
