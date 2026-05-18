@@ -894,6 +894,7 @@ namespace SCANsat.SCAN_Map
 
 			Texture2D readableScaledSpaceMap = SCANcontroller.controller.getVisualMapTexture(body);
 			Texture2D readableScaledSpaceNormalMap = SCANcontroller.controller.getVisualMapNormalTexture(body);
+			SCANcontroller.NormalMapEncoding normalEncoding = SCANcontroller.controller.GetNormalMapEncoding(body);
 
 			for (int i = 0; i < map.width; i++)
 			{
@@ -1206,7 +1207,8 @@ namespace SCANsat.SCAN_Map
 
 									double opacity = 0.8;
 
-									double lumOver = readableScaledSpaceNormalMap.GetPixelBilinear(fLon, fLat).b;
+									double lumOver = GetZFromNormalMap(readableScaledSpaceNormalMap, normalEncoding,
+										fLon, fLat);
 									double lum = hslBase.L;
 
 									if (colorMap)
@@ -1475,6 +1477,29 @@ namespace SCANsat.SCAN_Map
 			}
 
 			return resourceCache[ilon, ilat];
+		}
+
+		private double GetZFromNormalMap(Texture2D normalMap, SCANcontroller.NormalMapEncoding encoding, float fLon, float fLat)
+		{
+			Color pixel = normalMap.GetPixelBilinear(fLon, fLat);
+			float nx, ny, nz = 0.0f;
+			switch (encoding)
+			{
+				case SCANcontroller.NormalMapEncoding.BC5:
+					// BC5: X in R, Y in G, B and A undefined post-blit
+					nx = pixel.r * 2f - 1f;
+					ny = pixel.g * 2f - 1f;
+					nz = Mathf.Sqrt(Mathf.Max(0f, 1f - nx * nx - ny * ny));
+					return (nz + 1f) * 0.5f; // BC5 Reconstructed Z
+				case SCANcontroller.NormalMapEncoding.DXT5NM:
+					// DXT5_NM: X in A, Y in G, R and B padded
+					nx = pixel.a * 2f - 1f;
+					ny = pixel.g * 2f - 1f;
+					nz = Mathf.Sqrt(Mathf.Max(0f, 1f - nx * nx - ny * ny));
+					return (nz + 1f) * 0.5f; // BC5 Reconstructed Z
+				default:
+					return pixel.b; // .b contains Z in RGA normal
+			}
 		}
 
 		#endregion
