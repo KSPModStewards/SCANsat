@@ -145,7 +145,7 @@ namespace SCANsat.SCAN_Map
 					switch (mode)
 					{
 						case mapType.Altimetry: line += ",Height"; break;
-						case mapType.Slope: line += ",SlopeDisplayValue"; break;
+						case mapType.Slope: line += ",Slope"; break;
 						case mapType.Biome: line += ",Biome"; break;
 					}
 
