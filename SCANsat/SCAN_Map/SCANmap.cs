@@ -2,7 +2,7 @@
 /*
  * [Scientific Committee on Advanced Navigation]
  * 			S.C.A.N. Satellite
- * 
+ *
  * SCANmap - makes maps from data
  *
  * Copyright (c)2013 damny;
@@ -148,6 +148,11 @@ namespace SCANsat.SCAN_Map
 			get { return big_heightmap; }
 		}
 
+		internal float[,] Big_SlopeMap
+		{
+			get { return big_slopemap; }
+		}
+
 		public bool UseCustomRange
 		{
 			get { return useCustomRange; }
@@ -174,6 +179,7 @@ namespace SCANsat.SCAN_Map
 
 		/* MAP: Big Map height map caching */
 		private float[,] big_heightmap;
+		private float[,] big_slopemap;
 		private bool cache;
 		private double centeredLong, centeredLat;
 
@@ -510,8 +516,17 @@ namespace SCANsat.SCAN_Map
 			mapheight = (int)(w / 2);
 			startLine = 0;
 			stopLine = mapheight - 1;
-			/* big map caching */
 			big_heightmap = new float[mapwidth, mapheight];
+
+			if (mType == mapType.Slope)
+			{
+				big_slopemap = new float[mapwidth, mapheight];
+			}
+			else
+			{
+				big_slopemap = null;
+			}
+
 			map = null;
 			resetMap(resourceActive);
 		}
@@ -1059,6 +1074,7 @@ namespace SCANsat.SCAN_Map
 									}
 
 									float v = Mathf.Clamp((float)Math.Abs(projVal - v1) / (1000f / (float)mapscale), 0, 2f);
+									big_slopemap[i, mapstep] = v;
 									if (!colorMap)
 									{
 										baseColor = palette.lerp(palette.Black, palette.White, v / 2f);
@@ -1456,7 +1472,7 @@ namespace SCANsat.SCAN_Map
 			return terrainElevation(Lon, Lat, W, H, heightMap, true, Data, out c, export);
 		}
 
-		private float getResoureCache(double Lon, double Lat)
+		internal float getResoureCache(double Lon, double Lat)
 		{
 			double resourceLat = fixUnscale(unScaleLatitude(Lat, resourceMapScale), resourceMapHeight);
 			double resourceLon = fixUnscale(unScaleLongitude(Lon, resourceMapScale), resourceMapWidth);
