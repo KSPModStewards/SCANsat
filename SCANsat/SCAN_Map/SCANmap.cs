@@ -517,15 +517,7 @@ namespace SCANsat.SCAN_Map
 			startLine = 0;
 			stopLine = mapheight - 1;
 			big_heightmap = new float[mapwidth, mapheight];
-
-			if (mType == mapType.Slope)
-			{
-				big_slopemap = new float[mapwidth, mapheight];
-			}
-			else
-			{
-				big_slopemap = null;
-			}
+			big_slopemap = new float[mapwidth, mapheight];
 
 			map = null;
 			resetMap(resourceActive);
