@@ -1,10 +1,10 @@
 ﻿#region license
-/* 
+/*
  * [Scientific Committee on Advanced Navigation]
  * 			S.C.A.N. Satellite
  *
  * SCAN_ZoomMap - Script for controlling the zoom map UI
- * 
+ *
  * Copyright (c)2014 David Grandy <david.grandy@gmail.com>;
  * Copyright (c)2014 technogeeky <technogeeky@gmail.com>;
  * Copyright (c)2014 (Your Name Here) <your email here>; see LICENSE.txt for licensing details.
@@ -24,9 +24,9 @@ namespace SCANsat.Unity.Unity
 	public class SCAN_ZoomMap : CanvasFader, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
 	{
 		[SerializeField]
-		private float m_MaxWidth = 520;
+		private float m_MaxWidth = 1100;
 		[SerializeField]
-		private float m_MaxHeight = 440;
+		private float m_MaxHeight = 880;
 		[SerializeField]
 		private TextHandler m_Version = null;
 		[SerializeField]
@@ -1664,6 +1664,16 @@ namespace SCANsat.Unity.Unity
 			zoomInterface.RefreshMap();
 
 			UpdateMapData(false);
+		}
+
+		public void ExportMap()
+		{
+			if (zoomInterface == null)
+			{
+				return;
+			}
+
+			zoomInterface.ExportMap();
 		}
 
 		public void ToggleColor(bool isOn)

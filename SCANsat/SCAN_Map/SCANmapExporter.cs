@@ -79,6 +79,8 @@ namespace SCANsat.SCAN_Map
 		private IEnumerator exportCSV(string filePath, string fileName, SCANmap map, SCANdata data, bool resourceActive)
 		{
 			int timer = 0;
+			double latitudeOffset = 0;
+			double longitudeOffset = 0;
 
 			SCANdata copy = new SCANdata(data);
 
@@ -101,7 +103,13 @@ namespace SCANsat.SCAN_Map
 			double scale = map.MapScale;
 			mapType mode = map.MType;
 
-			Thread t = new Thread(() => exportThread(filePath, fileName, width, height, scale, map, copy, copyHeightMap, copySlopeMap, mode, resourceActive));
+			if (map.MSource == mapSource.ZoomMap)
+			{
+				latitudeOffset = map.Lat_Offset;
+				longitudeOffset = map.Lon_Offset;
+			}
+
+			Thread t = new Thread(() => exportThread(filePath, fileName, width, height, scale, latitudeOffset, longitudeOffset, map, copy, copyHeightMap, copySlopeMap, mode, resourceActive));
 			threadFinished = false;
 			threadRunning = true;
 			t.Start();
@@ -134,7 +142,7 @@ namespace SCANsat.SCAN_Map
 			}
 		}
 
-		private void exportThread(string path, string fileName, int w, int h, double s, SCANmap map, SCANdata copyData,
+		private void exportThread(string path, string fileName, int w, int h, double s, double latitudeOffset, double longitudeOffset, SCANmap map, SCANdata copyData,
 			float[,] copyHeightMap, float[,] copySlopeMap, mapType mode, bool resourceActive)
 		{
 			try
@@ -159,8 +167,8 @@ namespace SCANsat.SCAN_Map
 					{
 						for (int j = 0; j < w; j++)
 						{
-							double lat = (i * 1.0f / s) - 90f;
-							double lon = (j * 1.0f / s) - 180f;
+							double lat = ((i + 0.5d) / s) - 90d + latitudeOffset;
+							double lon = ((j + 0.5d) / s) - 180d + longitudeOffset;
 							double la = lat, lo = lon;
 							lat = map.unprojectLatitude(lo, la);
 							lon = map.unprojectLongitude(lo, la);

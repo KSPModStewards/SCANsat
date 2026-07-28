@@ -1,10 +1,10 @@
 ﻿#region license
-/* 
+/*
  * [Scientific Committee on Advanced Navigation]
  * 			S.C.A.N. Satellite
  *
  * SCAN_UI_ZoomMap - UI control object for SCANsat zoom map
- * 
+ *
  * Copyright (c)2014 David Grandy <david.grandy@gmail.com>;
  * Copyright (c)2014 technogeeky <technogeeky@gmail.com>;
  * Copyright (c)2014 (Your Name Here) <your email here>; see LICENSE.txt for licensing details.
@@ -408,6 +408,16 @@ namespace SCANsat.SCAN_Unity
 			spotmap.resetMap(ResourceToggle, narrowBand);
 		}
 
+		public void ExportMap()
+		{
+			if (spotmap == null || spotmap.Map == null || rebuilding)
+			{
+				return;
+			}
+
+			spotmap.exportPNG();
+		}
+
 		public void resetMapToVessel()
 		{
 			vessel = FlightGlobals.ActiveVessel;
@@ -704,7 +714,7 @@ namespace SCANsat.SCAN_Unity
 			if (vesselChanged)
 			{
 				vesselChanged = false;
-				
+
 				if (uiElement != null)
 				{
 					uiElement.RefreshIcons();
