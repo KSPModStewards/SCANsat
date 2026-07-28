@@ -13,6 +13,8 @@ namespace SCANsat.SCAN_Map
 	{
 		private bool exporting;
 		private volatile bool threadRunning, threadFinished;
+		private volatile int exportedRows;
+		private volatile string threadError;
 
 		public bool Exporting
 		{
@@ -110,36 +112,67 @@ namespace SCANsat.SCAN_Map
 			}
 
 			Thread t = new Thread(() => exportThread(filePath, fileName, width, height, scale, latitudeOffset, longitudeOffset, map, copy, copyHeightMap, copySlopeMap, mode, resourceActive));
+			exportedRows = 0;
+			threadError = null;
 			threadFinished = false;
 			threadRunning = true;
 			t.Start();
 
-			while (threadRunning && timer < 20000)
+			while (threadRunning && timer < 50000)
 			{
 				timer++;
+
+				if (timer % 60 == 0)
+				{
+					int rows = exportedRows;
+					double percent = height > 0 ? rows * 100.0 / height : 0;
+
+					ScreenMessages.PostScreenMessage(string.Format("SCANsat CSV export: {0:N0}/{1:N0} rows ({2:F1}%)", rows, height, percent), 1.1f, ScreenMessageStyle.UPPER_CENTER);
+				}
+
 				yield return null;
 			}
 
-			SCANUtil.SCANlog(".csv data file export complete; exported over {0} frames\nFile saved to GameData/SCANsat/PluginData/{1}_data.csv", timer, fileName);
-
-			copy = null;
-			copyHeightMap = null;
-			copySlopeMap = null;
-			exporting = false;
-
-			if (timer >= 20000)
+			if (threadRunning)
 			{
-				Log.Error("Something went wrong while exporting .csv data file\nCanceling export thread...");
+				Log.Error(string.Format("SCANsat CSV export timed out after {0} frames for [{1}_data.csv] at row {2} of {3}", timer, fileName, exportedRows, height));
+
+				ScreenMessages.PostScreenMessage("SCANsat CSV export timed out; see KSP.log", 8, ScreenMessageStyle.UPPER_CENTER);
+
 				t.Abort();
-				threadRunning = false;
+				while (threadRunning)
+				{
+					yield return null;
+				}
+
+				copy = null;
+				copyHeightMap = null;
+				copySlopeMap = null;
+				exporting = false;
 				yield break;
 			}
 
 			if (!threadFinished)
 			{
-				Log.Error("Something went wrong while exporting .csv data file\nExport thread has been interrupted...");
+				Log.Error(string.Format("SCANsat CSV export failed for [{0}_data.csv]\n{1}", fileName, threadError ?? "No error details"));
+
+				ScreenMessages.PostScreenMessage("SCANsat CSV export failed; see KSP.log", 8, ScreenMessageStyle.UPPER_CENTER);
+
+				copy = null;
+				copyHeightMap = null;
+				copySlopeMap = null;
+				exporting = false;
 				yield break;
 			}
+
+			SCANUtil.SCANlog(".csv data file export complete; exported over {0} frames\nFile saved to GameData/SCANsat/PluginData/{1}_data.csv", timer, fileName);
+
+			ScreenMessages.PostScreenMessage("SCANsat CSV saved: GameData/SCANsat/PluginData/" + fileName + "_data.csv", 8, ScreenMessageStyle.UPPER_CENTER);
+
+			copy = null;
+			copyHeightMap = null;
+			copySlopeMap = null;
+			exporting = false;
 		}
 
 		private void exportThread(string path, string fileName, int w, int h, double s, double latitudeOffset, double longitudeOffset, SCANmap map, SCANdata copyData,
@@ -217,12 +250,15 @@ namespace SCANsat.SCAN_Map
 							writer.WriteLine(line);
 						}
 						writer.Flush();
+						exportedRows = i + 1;
 					}
 				}
+
 				threadFinished = true;
 			}
-			catch
+			catch (Exception ex)
 			{
+				threadError = ex.ToString();
 				threadFinished = false;
 			}
 			finally
