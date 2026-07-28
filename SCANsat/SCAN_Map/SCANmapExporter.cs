@@ -28,8 +28,6 @@ namespace SCANsat.SCAN_Map
 				return;
 			}
 
-			exporting = true;
-
 			string path = Path.Combine(new DirectoryInfo(KSPUtil.ApplicationRootPath).FullName, "GameData/SCANsat/PluginData/").Replace("\\", "/");
 			string mode = "";
 
@@ -41,12 +39,12 @@ namespace SCANsat.SCAN_Map
 				case mapType.Visual: mode = "visual"; break;
 			}
 
-			if (map.ResourceActive && SCANconfigLoader.GlobalResource && !string.IsNullOrEmpty(SCANcontroller.controller.bigMapResource))
+			if (map.ResourceActive && SCANconfigLoader.GlobalResource && map.Resource != null)
 			{
-				mode += "-" + SCANcontroller.controller.bigMapResource;
+				mode += "-" + map.Resource.Name;
 			}
 
-			if (!SCANcontroller.controller.bigMapColor)
+			if (!map.ColorMap)
 			{
 				mode += "-grey";
 			}
@@ -56,6 +54,11 @@ namespace SCANsat.SCAN_Map
 			if (map.Projection != MapProjection.Rectangular)
 			{
 				baseFileName += "_" + map.Projection.ToString();
+			}
+
+			if (map.MSource == mapSource.ZoomMap)
+			{
+				baseFileName += string.Format("_{0:F3}_{1:F3}_{2:F3}", map.CenteredLat, map.CenteredLong, map.MapScale);
 			}
 
 			string filename = baseFileName + ".png";
@@ -111,6 +114,8 @@ namespace SCANsat.SCAN_Map
 				longitudeOffset = map.Lon_Offset;
 			}
 
+			exporting = true;
+
 			Thread t = new Thread(() => exportThread(filePath, fileName, width, height, scale, latitudeOffset, longitudeOffset, map, copy, copyHeightMap, copySlopeMap, mode, resourceActive));
 			exportedRows = 0;
 			threadError = null;
@@ -145,9 +150,6 @@ namespace SCANsat.SCAN_Map
 					yield return null;
 				}
 
-				copy = null;
-				copyHeightMap = null;
-				copySlopeMap = null;
 				exporting = false;
 				yield break;
 			}
@@ -158,9 +160,6 @@ namespace SCANsat.SCAN_Map
 
 				ScreenMessages.PostScreenMessage("SCANsat CSV export failed; see KSP.log", 8, ScreenMessageStyle.UPPER_CENTER);
 
-				copy = null;
-				copyHeightMap = null;
-				copySlopeMap = null;
 				exporting = false;
 				yield break;
 			}
@@ -169,14 +168,10 @@ namespace SCANsat.SCAN_Map
 
 			ScreenMessages.PostScreenMessage("SCANsat CSV saved: GameData/SCANsat/PluginData/" + fileName + "_data.csv", 8, ScreenMessageStyle.UPPER_CENTER);
 
-			copy = null;
-			copyHeightMap = null;
-			copySlopeMap = null;
 			exporting = false;
 		}
 
-		private void exportThread(string path, string fileName, int w, int h, double s, double latitudeOffset, double longitudeOffset, SCANmap map, SCANdata copyData,
-			float[,] copyHeightMap, float[,] copySlopeMap, mapType mode, bool resourceActive)
+		private void exportThread(string path, string fileName, int w, int h, double s, double latitudeOffset, double longitudeOffset, SCANmap map, SCANdata copyData, float[,] copyHeightMap, float[,] copySlopeMap, mapType mode, bool resourceActive)
 		{
 			try
 			{
@@ -220,7 +215,7 @@ namespace SCANsat.SCAN_Map
 							switch (mode)
 							{
 								case mapType.Altimetry:
-									float terrain = map.terrainElevation(lon, lat, w, h, copyHeightMap, copyData, true);
+									float terrain = copyHeightMap[j, i];
 									line = string.Format("{0},{1},{2:F3},{3:F3},{4:F3}", i, j, lat, lon, terrain);
 									break;
 								case mapType.Slope:

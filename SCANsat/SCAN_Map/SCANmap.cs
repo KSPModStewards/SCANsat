@@ -470,6 +470,8 @@ namespace SCANsat.SCAN_Map
 			resourceMapWidth = mapwidth;
 			resourceMapHeight = mapheight;
 			resourceCache = new float[resourceMapWidth, resourceMapHeight];
+			big_heightmap = new float[mapwidth, mapheight];
+			big_slopemap = new float[mapwidth, mapheight];
 			resourceInterpolation = interpolation;
 			resourceMapScale = resourceMapWidth / 360;
 			randomEdges = false;
@@ -818,6 +820,7 @@ namespace SCANsat.SCAN_Map
 
 			if (exporter.Exporting)
 			{
+				ScreenMessages.PostScreenMessage("SCANsat export already in progress; wait for CSV completion", 4, ScreenMessageStyle.UPPER_CENTER);
 				return;
 			}
 
@@ -1024,6 +1027,7 @@ namespace SCANsat.SCAN_Map
 							else if (SCANUtil.isCovered(lon, lat, data, SCANtype.Altimetry))
 							{
 								projVal = terrainElevation(lon, lat, mapwidth, mapheight, big_heightmap, cache, data, out nowColor);
+								big_heightmap[i, mapstep] = projVal;
 								if (useCustomRange)
 								{
 									baseColor = palette.heightToColor(projVal, nowColor, data.TerrainConfig, customMin, customMax, customRange, true);
