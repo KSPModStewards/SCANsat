@@ -107,7 +107,17 @@ namespace SCANsat.SCAN_Map
 			if (resourceActive)
 			{
 				copyResourceMap = new float[map.MapWidth, map.MapHeight];
-				Array.Copy(map.ResourceCache, copyResourceMap, map.MapWidth * map.MapHeight);
+
+				for (int y = 0; y < map.MapHeight; y++)
+				{
+					int resourceY = y * map.ResourceCache.GetLength(1) / map.MapHeight;
+
+					for (int x = 0; x < map.MapWidth; x++)
+					{
+						int resourceX = x * map.ResourceCache.GetLength(0) / map.MapWidth;
+						copyResourceMap[x, y] = map.ResourceCache[resourceX, resourceY];
+					}
+				}
 			}
 
 			int width = map.MapWidth;
@@ -202,11 +212,11 @@ namespace SCANsat.SCAN_Map
 					{
 						for (int j = 0; j < w; j++)
 						{
-							double lat = ((i + 0.5d) / s) - 90d + latitudeOffset;
-							double lon = ((j + 0.5d) / s) - 180d + longitudeOffset;
-							double la = lat, lo = lon;
-							lat = map.unprojectLatitude(lo, la);
-							lon = map.unprojectLongitude(lo, la);
+							double lat = (i * 1.0d / s) - 90d + latitudeOffset;
+							double lon = (j * 1.0d / s) - 180d + longitudeOffset;
+
+							lat = map.unprojectLatitude(lon, lat);
+							lon = map.unprojectLongitude(lon, lat);
 
 							if (double.IsNaN(lat) || double.IsNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180)
 							{
