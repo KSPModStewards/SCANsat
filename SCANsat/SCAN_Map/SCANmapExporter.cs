@@ -103,6 +103,13 @@ namespace SCANsat.SCAN_Map
 				Array.Copy(map.Big_SlopeMap, copySlopeMap, map.MapWidth * map.MapHeight);
 			}
 
+			float[,] copyResourceMap = null;
+			if (resourceActive)
+			{
+				copyResourceMap = new float[map.MapWidth, map.MapHeight];
+				Array.Copy(map.ResourceCache, copyResourceMap, map.MapWidth * map.MapHeight);
+			}
+
 			int width = map.MapWidth;
 			int height = map.MapHeight;
 			double scale = map.MapScale;
@@ -116,7 +123,7 @@ namespace SCANsat.SCAN_Map
 
 			exporting = true;
 
-			Thread t = new Thread(() => exportThread(filePath, fileName, width, height, scale, latitudeOffset, longitudeOffset, map, copy, copyHeightMap, copySlopeMap, mode, resourceActive));
+			Thread t = new Thread(() => exportThread(filePath, fileName, width, height, scale, latitudeOffset, longitudeOffset, map, copy, copyHeightMap, copySlopeMap, copyResourceMap, mode, resourceActive));
 			exportedRows = 0;
 			threadError = null;
 			threadFinished = false;
@@ -171,7 +178,7 @@ namespace SCANsat.SCAN_Map
 			exporting = false;
 		}
 
-		private void exportThread(string path, string fileName, int w, int h, double s, double latitudeOffset, double longitudeOffset, SCANmap map, SCANdata copyData, float[,] copyHeightMap, float[,] copySlopeMap, mapType mode, bool resourceActive)
+		private void exportThread(string path, string fileName, int w, int h, double s, double latitudeOffset, double longitudeOffset, SCANmap map, SCANdata copyData, float[,] copyHeightMap, float[,] copySlopeMap, float[,] copyResourceMap, mapType mode, bool resourceActive)
 		{
 			try
 			{
@@ -234,7 +241,7 @@ namespace SCANsat.SCAN_Map
 								if (SCANUtil.isCovered(lon, lat, copyData, SCANtype.ResourceHiRes) ||
 									SCANUtil.isCovered(lon, lat, copyData, SCANtype.ResourceLoRes))
 								{
-									line += string.Format(",{0:F3}", map.getResoureCache(lon, lat));
+									line += string.Format(",{0:F3}", copyResourceMap[j, i]);
 								}
 								else
 								{

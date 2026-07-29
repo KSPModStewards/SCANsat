@@ -153,6 +153,11 @@ namespace SCANsat.SCAN_Map
 			get { return big_slopemap; }
 		}
 
+		internal float[,] ResourceCache
+		{
+			get { return resourceCache; }
+		}
+
 		public bool UseCustomRange
 		{
 			get { return useCustomRange; }
