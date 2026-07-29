@@ -3,7 +3,7 @@
  * 			S.C.A.N. Satellite
  *
  * ISCAN_ZoomMap - Interface for transfer of zoom map information
- * 
+ *
  * Copyright (c)2013 damny;
  * Copyright (c)2014 technogeeky <technogeeky@gmail.com>;
  * Copyright (c)2014 DMagic
@@ -126,6 +126,8 @@ namespace SCANsat.Unity.Interfaces
 		void Update();
 
 		void VesselSync();
+
+		void ExportMap();
 
 		void MoveMap(int i);
 

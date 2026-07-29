@@ -13,6 +13,8 @@ namespace SCANsat.SCAN_Map
 	{
 		private bool exporting;
 		private volatile bool threadRunning, threadFinished;
+		private volatile int exportedRows;
+		private volatile string threadError;
 
 		public bool Exporting
 		{
@@ -21,14 +23,7 @@ namespace SCANsat.SCAN_Map
 
 		public void exportPNG(SCANmap map, SCANdata data)
 		{
-			exporting = true;
-
-			if (map == null)
-			{
-				return;
-			}
-
-			if (data == null)
+			if (map == null || data == null)
 			{
 				return;
 			}
@@ -44,12 +39,12 @@ namespace SCANsat.SCAN_Map
 				case mapType.Visual: mode = "visual"; break;
 			}
 
-			if (map.ResourceActive && SCANconfigLoader.GlobalResource && !string.IsNullOrEmpty(SCANcontroller.controller.bigMapResource))
+			if (map.ResourceActive && SCANconfigLoader.GlobalResource && map.Resource != null)
 			{
-				mode += "-" + SCANcontroller.controller.bigMapResource;
+				mode += "-" + map.Resource.Name;
 			}
 
-			if (!SCANcontroller.controller.bigMapColor)
+			if (!map.ColorMap)
 			{
 				mode += "-grey";
 			}
@@ -61,9 +56,12 @@ namespace SCANsat.SCAN_Map
 				baseFileName += "_" + map.Projection.ToString();
 			}
 
-			string filename = baseFileName;
+			if (map.MSource == mapSource.ZoomMap)
+			{
+				baseFileName += string.Format("_{0:F3}_{1:F3}_{2:F3}", map.CenteredLat, map.CenteredLong, map.MapScale);
+			}
 
-			filename += ".png";
+			string filename = baseFileName + ".png";
 
 			string fullPath = Path.Combine(path, filename);
 
@@ -73,9 +71,9 @@ namespace SCANsat.SCAN_Map
 
 			SCANUtil.SCANlog("Map of [{0}] saved\nMap Size: {1} X {2}\nMinimum Altitude: {3:F0}m; Maximum Altitude: {4:F0}m\nPixel Width At Equator: {5:F6}m", map.Body.displayName.LocalizeBodyName(), map.Map.width, map.Map.height, data.TerrainConfig.MinTerrain, data.TerrainConfig.MaxTerrain, (map.Body.Radius * 2 * Math.PI) / (map.Map.width * 1f));
 
-			if (SCAN_Settings_Config.Instance.ExportCSV && map.MType == mapType.Altimetry)
+			if (SCAN_Settings_Config.Instance.ExportCSV && map.MType != mapType.Visual)
 			{
-				StartCoroutine(exportCSV(path, baseFileName, map, data));
+				StartCoroutine(exportCSV(path, baseFileName, map, data, map.ResourceActive && SCANconfigLoader.GlobalResource && map.Resource != null));
 			}
 			else
 			{
@@ -83,93 +81,196 @@ namespace SCANsat.SCAN_Map
 			}
 		}
 
-		private IEnumerator exportCSV(string filePath, string fileName, SCANmap map, SCANdata data)
+		private IEnumerator exportCSV(string filePath, string fileName, SCANmap map, SCANdata data, bool resourceActive)
 		{
 			int timer = 0;
+			double latitudeOffset = 0;
+			double longitudeOffset = 0;
 
 			SCANdata copy = new SCANdata(data);
 
-			float[,] copyHeightMap = new float[map.MapWidth, map.MapHeight];
+			float[,] copyHeightMap = null;
+			if (map.MType == mapType.Altimetry)
+			{
+				copyHeightMap = new float[map.MapWidth, map.MapHeight];
+				Array.Copy(map.Big_HeightMap, copyHeightMap, map.MapWidth * map.MapHeight);
+			}
 
-			Array.Copy(map.Big_HeightMap, copyHeightMap, map.MapWidth * map.MapHeight);
+			float[,] copySlopeMap = null;
+			if (map.MType == mapType.Slope)
+			{
+				copySlopeMap = new float[map.MapWidth, map.MapHeight];
+				Array.Copy(map.Big_SlopeMap, copySlopeMap, map.MapWidth * map.MapHeight);
+			}
+
+			float[,] copyResourceMap = null;
+			if (resourceActive)
+			{
+				copyResourceMap = new float[map.MapWidth, map.MapHeight];
+
+				for (int y = 0; y < map.MapHeight; y++)
+				{
+					int resourceY = y * map.ResourceCache.GetLength(1) / map.MapHeight;
+
+					for (int x = 0; x < map.MapWidth; x++)
+					{
+						int resourceX = x * map.ResourceCache.GetLength(0) / map.MapWidth;
+						copyResourceMap[x, y] = map.ResourceCache[resourceX, resourceY];
+					}
+				}
+			}
 
 			int width = map.MapWidth;
 			int height = map.MapHeight;
 			double scale = map.MapScale;
+			mapType mode = map.MType;
 
-			Thread t = new Thread(() => exportThread(filePath, fileName, width, height, scale, map, copy, copyHeightMap));
+			if (map.MSource == mapSource.ZoomMap)
+			{
+				latitudeOffset = map.Lat_Offset;
+				longitudeOffset = map.Lon_Offset;
+			}
+
+			exporting = true;
+
+			Thread t = new Thread(() => exportThread(filePath, fileName, width, height, scale, latitudeOffset, longitudeOffset, map, copy, copyHeightMap, copySlopeMap, copyResourceMap, mode, resourceActive));
+			exportedRows = 0;
+			threadError = null;
 			threadFinished = false;
 			threadRunning = true;
 			t.Start();
 
-			while (threadRunning && timer < 20000)
+			while (threadRunning && timer < 50000)
 			{
 				timer++;
+
+				if (timer % 60 == 0)
+				{
+					int rows = exportedRows;
+					double percent = height > 0 ? rows * 100.0 / height : 0;
+
+					ScreenMessages.PostScreenMessage(string.Format("SCANsat CSV export: {0:N0}/{1:N0} rows ({2:F1}%)", rows, height, percent), 1.1f, ScreenMessageStyle.UPPER_CENTER);
+				}
+
 				yield return null;
 			}
 
-			SCANUtil.SCANlog(".csv data file export complete; exported over {0} frames\nFile saved to GameData/SCANsat/PluginData/{1}_data.csv", timer, fileName);
-
-			copy = null;
-			copyHeightMap = null;
-			exporting = false;
-
-			if (timer >= 20000)
+			if (threadRunning)
 			{
-				Log.Error("Something went wrong while exporting .csv data file\nCanceling export thread...");
+				Log.Error(string.Format("SCANsat CSV export timed out after {0} frames for [{1}_data.csv] at row {2} of {3}", timer, fileName, exportedRows, height));
+
+				ScreenMessages.PostScreenMessage("SCANsat CSV export timed out; see KSP.log", 8, ScreenMessageStyle.UPPER_CENTER);
+
 				t.Abort();
-				threadRunning = false;
+				while (threadRunning)
+				{
+					yield return null;
+				}
+
+				exporting = false;
 				yield break;
 			}
 
 			if (!threadFinished)
 			{
-				Log.Error("Something went wrong while exporting .csv data file\nExport thread has been interrupted...");
+				Log.Error(string.Format("SCANsat CSV export failed for [{0}_data.csv]\n{1}", fileName, threadError ?? "No error details"));
+
+				ScreenMessages.PostScreenMessage("SCANsat CSV export failed; see KSP.log", 8, ScreenMessageStyle.UPPER_CENTER);
+
+				exporting = false;
 				yield break;
 			}
+
+			SCANUtil.SCANlog(".csv data file export complete; exported over {0} frames\nFile saved to GameData/SCANsat/PluginData/{1}_data.csv", timer, fileName);
+
+			ScreenMessages.PostScreenMessage("SCANsat CSV saved: GameData/SCANsat/PluginData/" + fileName + "_data.csv", 8, ScreenMessageStyle.UPPER_CENTER);
+
+			exporting = false;
 		}
 
-		private void exportThread(string path, string fileName, int w, int h, double s, SCANmap map, SCANdata copyData, float[,] copyMap)
+		private void exportThread(string path, string fileName, int w, int h, double s, double latitudeOffset, double longitudeOffset, SCANmap map, SCANdata copyData, float[,] copyHeightMap, float[,] copySlopeMap, float[,] copyResourceMap, mapType mode, bool resourceActive)
 		{
 			try
 			{
 				using (StreamWriter writer = new StreamWriter(Path.Combine(path, fileName + "_data" + ".csv")))
 				{
-					string line = "Row,Column,Lat,Long,Height";
+					string line = "Row,Column,Lat,Long";
+					switch (mode)
+					{
+						case mapType.Altimetry: line += ",Height"; break;
+						case mapType.Slope: line += ",Slope"; break;
+						case mapType.Biome: line += ",Biome"; break;
+					}
+
+					if (resourceActive)
+					{
+						line += ",ResourceAbundancePercent";
+					}
+
 					writer.WriteLine(line);
 					for (int i = 0; i < h; i++)
 					{
 						for (int j = 0; j < w; j++)
 						{
-							double lat = (i * 1.0f / s) - 90f;
-							double lon = (j * 1.0f / s) - 180f;
-							double la = lat, lo = lon;
-							lat = map.unprojectLatitude(lo, la);
-							lon = map.unprojectLongitude(lo, la);
+							double lat = (i * 1.0d / s) - 90d + latitudeOffset;
+							double lon = (j * 1.0d / s) - 180d + longitudeOffset;
+
+							lat = map.unprojectLatitude(lon, lat);
+							lon = map.unprojectLongitude(lon, lat);
 
 							if (double.IsNaN(lat) || double.IsNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180)
 							{
 								continue;
 							}
 
-							if (!SCANUtil.isCovered(lon, lat, copyData, SCANtype.Altimetry))
+							SCANtype coverage = mode == mapType.Biome ? SCANtype.Biome : SCANtype.Altimetry;
+							if (!SCANUtil.isCovered(lon, lat, copyData, coverage))
 							{
 								continue;
 							}
 
-							float terrain = map.terrainElevation(lon, lat, w, h, copyMap, copyData, true);
+							switch (mode)
+							{
+								case mapType.Altimetry:
+									float terrain = copyHeightMap[j, i];
+									line = string.Format("{0},{1},{2:F3},{3:F3},{4:F3}", i, j, lat, lon, terrain);
+									break;
+								case mapType.Slope:
+									line = string.Format("{0},{1},{2:F3},{3:F3},{4:F6}", i, j, lat, lon, copySlopeMap[j, i]);
+									break;
+								case mapType.Biome:
+									string biome = SCANUtil.getBiomeName(map.Body, lon, lat).Replace("\"", "\"\"");
+									line = string.Format("{0},{1},{2:F3},{3:F3},\"{4}\"", i, j, lat, lon, biome);
+									break;
+								default:
+									continue;
+							}
 
-							line = string.Format("{0},{1},{2:F3},{3:F3},{4:F3}", i, j, lat, lon, terrain);
+							if (resourceActive)
+							{
+								if (SCANUtil.isCovered(lon, lat, copyData, SCANtype.ResourceHiRes) ||
+									SCANUtil.isCovered(lon, lat, copyData, SCANtype.ResourceLoRes))
+								{
+									line += string.Format(",{0:F3}", copyResourceMap[j, i]);
+								}
+								else
+								{
+									line += ",";
+								}
+							}
 
 							writer.WriteLine(line);
 						}
 						writer.Flush();
+						exportedRows = i + 1;
 					}
 				}
+
 				threadFinished = true;
 			}
-			catch
+			catch (Exception ex)
 			{
+				threadError = ex.ToString();
 				threadFinished = false;
 			}
 			finally

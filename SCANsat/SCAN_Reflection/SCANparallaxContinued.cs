@@ -11,7 +11,7 @@ namespace SCANsat.SCAN_Reflection
 		static MethodInfo x_ParallaxScaledBody_Load = null;
 		static MethodInfo x_ParallaxScaledBody_SetScaledMaterialParams = null;
 		static FieldInfo x_ParallaxScaledBody_scaledMaterial = null;
-		
+
 		static FieldInfo x_ConfigLoader_parallaxScaledBodies = null;
 
 		internal static bool ParallaxContinuedLoaded = false;
