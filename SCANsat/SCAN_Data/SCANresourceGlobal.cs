@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using SCANsat.SCAN_Platform;
-using Log = KSPBuildTools.Log;
+using Log = KSPCommunityLib.Logging.Log;
 
 namespace SCANsat.SCAN_Data
 {

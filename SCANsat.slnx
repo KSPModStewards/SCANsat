@@ -1,0 +1,213 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="CHANGELOG.md" />
+    <File Path="CONTRIBUTING.md" />
+    <File Path="LICENSE.txt" />
+    <File Path="README.md" />
+    <File Path="SCANsat.props" />
+    <File Path="SCANsat.props.user" />
+    <File Path="SCANsat.version.props" />
+  </Folder>
+  <Project Path="SCANmechjeb/SCANmechjeb.csproj" />
+  <Project Path="SCANsat.Unity/SCANsat.Unity.csproj" />
+  <Project Path="SCANsat/SCANsat.csproj" />
+  <Properties Name="MonoDevelopProperties">
+    <Property Name="$0.ChangeLogPolicy" Value="$42" />
+    <Property Name="$0.CSharpFormattingPolicy" Value="$4" />
+    <Property Name="$0.DotNetNamingPolicy" Value="$1" />
+    <Property Name="$0.NameConventionPolicy" Value="$7" />
+    <Property Name="$0.StandardHeader" Value="$2" />
+    <Property Name="$0.TextStylePolicy" Value="$39" />
+    <Property Name="$0.VersionControlPolicy" Value="$41" />
+    <Property Name="$0.XmlFormattingPolicy" Value="$40" />
+    <Property Name="$1.DirectoryNamespaceAssociation" Value="None" />
+    <Property Name="$1.ResourceNamePolicy" Value="FileFormatDefault" />
+    <Property Name="$10.AffectedEntity" Value="Class, Struct, Enum, Delegate" />
+    <Property Name="$10.IncludeInstanceMembers" Value="True" />
+    <Property Name="$10.IncludeStaticEntities" Value="True" />
+    <Property Name="$10.Name" Value="Types" />
+    <Property Name="$10.NamingStyle" Value="PascalCase" />
+    <Property Name="$10.VisibilityMask" Value="VisibilityMask" />
+    <Property Name="$11.AffectedEntity" Value="Interface" />
+    <Property Name="$11.IncludeInstanceMembers" Value="True" />
+    <Property Name="$11.IncludeStaticEntities" Value="True" />
+    <Property Name="$11.Name" Value="Interfaces" />
+    <Property Name="$11.NamingStyle" Value="PascalCase" />
+    <Property Name="$11.RequiredPrefixes" Value="$12" />
+    <Property Name="$11.VisibilityMask" Value="VisibilityMask" />
+    <Property Name="$12.String" Value="I" />
+    <Property Name="$13.AffectedEntity" Value="CustomAttributes" />
+    <Property Name="$13.IncludeInstanceMembers" Value="True" />
+    <Property Name="$13.IncludeStaticEntities" Value="True" />
+    <Property Name="$13.Name" Value="Attributes" />
+    <Property Name="$13.NamingStyle" Value="PascalCase" />
+    <Property Name="$13.RequiredSuffixes" Value="$14" />
+    <Property Name="$13.VisibilityMask" Value="VisibilityMask" />
+    <Property Name="$14.String" Value="Attribute" />
+    <Property Name="$15.AffectedEntity" Value="CustomEventArgs" />
+    <Property Name="$15.IncludeInstanceMembers" Value="True" />
+    <Property Name="$15.IncludeStaticEntities" Value="True" />
+    <Property Name="$15.Name" Value="Event Arguments" />
+    <Property Name="$15.NamingStyle" Value="PascalCase" />
+    <Property Name="$15.RequiredSuffixes" Value="$16" />
+    <Property Name="$15.VisibilityMask" Value="VisibilityMask" />
+    <Property Name="$16.String" Value="EventArgs" />
+    <Property Name="$17.AffectedEntity" Value="CustomExceptions" />
+    <Property Name="$17.IncludeInstanceMembers" Value="True" />
+    <Property Name="$17.IncludeStaticEntities" Value="True" />
+    <Property Name="$17.Name" Value="Exceptions" />
+    <Property Name="$17.NamingStyle" Value="PascalCase" />
+    <Property Name="$17.RequiredSuffixes" Value="$18" />
+    <Property Name="$17.VisibilityMask" Value="VisibilityMask" />
+    <Property Name="$18.String" Value="Exception" />
+    <Property Name="$19.AffectedEntity" Value="Methods" />
+    <Property Name="$19.IncludeInstanceMembers" Value="True" />
+    <Property Name="$19.IncludeStaticEntities" Value="True" />
+    <Property Name="$19.Name" Value="Methods" />
+    <Property Name="$19.NamingStyle" Value="PascalCase" />
+    <Property Name="$19.VisibilityMask" Value="VisibilityMask" />
+    <Property Name="$2.IncludeInNewFiles" Value="True" />
+    <Property Name="$2.Text" />
+    <Property Name="$20.AffectedEntity" Value="ReadonlyField" />
+    <Property Name="$20.IncludeInstanceMembers" Value="False" />
+    <Property Name="$20.IncludeStaticEntities" Value="True" />
+    <Property Name="$20.Name" Value="Static Readonly Fields" />
+    <Property Name="$20.NamingStyle" Value="PascalCase" />
+    <Property Name="$20.VisibilityMask" Value="Internal, Protected, Public" />
+    <Property Name="$21.AffectedEntity" Value="Field" />
+    <Property Name="$21.IncludeInstanceMembers" Value="True" />
+    <Property Name="$21.IncludeStaticEntities" Value="True" />
+    <Property Name="$21.Name" Value="Fields (Non Private)" />
+    <Property Name="$21.NamingStyle" Value="PascalCase" />
+    <Property Name="$21.VisibilityMask" Value="Internal, Protected, Public" />
+    <Property Name="$22.AffectedEntity" Value="ReadonlyField" />
+    <Property Name="$22.IncludeInstanceMembers" Value="True" />
+    <Property Name="$22.IncludeStaticEntities" Value="False" />
+    <Property Name="$22.Name" Value="ReadOnly Fields (Non Private)" />
+    <Property Name="$22.NamingStyle" Value="PascalCase" />
+    <Property Name="$22.VisibilityMask" Value="Internal, Protected, Public" />
+    <Property Name="$23.AffectedEntity" Value="Field, ReadonlyField" />
+    <Property Name="$23.AllowedPrefixes" Value="$24" />
+    <Property Name="$23.IncludeInstanceMembers" Value="True" />
+    <Property Name="$23.IncludeStaticEntities" Value="False" />
+    <Property Name="$23.Name" Value="Fields (Private)" />
+    <Property Name="$23.NamingStyle" Value="CamelCase" />
+    <Property Name="$23.VisibilityMask" Value="Private" />
+    <Property Name="$24.String" Value="m_" />
+    <Property Name="$25.AffectedEntity" Value="Field" />
+    <Property Name="$25.IncludeInstanceMembers" Value="False" />
+    <Property Name="$25.IncludeStaticEntities" Value="True" />
+    <Property Name="$25.Name" Value="Static Fields (Private)" />
+    <Property Name="$25.NamingStyle" Value="CamelCase" />
+    <Property Name="$25.VisibilityMask" Value="Private" />
+    <Property Name="$26.AffectedEntity" Value="ReadonlyField" />
+    <Property Name="$26.AllowedPrefixes" Value="$27" />
+    <Property Name="$26.IncludeInstanceMembers" Value="True" />
+    <Property Name="$26.IncludeStaticEntities" Value="False" />
+    <Property Name="$26.Name" Value="ReadOnly Fields (Private)" />
+    <Property Name="$26.NamingStyle" Value="CamelCase" />
+    <Property Name="$26.VisibilityMask" Value="Private" />
+    <Property Name="$27.String" Value="m_" />
+    <Property Name="$28.AffectedEntity" Value="ConstantField" />
+    <Property Name="$28.IncludeInstanceMembers" Value="True" />
+    <Property Name="$28.IncludeStaticEntities" Value="True" />
+    <Property Name="$28.Name" Value="Constant Fields" />
+    <Property Name="$28.NamingStyle" Value="PascalCase" />
+    <Property Name="$28.VisibilityMask" Value="VisibilityMask" />
+    <Property Name="$29.AffectedEntity" Value="Property" />
+    <Property Name="$29.IncludeInstanceMembers" Value="True" />
+    <Property Name="$29.IncludeStaticEntities" Value="True" />
+    <Property Name="$29.Name" Value="Properties" />
+    <Property Name="$29.NamingStyle" Value="PascalCase" />
+    <Property Name="$29.VisibilityMask" Value="VisibilityMask" />
+    <Property Name="$3.inheritsSet" Value="null" />
+    <Property Name="$3.scope" Value="text/x-csharp" />
+    <Property Name="$30.AffectedEntity" Value="Event" />
+    <Property Name="$30.IncludeInstanceMembers" Value="True" />
+    <Property Name="$30.IncludeStaticEntities" Value="True" />
+    <Property Name="$30.Name" Value="Events" />
+    <Property Name="$30.NamingStyle" Value="PascalCase" />
+    <Property Name="$30.VisibilityMask" Value="VisibilityMask" />
+    <Property Name="$31.AffectedEntity" Value="EnumMember" />
+    <Property Name="$31.IncludeInstanceMembers" Value="True" />
+    <Property Name="$31.IncludeStaticEntities" Value="True" />
+    <Property Name="$31.Name" Value="Enum Members" />
+    <Property Name="$31.NamingStyle" Value="PascalCase" />
+    <Property Name="$31.VisibilityMask" Value="VisibilityMask" />
+    <Property Name="$32.AffectedEntity" Value="Parameter" />
+    <Property Name="$32.IncludeInstanceMembers" Value="True" />
+    <Property Name="$32.IncludeStaticEntities" Value="True" />
+    <Property Name="$32.Name" Value="Parameters" />
+    <Property Name="$32.NamingStyle" Value="CamelCase" />
+    <Property Name="$32.VisibilityMask" Value="VisibilityMask" />
+    <Property Name="$33.AffectedEntity" Value="TypeParameter" />
+    <Property Name="$33.IncludeInstanceMembers" Value="True" />
+    <Property Name="$33.IncludeStaticEntities" Value="True" />
+    <Property Name="$33.Name" Value="Type Parameters" />
+    <Property Name="$33.NamingStyle" Value="PascalCase" />
+    <Property Name="$33.RequiredPrefixes" Value="$34" />
+    <Property Name="$33.VisibilityMask" Value="VisibilityMask" />
+    <Property Name="$34.String" Value="T" />
+    <Property Name="$35.inheritsSet" Value="null" />
+    <Property Name="$35.scope" Value="application/x-csproject" />
+    <Property Name="$36.inheritsSet" Value="null" />
+    <Property Name="$36.scope" Value="application/x-csproject" />
+    <Property Name="$37.inheritsSet" Value="null" />
+    <Property Name="$37.scope" Value="application/x-msbuild" />
+    <Property Name="$38.inheritsSet" Value="null" />
+    <Property Name="$38.scope" Value="application/x-msbuild" />
+    <Property Name="$39.inheritsSet" Value="null" />
+    <Property Name="$39.scope" Value="application/xml" />
+    <Property Name="$4.AfterDelegateDeclarationParameterComma" Value="True" />
+    <Property Name="$4.AroundShiftOperatorParentheses" Value="False" />
+    <Property Name="$4.BeforeIndexerDeclarationBracket" Value="False" />
+    <Property Name="$4.BlankLinesBetweenTypes" Value="2" />
+    <Property Name="$4.ClassBraceStyle" Value="EndOfLine" />
+    <Property Name="$4.ConstructorBraceStyle" Value="EndOfLine" />
+    <Property Name="$4.DestructorBraceStyle" Value="EndOfLine" />
+    <Property Name="$4.EnumBraceStyle" Value="EndOfLine" />
+    <Property Name="$4.IndentSwitchBody" Value="True" />
+    <Property Name="$4.inheritsScope" Value="text/x-csharp" />
+    <Property Name="$4.inheritsSet" Value="Mono" />
+    <Property Name="$4.InterfaceBraceStyle" Value="EndOfLine" />
+    <Property Name="$4.MethodBraceStyle" Value="EndOfLine" />
+    <Property Name="$4.NamespaceBraceStyle" Value="EndOfLine" />
+    <Property Name="$4.scope" Value="text/x-csharp" />
+    <Property Name="$4.SpacesBeforeBrackets" Value="False" />
+    <Property Name="$4.StructBraceStyle" Value="EndOfLine" />
+    <Property Name="$4.WithinConstructorDeclarationParentheses" Value="True" />
+    <Property Name="$4.WithinDelegateDeclarationParentheses" Value="True" />
+    <Property Name="$4.WithinMethodDeclarationParentheses" Value="True" />
+    <Property Name="$40.inheritsScope" Value="application/xml" />
+    <Property Name="$40.inheritsSet" Value="Mono" />
+    <Property Name="$40.scope" Value="application/xml" />
+    <Property Name="$41.inheritsSet" Value="Mono" />
+    <Property Name="$42.inheritsSet" Value="Mono" />
+    <Property Name="$42.MessageStyle" Value="$43" />
+    <Property Name="$42.UpdateMode" Value="None" />
+    <Property Name="$43.LineAlign" Value="0" />
+    <Property Name="$5.EolMarker" Value="Windows" />
+    <Property Name="$5.FileWidth" Value="120" />
+    <Property Name="$5.inheritsScope" Value="text/plain" />
+    <Property Name="$5.inheritsSet" Value="Mono" />
+    <Property Name="$5.NoTabsAfterNonTabs" Value="True" />
+    <Property Name="$5.scope" Value="text/plain" />
+    <Property Name="$5.TabWidth" Value="2" />
+    <Property Name="$6.inheritsSet" Value="null" />
+    <Property Name="$6.scope" Value="application/octet-stream" />
+    <Property Name="$7.Rules" Value="$8" />
+    <Property Name="$8.NamingRule" Value="$33" />
+    <Property Name="$9.AffectedEntity" Value="Namespace" />
+    <Property Name="$9.IncludeInstanceMembers" Value="True" />
+    <Property Name="$9.IncludeStaticEntities" Value="True" />
+    <Property Name="$9.Name" Value="Namespaces" />
+    <Property Name="$9.NamingStyle" Value="PascalCase" />
+    <Property Name="$9.VisibilityMask" Value="VisibilityMask" />
+    <Property Name="outputpath" Value="..\..\GameData\SCANsat" />
+    <Property Name="Policies" Value="$0" />
+    <Property Name="StartupItem" Value="SCANdebug\SCANdebug.csproj" />
+    <Property Name="version" Value="1.0.8.0" />
+  </Properties>
+</Solution>

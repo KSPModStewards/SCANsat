@@ -9,7 +9,7 @@ on:
 
 jobs:
   create-release:
-    uses: KSPModdingLibs/KSPBuildTools/.github/workflows/create-release.yml@0.0.4
+    uses: KSPModdingLibs/KSPBuildTools/.github/workflows/create-release.yml@1.1.1
     with:
       version-string: ${{ inputs.version-string }}
       use-ckan: true

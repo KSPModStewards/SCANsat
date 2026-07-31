@@ -26,7 +26,7 @@ using SCANsat.SCAN_Data;
 using SCANsat.SCAN_UI.UI_Framework;
 using KSP.UI;
 using palette = SCANsat.SCAN_UI.UI_Framework.SCANcolorUtil;
-using Log = KSPBuildTools.Log;
+using Log = KSPCommunityLib.Logging.Log;
 
 namespace SCANsat.SCAN_Unity
 {

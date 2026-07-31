@@ -12,31 +12,346 @@
  */
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using UnityEngine;
-using UnityEngine.Events;
 using Contracts;
 using FinePrint.Contracts;
-using FinePrint.Utilities;
-using SCANsat.SCAN_UI.UI_Framework;
-using SCANsat.SCAN_Unity;
+using FinePrint.Contracts.Parameters;
+using KSPTextureLoader;
 using SCANsat.SCAN_Data;
 using SCANsat.SCAN_Map;
 using SCANsat.SCAN_Platform.Extensions.ConfigNodes;
-using SCANsat.SCAN_Palettes;
-using SCANsat.SCAN_Toolbar;
-using palette = SCANsat.SCAN_UI.UI_Framework.SCANcolorUtil;
-using FinePrint.Contracts.Parameters;
-using UnityEngine.Profiling;
-using Log = KSPBuildTools.Log;
 using SCANsat.SCAN_Reflection;
+using SCANsat.SCAN_Toolbar;
+using SCANsat.SCAN_UI.UI_Framework;
+using SCANsat.SCAN_Unity;
+using SCANsat.Unity.Interfaces;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.Events;
+using Log = KSPCommunityLib.Logging.Log;
+using palette = SCANsat.SCAN_UI.UI_Framework.SCANcolorUtil;
 
 namespace SCANsat
 {
+	public class SCANtextures
+	{
+		/* Game Loaded Data */
+		public CelestialBody body;
+		public Texture2D cachedVisualMap = null;
+		public Texture2D cachedNormalMap = null;
+
+		/* Memory Mapped Data (requires SCANSAT_BODY_TEXTURES config) */
+		public CPUTexture2D memoryMappedHeightMap = null;
+		public CPUTexture2D memoryMappedNormalMap = null;
+		public CPUTexture2D memoryMappedVisualMap = null;
+
+		public SCANtextures(CelestialBody b)
+		{
+			body = b;
+
+			ConfigNode[] visualOverrides = GameDatabase.Instance.GetConfigNodes("SCANSAT_BODY_TEXTURES");
+
+			for (int i = 0; i < visualOverrides.Length; i++)
+			{
+				ConfigNode node = visualOverrides[i];
+				if (node.HasValue("name"))
+				{
+					string bodyName = node.GetValue("name");
+					if (bodyName == b.name)
+					{
+						GetMemoryMappedTexturesFromConfig(node);
+						break;
+					}
+				}
+			}
+
+			CacheMapTexturesFromBody();
+			SCANUtil.SCANlog(TextureState());  // Log whether using memory mapped or RAM buffered textures
+		}
+
+		private Texture2D readableTexture(Texture tex, Material mat)
+		{
+			if (tex == null)
+			{
+				return null;
+			}
+
+			Texture2D readable = new Texture2D(tex.width, tex.height);
+
+			var rt = RenderTexture.GetTemporary(tex.width, tex.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB, 1);
+
+			if (mat != null)
+			{
+				Graphics.Blit(tex, rt, mat);
+			}
+			else
+			{
+				Graphics.Blit(tex, rt);
+			}
+
+			RenderTexture.active = rt;
+
+			readable.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
+
+			RenderTexture.active = null;
+			RenderTexture.ReleaseTemporary(rt);
+
+			rt = null;
+
+			readable.Apply();
+
+			tex = null;
+
+			return readable;
+		}
+
+		public void GetMemoryMappedTexturesFromConfig(ConfigNode node)
+		{
+			string bodyName = node.GetValue("name");
+			if (bodyName == body.name)
+			{
+				string baseFolder = System.IO.Directory.GetParent(KSPUtil.ApplicationRootPath).FullName;
+
+				// Attempt to load heightMap
+				string heightMapPath = node.GetValue("heightMap");
+				if (memoryMappedHeightMap == null && heightMapPath != null)
+				{
+					string heightMapCPUTextureName = (baseFolder + '/' + heightMapPath).Replace("\\", "/");
+					CPUTextureHandle heightMap = TextureLoader.LoadCPUTexture(heightMapCPUTextureName);
+					try
+					{
+						memoryMappedHeightMap = heightMap.GetTexture();
+					}
+					catch (Exception e)
+					{
+						Log.Error($"[{body.name}] Height Map Path not defined: {heightMapCPUTextureName}");
+						Log.Exception(e);
+					}
+				}
+
+				// Attempt to load normalMap
+				string normalMapPath = node.GetValue("normalMap");
+				if (memoryMappedNormalMap == null && normalMapPath != null)
+				{
+					string normalMapCPUTextureName = (baseFolder + '/' + normalMapPath).Replace("\\", "/");
+					CPUTextureHandle normalMap = TextureLoader.LoadCPUTexture(normalMapCPUTextureName);
+					try
+					{
+						memoryMappedNormalMap = normalMap.GetTexture();
+					}
+					catch (Exception e)
+					{
+						Log.Error($"[{body.name}] Normal Map Path not defined: {normalMapCPUTextureName}");
+						Log.Exception(e);
+					}
+				}
+
+				// Attempt to load colorMap
+				string visualMapPath = node.GetValue("colorMap");
+				if (memoryMappedVisualMap == null && visualMapPath != null)
+				{
+					string colorMapCPUTextureName = (baseFolder + '/' + visualMapPath).Replace("\\", "/");
+					CPUTextureHandle colorMap = TextureLoader.LoadCPUTexture(colorMapCPUTextureName);
+					try
+					{
+						memoryMappedVisualMap = colorMap.GetTexture();
+					}
+					catch (Exception e)
+					{
+						Log.Error($"[{body.name}] Visual Data path not loaded: {colorMapCPUTextureName}");
+						Log.Exception(e);
+					}
+				}
+			}
+		}
+
+		public void CacheMapTexturesFromBody()
+		{
+			Material material = null;
+			string colorMapTextureName = null;
+			string normalMapTextureName = null;
+			bool useMaterialForColorMap = true;
+
+			if (body.scaledBody == null)
+			{
+				return;
+			}
+
+			MeshRenderer scaledMesh = body.scaledBody.GetComponent<MeshRenderer>();
+
+			if (scaledMesh == null)
+			{
+				return;
+			}
+
+			material = scaledMesh.sharedMaterial; // TODO: what if there are multiple materials?  do we need to check all of them?
+			string shaderName = material.shader.name;
+
+			if (shaderName == "Terrain/Gas Giant")
+			{
+				colorMapTextureName = "_DetailCloudPatternTexture";
+				normalMapTextureName = "_NormalMap";
+			}
+			// HapkeScaled is the Sol shader which is also a Parallax-dependent instance
+			else if (shaderName.Contains("ParallaxScaled") || shaderName.Contains("HapkeScaled"))
+			{
+				SCANparallaxContinued.LoadParallax(body, ref material);
+				useMaterialForColorMap = false;
+				colorMapTextureName = "_ColorMap";
+				normalMapTextureName = "_BumpMap";
+			}
+			else if (material.HasProperty("_MainTex"))
+			{
+				colorMapTextureName = "_MainTex";
+			}
+			else if (material.HasProperty("_ColorMap"))
+			{
+				colorMapTextureName = "_ColorMap";
+			}
+
+			if (material.HasProperty("_BumpMap"))
+			{
+				normalMapTextureName = "_BumpMap";
+			}
+			else if (material.HasProperty("_NormalMap"))
+			{
+				normalMapTextureName = "_NormalMap";
+			}
+
+			// Only cache color / visual map if memory mapped visual map is not available and map not previously cached
+			if (memoryMappedVisualMap == null && cachedVisualMap == null && colorMapTextureName != null)
+			{
+				var sourceColorTexture = material.GetTexture(colorMapTextureName) as Texture2D;
+				if (sourceColorTexture != null)
+				{
+					cachedVisualMap = sourceColorTexture.isReadable ? sourceColorTexture : readableTexture(sourceColorTexture, useMaterialForColorMap ? material : null);
+				}
+				else
+				{
+					Log.Error($"Visual Map cached null texture for body {body.name}, material {material.name} and texture name {colorMapTextureName}");
+				}
+			}
+
+			// Only cache normal map if memory mapped normal map is not available and map not previously cached
+			if (memoryMappedNormalMap == null && cachedNormalMap == null && normalMapTextureName != null)
+			{
+				var sourceNormalTexture = material.GetTexture(normalMapTextureName) as Texture2D;
+				if (sourceNormalTexture != null)
+				{
+					cachedNormalMap = sourceNormalTexture.isReadable ? sourceNormalTexture : readableTexture(sourceNormalTexture, null);
+				}
+				else
+				{
+					Log.Error($"Normal Map cached null texture for body {body.name}, material {material.name} and texture name {normalMapTextureName}");
+				}
+			}
+		}
+		
+		public TextureFormat GetNormalFormat()
+		{
+			if (memoryMappedNormalMap != null)
+			{
+				return memoryMappedNormalMap.Format;
+			}
+			else if (cachedNormalMap != null)
+			{
+				return cachedNormalMap.format;
+			}
+			Log.Error($"No normal map textures defined for {body.bodyName}");
+			throw new NullReferenceException($"No normal map textures defined for {body.bodyName}");
+		}
+		public Color32 GetShadedVisualPixel(double lon, double lat)
+		{
+
+			float fLat = ((float)lat + 90f) / 180f;
+			float fLon = ((float)lon + 270f) / 360f;
+
+			if (fLon < 0) { fLon += 1; }
+			if (fLon > 1) { fLon -= 1; }
+			fLon = 1 - fLon;
+
+			fLat = Mathf.Clamp01(fLat);
+			fLon = Mathf.Clamp01(fLon);
+
+			Color32 c = palette.Grey;
+
+			// If no textures are loaded, return static
+			if (memoryMappedVisualMap != null)
+			{
+				c = memoryMappedVisualMap.GetPixelBilinear(fLon, fLat);
+			}
+			else if (cachedVisualMap != null)
+			{
+				c = cachedVisualMap.GetPixelBilinear(fLon, fLat);
+			}
+			else
+			{
+				return palette.lerp(palette.Black, palette.White, UnityEngine.Random.value);
+			}
+
+			// Set c to be fully opaque
+			c.a = 255;
+
+			// Attempt to load Normal map values
+			Color32 n;
+			if (memoryMappedNormalMap != null)
+			{
+				n = memoryMappedNormalMap.GetPixelBilinear(fLon, fLat);
+			}
+			else if (cachedNormalMap != null)
+			{
+				n = cachedNormalMap.GetPixelBilinear(fLon, fLat);
+			}
+			else
+			{
+				return c;  // No normal map, return the color as is
+			}
+
+			// Extract the Y channel from the normal map and normalize to range [0, 1]. lumOver of 0.5 is neutral
+			double lumOver = n.b / 255f;  // Base game KSP blue channel to store Y axis normal data
+
+			switch (GetNormalFormat())
+			{
+				case TextureFormat.BC5:
+					lumOver = n.g / 255f;  // BC5 stores X in red and Y in green (Z not stored)
+					break;
+				case TextureFormat.DXT5:
+					lumOver = n.g / 255f;  // DXT5 stores X in alpha and Y in green (Z not stored)
+					break;
+				default:
+					break;
+			}
+
+			HslColor hslBase = palette.ConvertRgbToHsl(c);
+
+			double opacity = 0.8;
+			double lum = hslBase.L;
+
+			if (lum > 0.5d)
+			{
+				lum = (opacity * (1 - (1 - (2 * (lumOver - 0.5))) * (1 - lum))) + (1 - opacity) * lum;
+				lum = (opacity * lum) + (1 - opacity) * lum;
+			}
+			else
+			{
+				lum = (opacity * (2 * lumOver * lum)) + (1 - opacity) * lum;
+			}
+
+			c = palette.ConvertHslToRgb(hslBase.H, hslBase.S, lum);
+			return c;
+		}
+
+		public string TextureState()
+		{
+			string colorMapState = memoryMappedVisualMap != null ? "Memory Mapped" : (cachedVisualMap != null ? "RAM Buffered" : "None");
+			string normalMapState = memoryMappedNormalMap != null ? "Memory Mapped" : (cachedNormalMap != null ? "RAM Buffered" : "None");
+
+			return $"{body.name} Visual Map Texture: {colorMapState}, Normal Map Texture: {normalMapState}";
+		}
+	}
+
 	[KSPScenario(ScenarioCreationOptions.AddToAllGames | ScenarioCreationOptions.AddToExistingGames, GameScenes.FLIGHT, GameScenes.SPACECENTER, GameScenes.TRACKSTATION)]
 	public class SCANcontroller : ScenarioModule
 	{
@@ -58,7 +373,7 @@ namespace SCANsat
 		[KSPField(isPersistant = true)]
 		public bool mainMapTerminator = false;
 		[KSPField(isPersistant = true)]
-		public bool mainMapBiome = false;
+		public MainMapDisplayMode mainMapDisplayMode = MainMapDisplayMode.Terrain;
 		[KSPField(isPersistant = true)]
 		public bool mainMapMinimized = false;
 		[KSPField(isPersistant = true)]
@@ -139,7 +454,7 @@ namespace SCANsat
 		/* Primary SCANsat vessel dictionary; loaded every time */
 		public DictionaryValueList<Guid, SCANvessel> knownVessels = new DictionaryValueList<Guid, SCANvessel>();
 
-		/* Primary SCANdata dictionary; loaded every time*/
+		/* Primary SCANdata dictionary; loaded every time */
 		private DictionaryValueList<string, SCANdata> body_data = new DictionaryValueList<string, SCANdata>();
 
 		/* MechJeb Landing Target Integration */
@@ -154,8 +469,7 @@ namespace SCANsat
 		private CelestialBody zoomMapBodyVisual;
 
 		/* Visual Map Texture Data */
-		private Dictionary<CelestialBody, Texture2D> readableScaledSpaceMaps = new Dictionary<CelestialBody, Texture2D>();
-		private Dictionary<CelestialBody, Texture2D> readableScaledSpaceNormalMaps = new Dictionary<CelestialBody, Texture2D>();
+		private Dictionary<CelestialBody, SCANtextures> mapTextureHandler = new Dictionary<CelestialBody, SCANtextures>();
 		private CelestialBody bigMapBodyScaledSpace;
 		private CelestialBody zoomMapBodyScaledSpace;
 
@@ -234,30 +548,38 @@ namespace SCANsat
 			}
 		}
 
-		public Texture2D getVisualMapTexture(CelestialBody b)
+		public bool isVisualTextureLoaded(CelestialBody b)
 		{
 			if (!SCAN_Settings_Config.Instance.VisibleMapsActive)
 			{
-				return null;
+				return false;
 			}
 
-			if (readableScaledSpaceMaps.ContainsKey(b))
+			// Check if a texture is present in either dictionary
+			if (mapTextureHandler.GetValueOrDefault(b) != null)
 			{
-				return readableScaledSpaceMaps[b];
+				if (mapTextureHandler[b].memoryMappedVisualMap != null || mapTextureHandler[b].cachedVisualMap != null)
+				{
+					return true;
+				}
 			}
 
-			return null;
+			return false;
 		}
 
-		public Texture2D getVisualMapNormalTexture(CelestialBody b)
+		public Color32 GetShadedVisualPixel(CelestialBody b, double lon, double lat)
 		{
-			if (readableScaledSpaceNormalMaps.ContainsKey(b))
+			Color32 c = palette.Grey;
+
+			SCANtextures bodyTextures = mapTextureHandler.GetValueOrDefault(b);
+			if (bodyTextures != null)
 			{
-				return readableScaledSpaceNormalMaps[b];
+				return bodyTextures.GetShadedVisualPixel(lon, lat);
 			}
 
-			return null;
+			return c;
 		}
+
 
 		public static List<SCANterrainConfig> EncodeTerrainConfigs
 		{
@@ -289,6 +611,7 @@ namespace SCANsat
 			}
 		}
 
+
 		public static void checkLoadedTerrainNodes()
 		{
 			for (int i = 0; i < FlightGlobals.Bodies.Count; i++)
@@ -300,29 +623,9 @@ namespace SCANsat
 					continue;
 				}
 
-				if (getTerrainNode(b.bodyName) == null)
+				if (SCANUtil.getTerrainConfig(b) == null)
 				{
-					float? clamp = null;
-					if (b.ocean)
-					{
-						clamp = 0;
-					}
-
-					float newMax;
-
-					try
-					{
-						newMax = ((float)CelestialUtilities.GetHighestPeak(b)).Mathf_Round(-2);
-					}
-					catch (Exception e)
-					{
-						SCANUtil.SCANlog("Error in calculating Max Height for {0}; using default value/n{1}", b.bodyName, e);
-						newMax = SCANconfigLoader.SCANNode.DefaultMaxHeightRange;
-					}
-
-					SCANUtil.SCANlog("Generating new SCANsat Terrain Config for [{0}] - Max Height: [{1:F0}m]", b.bodyName, newMax);
-
-					addToTerrainConfigData(b.bodyName, new SCANterrainConfig(SCANconfigLoader.SCANNode.DefaultMinHeightRange, newMax, clamp, SCANUtil.PaletteLoader(SCANconfigLoader.SCANNode.DefaultPalette, 7), 7, false, false, b));
+					SCANUtil.generateTerrainConfig(b);  // Sets the terrain config in the dictionary
 				}
 			}
 		}
@@ -333,11 +636,8 @@ namespace SCANsat
 			{
 				return masterTerrainNodes[name];
 			}
-			else
-			{
-				SCANUtil.SCANlog("SCANsat terrain config [{0}] cannot be found in master terrain storage list", name);
-			}
 
+			SCANUtil.SCANlog("SCANsat terrain config [{0}] cannot be found in master terrain storage list", name);
 			return null;
 		}
 
@@ -358,14 +658,13 @@ namespace SCANsat
 
 		public static void addToTerrainConfigData(string name, SCANterrainConfig data)
 		{
-			if (!masterTerrainNodes.ContainsKey(name))
+			if (masterTerrainNodes.ContainsKey(name))
 			{
-				masterTerrainNodes.Add(name, data);
+				Log.Warning($"[{name}] Terrain Config already stored in SCANterrain Data Dictionary");
+				return;
 			}
-			else
-			{
-				Log.Error("SCANterrain Data Dictionary Already Contains Key Of This Type");
-			}
+
+			masterTerrainNodes.Add(name, data);
 		}
 
 		public static int MasterResourceCount
@@ -406,7 +705,7 @@ namespace SCANsat
 					{
 						continue;
 					}
-					//SCANUtil.SCANlog("Loading SCANsat resource config settings: {0}", r.Name);
+
 					if (!masterResourceNodes.Contains(r.Name))
 					{
 						masterResourceNodes.Add(r.Name, r);
@@ -720,42 +1019,6 @@ namespace SCANsat
 							}
 
 							data.Disabled = node_body.parse("Disabled", false);
-
-							float min = node_body.parse("MinHeightRange", data.TerrainConfig.DefaultMinHeight);
-							float max = node_body.parse("MaxHeightRange", data.TerrainConfig.DefaultMaxHeight);
-							float? clampState = node_body.parse("ClampHeight", (float?)null);
-
-							int pSize = node_body.parse("PaletteSize", data.TerrainConfig.DefaultPaletteSize);
-							bool pRev = node_body.parse("PaletteReverse", data.TerrainConfig.DefaultReverse);
-							bool pDis = node_body.parse("PaletteDiscrete", data.TerrainConfig.DefaultDiscrete);
-
-							string paletteName = node_body.parse("PaletteName", "");
-
-							if (string.IsNullOrEmpty(paletteName))
-							{
-								paletteName = data.TerrainConfig.DefaultPalette.Name;
-							}
-
-							SCANPalette dataPalette = SCANUtil.PaletteLoader(paletteName, pSize);
-
-							if (dataPalette.Hash == SCAN_Palette_Config.DefaultPalette.GetPalette(0).Hash)
-							{
-								paletteName = "Default";
-								pSize = 7;
-							}
-
-							SCANterrainConfig dataTerrainConfig = getTerrainNode(body.bodyName);
-
-							if (dataTerrainConfig == null)
-							{
-								dataTerrainConfig = new SCANterrainConfig(min, max, clampState, dataPalette, pSize, pRev, pDis, body);
-							}
-							else
-							{
-								setNewTerrainConfigValues(dataTerrainConfig, min, max, clampState, dataPalette, pSize, pRev, pDis);
-							}
-
-							data.TerrainConfig = dataTerrainConfig;
 						}
 						catch (Exception e)
 						{
@@ -826,17 +1089,22 @@ namespace SCANsat
 							node_body.AddValue("LandingTarget", string.Format("{0:N4},{1:N4}", w.Latitude, w.Longitude));
 						}
 					}
-					node_body.AddValue("MinHeightRange", body_scan.TerrainConfig.MinTerrain / body_scan.TerrainConfig.MinHeightMultiplier);
-					node_body.AddValue("MaxHeightRange", body_scan.TerrainConfig.MaxTerrain / body_scan.TerrainConfig.MaxHeightMultiplier);
-					if (body_scan.TerrainConfig.ClampTerrain != null)
-					{
-						node_body.AddValue("ClampHeight", body_scan.TerrainConfig.ClampTerrain / body_scan.TerrainConfig.ClampHeightMultiplier);
-					}
 
-					node_body.AddValue("PaletteName", body_scan.TerrainConfig.ColorPal.Name);
-					node_body.AddValue("PaletteSize", body_scan.TerrainConfig.PalSize);
-					node_body.AddValue("PaletteReverse", body_scan.TerrainConfig.PalRev);
-					node_body.AddValue("PaletteDiscrete", body_scan.TerrainConfig.PalDis);
+					SCANterrainConfig body_config = SCANUtil.getTerrainConfig(body_scan);
+					if (body_config != null)
+					{
+						node_body.AddValue("MinHeightRange", body_config.MinTerrain / body_config.MinHeightMultiplier);
+						node_body.AddValue("MaxHeightRange", body_config.MaxTerrain / body_config.MaxHeightMultiplier);
+						if (body_config.ClampTerrain != null)
+						{
+							node_body.AddValue("ClampHeight", body_config.ClampTerrain / body_config.ClampHeightMultiplier);
+						}
+
+						node_body.AddValue("PaletteName", body_config.ColorPal.Name);
+						node_body.AddValue("PaletteSize", body_config.PalSize);
+						node_body.AddValue("PaletteReverse", body_config.PalRev);
+						node_body.AddValue("PaletteDiscrete", body_config.PalDis);
+					}
 					node_body.AddValue("Map", body_scan.shortSerialize());
 					node_progress.AddNode(node_body);
 				}
@@ -1600,78 +1868,6 @@ namespace SCANsat
 
 		}
 
-		void GetVisualMapTexturesForBody(CelestialBody b, out Material material, out bool useMaterialForColorMap, out string colorMapTextureName, out string normalMapTextureName)
-		{
-			material = null;
-			colorMapTextureName = null;
-			normalMapTextureName = null;
-			useMaterialForColorMap = true;
-
-			if (b.scaledBody == null)
-			{
-				return;
-			}
-
-			MeshRenderer scaledMesh = b.scaledBody.GetComponent<MeshRenderer>();
-
-			if (scaledMesh == null)
-			{
-				return;
-			}
-
-			material = scaledMesh.sharedMaterial; // TODO: what if there are multiple materials?  do we need to check all of them?
-			string shaderName = material.shader.name;
-
-			if (shaderName == "Terrain/Gas Giant")
-			{
-				colorMapTextureName = "_DetailCloudPatternTexture";
-				normalMapTextureName = "_NormalMap";
-				return;
-			}
-			else if (shaderName.Contains("ParallaxScaled"))
-			{
-				SCANparallaxContinued.LoadParallax(b, ref material);
-				useMaterialForColorMap = false;
-				colorMapTextureName = "_ColorMap";
-				normalMapTextureName = null; // for whatever reason, the logic in ScANmap that uses the normal map doesn't work with parallax's normal maps
-				return;
-			}
-			else if (material.HasProperty("_MainTex"))
-			{
-				colorMapTextureName = "_MainTex";
-			}
-			else if (material.HasProperty("_ColorMap"))
-			{
-				colorMapTextureName = "_ColorMap";
-			}
-
-			if (material.HasProperty("_BumpMap"))
-			{
-				normalMapTextureName = "_BumpMap";
-			}
-			else if (material.HasProperty("_NormalMap"))
-			{
-				normalMapTextureName = "_NormalMap";
-			}
-		}
-
-		void CacheScaledSpaceTexture(Dictionary<CelestialBody, Texture2D> cache, CelestialBody b, Material material, string textureName, bool useMaterial)
-		{
-			if (cache.GetValueOrDefault(b) == null && textureName != null)
-			{
-				var sourceTexture = material.GetTexture(textureName) as Texture2D;
-				if (sourceTexture == null)
-				{
-					Log.Error($"GetTexture returned a null texture for body {b.name}, material {material.name} and texture name {textureName}");
-				}
-				else
-				{
-					var colorMap = sourceTexture.isReadable ? sourceTexture : readableTexture(sourceTexture, useMaterial ? material : null);
-					cache.Add(b, colorMap);
-				}
-			}
-		}
-
 		internal void LoadVisualMapTexture_Renamed(CelestialBody b, mapSource s)
 		{
 			if (!SCAN_Settings_Config.Instance.VisibleMapsActive)
@@ -1684,18 +1880,6 @@ namespace SCANsat
 				return;
 			}
 
-			GetVisualMapTexturesForBody(b, out Material material, out bool useMaterialForColorMap, out string colorMapTextureName, out string normalMapTextureName);
-
-			if (material == null)
-			{
-				Log.Error($"GetVisualMapTexturesForBody returned a null material for body {b.name}");
-			}
-			else
-			{
-				CacheScaledSpaceTexture(readableScaledSpaceMaps, b, material, colorMapTextureName, useMaterialForColorMap);
-				CacheScaledSpaceTexture(readableScaledSpaceNormalMaps, b, material, normalMapTextureName, false);
-			}
-
 			switch (s)
 			{
 				case mapSource.BigMap:
@@ -1705,6 +1889,14 @@ namespace SCANsat
 					zoomMapBodyScaledSpace = b;
 					break;
 			}
+
+			if (mapTextureHandler.GetValueOrDefault(b) != null)
+			{
+				return; // Already cached
+			}
+
+			// Load the textures for this body (either memory mapped, or RAM cached if memory mapping not available)
+			mapTextureHandler.Add(b, new SCANtextures(b));
 		}
 
 		internal void UnloadVisualMapTexture(CelestialBody b, mapSource s)
@@ -1741,55 +1933,20 @@ namespace SCANsat
 					break;
 			}
 
-			if (readableScaledSpaceMaps.ContainsKey(b))
+			if (mapTextureHandler.ContainsKey(b))
 			{
-				GameObject.Destroy(readableScaledSpaceMaps[b]);
-				readableScaledSpaceMaps[b] = null;
-				readableScaledSpaceMaps.Remove(b);
+				if (mapTextureHandler[b].cachedVisualMap != null)
+				{
+					GameObject.Destroy(mapTextureHandler[b].cachedVisualMap);
+				}
+				if (mapTextureHandler[b].cachedNormalMap != null)
+				{
+					GameObject.Destroy(mapTextureHandler[b].cachedNormalMap);
+				}
+
+				mapTextureHandler[b] = null;
+				mapTextureHandler.Remove(b);
 			}
-
-			if (readableScaledSpaceNormalMaps.ContainsKey(b))
-			{
-				GameObject.Destroy(readableScaledSpaceNormalMaps[b]);
-				readableScaledSpaceNormalMaps[b] = null;
-				readableScaledSpaceNormalMaps.Remove(b);
-			}
-		}
-
-		private Texture2D readableTexture(Texture tex, Material mat)
-		{
-			if (tex == null)
-			{
-				return null;
-			}
-
-			Texture2D readable = new Texture2D(tex.width, tex.height);
-
-			var rt = RenderTexture.GetTemporary(tex.width, tex.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB, 1);
-
-			if (mat != null)
-			{
-				Graphics.Blit(tex, rt, mat);
-			}
-			else
-			{
-				Graphics.Blit(tex, rt);
-			}
-
-			RenderTexture.active = rt;
-
-			readable.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
-
-			RenderTexture.active = null;
-			RenderTexture.ReleaseTemporary(rt);
-
-			rt = null;
-
-			readable.Apply();
-
-			tex = null;
-
-			return readable;
 		}
 
 		private void OnGUI()
@@ -2178,17 +2335,12 @@ namespace SCANsat
 			{
 				body_data.Add(VC.to.bodyName, new SCANdata(VC.to));
 			}
-		}
 
-		private void setNewTerrainConfigValues(SCANterrainConfig terrain, float min, float max, float? clamp, SCANPalette c, int size, bool reverse, bool discrete)
-		{
-			terrain.MinTerrain = min * terrain.MinHeightMultiplier;
-			terrain.MaxTerrain = max * terrain.MaxHeightMultiplier;
-			terrain.ClampTerrain = clamp * terrain.ClampHeightMultiplier;
-			terrain.ColorPal = c;
-			terrain.PalSize = size;
-			terrain.PalRev = reverse;
-			terrain.PalDis = discrete;
+			// Generate terrain config if it doesn't exist
+			if (SCANUtil.getTerrainConfig(VC.to) == null)
+			{
+				SCANUtil.generateTerrainConfig(VC.to);
+			}
 		}
 
 		private string saveResources(SCANresourceGlobal resource)
@@ -2283,8 +2435,6 @@ namespace SCANsat
 								res.MinValue = min;
 								res.MaxValue = max;
 							}
-							//else
-							//SCANUtil.SCANlog("No resources found assigned for Celestial Body: {0}, skipping...", b.bodyName);
 						}
 						else
 						{

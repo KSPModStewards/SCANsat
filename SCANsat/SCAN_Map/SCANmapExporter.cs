@@ -5,7 +5,7 @@ using System.Threading;
 using UnityEngine;
 using SCANsat.SCAN_Data;
 using SCANsat.SCAN_Platform;
-using Log = KSPBuildTools.Log;
+using Log = KSPCommunityLib.Logging.Log;
 
 namespace SCANsat.SCAN_Map
 {
@@ -71,7 +71,7 @@ namespace SCANsat.SCAN_Map
 
 			ScreenMessages.PostScreenMessage("SCANsat Map saved: GameData/SCANsat/PluginData/" + filename, 8, ScreenMessageStyle.UPPER_CENTER);
 
-			SCANUtil.SCANlog("Map of [{0}] saved\nMap Size: {1} X {2}\nMinimum Altitude: {3:F0}m; Maximum Altitude: {4:F0}m\nPixel Width At Equator: {5:F6}m", map.Body.displayName.LocalizeBodyName(), map.Map.width, map.Map.height, data.TerrainConfig.MinTerrain, data.TerrainConfig.MaxTerrain, (map.Body.Radius * 2 * Math.PI) / (map.Map.width * 1f));
+			SCANUtil.SCANlog("Map of [{0}] saved\nMap Size: {1} X {2}\nMinimum Altitude: {3:F0}m; Maximum Altitude: {4:F0}m\nPixel Width At Equator: {5:F6}m", map.Body.displayName.LocalizeBodyName(), map.Map.width, map.Map.height, SCANUtil.getTerrainConfig(data).MinTerrain, SCANUtil.getTerrainConfig(data).MaxTerrain, (map.Body.Radius * 2 * Math.PI) / (map.Map.width * 1f));
 
 			if (SCAN_Settings_Config.Instance.ExportCSV && map.MType == mapType.Altimetry)
 			{

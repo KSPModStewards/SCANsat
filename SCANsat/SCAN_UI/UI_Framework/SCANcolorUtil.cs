@@ -162,6 +162,10 @@ namespace SCANsat.SCAN_UI.UI_Framework
 
 		public static Color32 heightToColor(float val, bool color, SCANterrainConfig terrain, float min = 0, float max = 0, float range = 0, bool useCustomRange = false)
 		{
+			if (terrain == null)
+			{
+				return lerp(Black, White, UnityEngine.Random.value);
+			}
 			Color32[] c = terrain.ColorPal.ColorsArray;
 			if (terrain.PalRev)
 			{

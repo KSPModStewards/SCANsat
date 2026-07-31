@@ -1,5 +1,5 @@
 ﻿using System;
-using Log = KSPBuildTools.Log;
+using Log = KSPCommunityLib.Logging.Log;
 
 
 // TODO: remove this file and fixup references to call KSPBuildTools.Log directly

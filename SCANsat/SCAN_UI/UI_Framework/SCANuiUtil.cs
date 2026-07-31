@@ -19,7 +19,6 @@ using System.Text;
 using SCANsat.SCAN_Data;
 using SCANsat.SCAN_Map;
 using SCANsat.SCAN_Unity;
-using SCANsat.SCAN_UI.UI_Framework;
 using palette = SCANsat.SCAN_UI.UI_Framework.SCANcolorUtil;
 using UnityEngine;
 
@@ -967,7 +966,7 @@ namespace SCANsat.SCAN_UI.UI_Framework
 					{
 						if (SCANUtil.isCovered(lon, lat, data, SCANtype.AltimetryHiRes))
 						{
-							c = palette.heightToColor(values[i, j], true, data.TerrainConfig);
+							c = palette.heightToColor(values[i, j], true, SCANUtil.getTerrainConfig(data));
 						}
 						else
 						{
@@ -975,7 +974,7 @@ namespace SCANsat.SCAN_UI.UI_Framework
 							int ilat = SCANUtil.icLAT(lat);
 							int lo = ((int)(ilon * scale * 5)) / 5;
 							int la = ((int)(ilat * scale * 5)) / 5;
-							c = palette.heightToColor(values[lo, la], false, data.TerrainConfig);
+							c = palette.heightToColor(values[lo, la], false, SCANUtil.getTerrainConfig(data));
 						}
 
 						c = palette.lerp(c, palette.Clear, 0.1f);
@@ -1189,11 +1188,11 @@ namespace SCANsat.SCAN_UI.UI_Framework
 				{
 					if (map.UseCustomRange)
 					{
-						pix[j * width + i] = palette.heightToColor(values[i, j], true, data.TerrainConfig, map.CustomMin, map.CustomMax, map.CustomRange, true);
+						pix[j * width + i] = palette.heightToColor(values[i, j], true, SCANUtil.getTerrainConfig(data), map.CustomMin, map.CustomMax, map.CustomRange, true);
 					}
 					else
 					{
-						pix[j * width + i] = palette.heightToColor(values[i, j], true, data.TerrainConfig);
+						pix[j * width + i] = palette.heightToColor(values[i, j], true, SCANUtil.getTerrainConfig(data));
 					}
 				}
 			}

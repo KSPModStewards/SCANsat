@@ -27,6 +27,7 @@ using SCANsat.SCAN_Data;
 using SCANsat.SCAN_UI.UI_Framework;
 using palette = SCANsat.SCAN_UI.UI_Framework.SCANcolorUtil;
 using SCANsat.SCAN_Unity;
+using Log = KSPCommunityLib.Logging.Log;
 
 namespace SCANsat
 {
@@ -263,6 +264,84 @@ namespace SCANsat
 			}
 
 			return SCANcontroller.controller.getData(BodyName);
+		}
+
+		/// <summary>
+		/// For a given Celestial Body, this returns the SCANterrainConfig instance if it exists in the SCANcontroller master dictionary; return is null if the SCANterrainConfig does not exist for that body (likely not generated or loaded properly), or if the SCANcontroller Scenario Module has not been loaded.
+		/// </summary>
+		/// <param name="body">Instance of celestial body</param>
+		/// <returns>SCANterrainConfig instance for the given Celestial Body; null if none exists</returns>
+		public static SCANterrainConfig getTerrainConfig(CelestialBody body)
+		{
+			return getTerrainConfig(body.bodyName);
+		}
+
+		/// <summary>
+		/// For a given SCANdata instance of a celestial body, this returns the SCANterrainConfig instance if it exists in the SCANcontroller master dictionary; return is null if the SCANterrainConfig does not exist for that body (likely not generated or loaded properly), or if the SCANcontroller Scenario Module has not been loaded.
+		/// </summary>
+		/// <param name="data">SCANdata instance for a celestial body</param>
+		/// <returns>SCANterrainConfig instance for the given Celestial Body; null if none exists</returns>
+		public static SCANterrainConfig getTerrainConfig(SCANdata data)
+		{
+			return getTerrainConfig(data.Body.bodyName);
+		}
+
+		/// <summary>
+		/// For a given Celestial Body name, this returns the SCANterrainConfig instance if it exists in the SCANcontroller master dictionary; return is null if the SCANterrainConfig does not exist for that body (likely not generated or loaded properly), or if the SCANcontroller Scenario Module has not been loaded.
+		/// </summary>
+		/// <param name="BodyName">Name of celestial body (do not use displayName string)</param>
+		/// <returns>SCANterrainConfig instance for the given Celestial Body; null if none exists</returns>
+		public static SCANterrainConfig getTerrainConfig(string BodyName)
+		{
+			if (SCANcontroller.controller == null)
+			{
+				return null;
+			}
+
+			return SCANcontroller.getTerrainNode(BodyName);
+		}
+
+		/// <summary>
+		/// Generate the default SCANterrainConfig for the provided body and set / update its entry in the masterTerrainNodes.
+		/// </summary>
+		/// <param name="body">CelestialBody instance to generate the SCANterrainConfig for</param>
+		/// <returns>SCANterrainConfig instance for the given Celestial Body</returns>
+		public static SCANterrainConfig generateTerrainConfig(CelestialBody b)
+		{
+			if (b.pqsController == null)
+			{
+				SCANUtil.SCANlog($"[{b.name}] PQS Controller not loaded - no terrain data generated.");
+				return null;
+			}
+
+			float? clamp = null;
+			if (b.ocean)
+			{
+				clamp = 0;
+			}
+
+			float newMin;
+			float newMax;
+
+			try
+			{
+				newMin = ((float)(b.pqsController.radiusMin - b.pqsController.radius)).Mathf_Round(-1);
+				newMax = ((float)(b.pqsController.radiusMax - b.pqsController.radius)).Mathf_Round(-1);
+				if (newMin == newMax)
+				{
+					throw new Exception("Gas Giant / Flat Body");  // Clamp altimetry if body is perfectly smooth / gas giant
+				}
+			}
+			catch (Exception e)
+			{
+				SCANlog($"[{b.name}] Error in calculating Max Height; using default value\n{e}");
+				newMin = SCANconfigLoader.SCANNode.DefaultMinHeightRange;
+				newMax = SCANconfigLoader.SCANNode.DefaultMaxHeightRange;
+			}
+
+			SCANterrainConfig config = new SCANterrainConfig(newMin, newMax, clamp, PaletteLoader(SCANconfigLoader.SCANNode.DefaultPalette, 7), 7, false, false, b);
+			SCANcontroller.addToTerrainConfigData(b.bodyName, config);  // Add to masterTerrainNodes dictionary in SCANcontroller
+			return config;
 		}
 
 		/// <summary>
@@ -534,6 +613,10 @@ namespace SCANsat
 
 		public static double[] cosLookUp = new double[180];
 		public static DictionaryValueList<CelestialBody, string> localizedBodyNames = new DictionaryValueList<CelestialBody, string>();
+
+		/* Biome Map Encoding Data */
+		private static Dictionary<string, CBAttributeMapSO.MapAttribute[]> _scanBiomePaletteCache
+			= new Dictionary<string, CBAttributeMapSO.MapAttribute[]>();
 
 		internal static bool isCovered(double lon, double lat, SCANdata data, SCANtype type)
 		{
@@ -834,6 +917,44 @@ namespace SCANsat
 			return amount;
 		}
 
+		private static bool IsGrayscaleEncoded(CBAttributeMapSO.MapAttribute[] attrs)
+		{
+			foreach (var a in attrs)
+			{
+				if (a == null) continue;
+				if (Mathf.Abs(a.mapColor.g - 1f) > 0.01f) return false;
+				if (Mathf.Abs(a.mapColor.b - 1f) > 0.01f) return false;
+			}
+			return true;
+		}
+
+		public static CBAttributeMapSO.MapAttribute[] GetOrBuildPalette(CelestialBody body)
+		{
+			if (_scanBiomePaletteCache.TryGetValue(body.name, out var cached))
+			{
+				return cached;
+			}
+
+			var src = body.BiomeMap.Attributes;
+			if (!IsGrayscaleEncoded(src))
+			{
+				_scanBiomePaletteCache[body.name] = body.BiomeMap.Attributes;
+				return body.BiomeMap.Attributes;
+			}
+
+			// Build replacements with categorical hues via golden-ratio HSV
+			var replacements = new CBAttributeMapSO.MapAttribute[src.Length];
+			for (int i = 0; i < src.Length; i++)
+			{
+				if (src[i] == null) { continue; }
+				var clone = new CBAttributeMapSO.MapAttribute(src[i]);  // Copy all attributes
+				clone.mapColor = Color.HSVToRGB((i * 0.61803398875f) % 1f, 1f, 1f);
+				replacements[i] = clone;
+			}
+			_scanBiomePaletteCache[body.name] = replacements;
+			return replacements;
+		}
+
 		private static int getBiomeIndex(CelestialBody body, double lon, double lat)
 		{
 			if (body.BiomeMap == null)
@@ -850,6 +971,7 @@ namespace SCANsat
 			}
 
 			CBAttributeMapSO.MapAttribute att = body.BiomeMap.GetAtt(Mathf.Deg2Rad * lat, Mathf.Deg2Rad * lon);
+
 			for (int i = 0; i < body.BiomeMap.Attributes.Length; ++i)
 			{
 				if (body.BiomeMap.Attributes[i] == att)
@@ -882,6 +1004,10 @@ namespace SCANsat
 			{
 				return null;
 			}
+
+			var palette = GetOrBuildPalette(body);
+			if (palette != null && i < palette.Length && palette[i] != null)
+				return palette[i];
 
 			return body.BiomeMap.Attributes[i];
 		}
@@ -928,6 +1054,19 @@ namespace SCANsat
 			}
 
 			sb.Append(string.IsNullOrEmpty(a.displayname) ? a.name : Localizer.Format(a.displayname));
+		}
+		internal static Color getBiomeDisplayColor(CelestialBody body, int idx)
+		{
+			if (body == null || body.BiomeMap == null)
+				return Color.gray;
+			if (idx < 0 || idx >= body.BiomeMap.Attributes.Length)
+				return Color.gray;
+
+			var palette = GetOrBuildPalette(body);
+			if (palette != null && palette[idx] != null)
+				return palette[idx].mapColor;
+
+			return body.BiomeMap.Attributes[idx].mapColor;
 		}
 
 		internal static int countBits(int i)
@@ -1342,13 +1481,13 @@ namespace SCANsat
 
 		internal static void SCANlog(string log, params object[] stringObjects)
 		{
-			KSPBuildTools.Log.Message(string.Format(log, stringObjects));
+			Log.Message(string.Format(log, stringObjects));
 		}
 
 		[System.Diagnostics.Conditional("DEBUG")]
 		internal static void SCANdebugLog(string log, params object[] stringObjects)
 		{
-			KSPBuildTools.Log.Debug(string.Format(log, stringObjects));
+			Log.Debug(string.Format(log, stringObjects));
 		}
 
 		#endregion
@@ -1591,4 +1730,3 @@ namespace SCANsat
 	}
 }
 #endregion
-

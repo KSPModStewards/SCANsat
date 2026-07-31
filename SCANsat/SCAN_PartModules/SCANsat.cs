@@ -23,7 +23,7 @@ using KSP.Localization;
 
 using UnityEngine;
 using palette = SCANsat.SCAN_UI.UI_Framework.SCANcolorUtil;
-using Log = KSPBuildTools.Log;
+using Log = KSPCommunityLib.Logging.Log;
 
 namespace SCANsat.SCAN_PartModules
 {

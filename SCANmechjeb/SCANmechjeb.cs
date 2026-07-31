@@ -14,12 +14,12 @@
 using System.Collections;
 using SCANsat;
 using SCANsat.SCAN_Data;
-using log = SCANsat.SCAN_Platform.Logging.ConsoleLogger;
-using palette = SCANsat.SCAN_UI.UI_Framework.SCANcolorUtil;
+using Log = KSPCommunityLib.Logging.Log;
 using MuMech;
 
 using UnityEngine;
 using UnityEngine.Events;
+using System.Reflection;
 
 namespace SCANmechjeb
 {
@@ -35,6 +35,55 @@ namespace SCANmechjeb
 		private SCANdata data;
 		private Vector2d coords = new Vector2d();
 		private bool shutdown, mjOnboard, mjTechTreeLocked;
+
+		// Store references to required fields - type name changes between Target / Hidden and target / hidden across MechJeb versions
+		private readonly static FieldInfo targetField;
+		private readonly static FieldInfo hiddenField;
+
+		/// <summary>
+		/// Reflectively fetches MechJebCore fields, tolerating the
+		/// 'Target'/'target' field rename across MechJeb versions. Returns null
+		/// (and logs) if the field can't be resolved under any known name.
+		/// </summary>
+		static SCANmechjeb()
+		{
+			var t = new MechJebCore().GetType();
+			targetField = t.GetField("Target") ?? t.GetField("target");
+			if (targetField == null)
+			{
+				Log.Message("MechJebCore 'target' field could not be found under any known name; MechJeb support broken.");
+			}
+
+			hiddenField = t.GetField("Hidden") ?? t.GetField("hidden");
+			if (hiddenField == null)
+			{
+				Log.Message("MechJebGuidanceModule 'hidden' field could not be found under any known name; MechJeb support broken.");
+			}
+		}
+
+		#region Helpers
+
+		/// <summary>
+		/// Reflectively fetches MechJebCore's target controller, tolerating the
+		/// 'Target'/'target' field rename across MechJeb versions. Returns null
+		/// (and logs) if the field can't be resolved under any known name.
+		/// </summary>
+		private static MechJebModuleTargetController GetMJCoreTarget(MechJebCore mjc)
+		{
+			return targetField?.GetValue(mjc) as MechJebModuleTargetController;
+		}
+
+		/// <summary>
+		/// Reflectively reads the guidance module's hidden flag, tolerating the
+		/// 'Hidden'/'hidden' field rename across MechJeb versions. Returns null
+		/// (and logs) if the field can't be resolved under any known name.
+		/// </summary>
+		private static bool? IsMJGuidanceModuleHidden(DisplayModule gm)
+		{
+			return hiddenField?.GetValue(gm) as bool?;
+		}
+
+		#endregion
 
 		private void Start()
 		{
@@ -227,7 +276,7 @@ namespace SCANmechjeb
 				return;
 			}
 
-			target = mjCore.target;
+			target = GetMJCoreTarget(mjCore);
 
 			if (target == null)
 			{
@@ -256,7 +305,8 @@ namespace SCANmechjeb
 
 				guidanceModule.UnlockCheck();
 
-				if (guidanceModule.hidden)
+				var hidden = IsMJGuidanceModuleHidden(guidanceModule);
+				if (hidden ?? true) // Defaults to a hidden state if the field cannot be found
 				{
 					SCANcontroller.controller.MechJebLoaded = false;
 					way = null;

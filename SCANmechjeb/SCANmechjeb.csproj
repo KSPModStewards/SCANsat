@@ -3,23 +3,22 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SCANmechjeb</RootNamespace>
     <AssemblyName>SCANmechjeb</AssemblyName>
-    <TargetFramework>net4.8</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateKSPAssemblyAttribute>true</GenerateKSPAssemblyAttribute>
-    <GenerateKSPAssemblyDependencyAttributes>true</GenerateKSPAssemblyDependencyAttributes>
+	  <KSPBT_GenerateAssemblyAttribute>true</KSPBT_GenerateAssemblyAttribute>
+	  <KSPBT_GenerateDependencyAttributes>true</KSPBT_GenerateDependencyAttributes>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MechJeb2">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(KSPRoot)\GameData\MechJeb2\Plugins\MechJeb2.dll</HintPath>
-      <Private>False</Private>
+    <ModReference Include="MechJeb2">
+      <DLLPath>GameData/MechJeb2/Plugins/MechJeb2.dll</DLLPath>
       <CKANIdentifier>MechJeb2</CKANIdentifier>
-      <KSPAssemblyVersion>2.5</KSPAssemblyVersion>
-    </Reference>
+	  <KSPAssemblyVersion>2.5</KSPAssemblyVersion>
+    </ModReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="KSPBuildTools" Version="0.0.4" />
+    <PackageReference Include="KSPBuildTools" Version="1.1.1" />
+    <PackageReference Include="KSPCommunityLib" Version="0.1.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SCANsat\SCANsat.csproj" />

@@ -22,8 +22,6 @@ namespace SCANsat.SCAN_Data
 		[Persistent]
 		private string name;
 		[Persistent]
-		private int index;
-		[Persistent]
 		private float minHeightRange;
 		[Persistent]
 		private float maxHeightRange;
@@ -80,7 +78,6 @@ namespace SCANsat.SCAN_Data
 			paletteDiscrete = discrete;
 			body = b;
 			name = body.bodyName;
-			index = body.flightGlobalsIndex;
 
 			setDefaultValues();
 		}
@@ -113,16 +110,6 @@ namespace SCANsat.SCAN_Data
 
 		public override void OnDecodeFromConfigNode()
 		{
-			body = FlightGlobals.Bodies.FirstOrDefault(b => b.flightGlobalsIndex == index);
-			if (body != null)
-			{
-				name = body.bodyName;
-			}
-			else
-			{
-				name = "WrongBody" + index;
-			}
-
 			colorPal = SCANUtil.PaletteLoader(paletteName, paletteSize);
 
 			float tempClamp = 0;

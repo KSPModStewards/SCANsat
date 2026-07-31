@@ -1780,11 +1780,11 @@ namespace SCANsat.SCAN_Unity
 				switch (bigmap.MType)
 				{
 					case mapType.Altimetry:
-						return bigmap.MapLegend.getLegend(SCANcontroller.controller.bigMapColor, data.TerrainConfig);
+						return bigmap.MapLegend.getLegend(SCANcontroller.controller.bigMapColor, SCANUtil.getTerrainConfig(data));
 					case mapType.Biome:
 						if (body != null && body.BiomeMap != null && body.BiomeMap.Attributes != null)
 						{
-							return bigmap.MapLegend.getLegend(data, SCANcontroller.controller.bigMapColor, SCAN_Settings_Config.Instance.BigMapStockBiomes, body.BiomeMap.Attributes);
+							return bigmap.MapLegend.getLegend(data, SCANcontroller.controller.bigMapColor, SCAN_Settings_Config.Instance.BigMapStockBiomes, SCANUtil.GetOrBuildPalette(body));
 						}
 						else
 						{
@@ -1963,18 +1963,7 @@ namespace SCANsat.SCAN_Unity
 		{
 			get
 			{
-				if (data == null)
-				{
-					return null;
-				}
-
-				string one = string.Format("|\n{0}", (((int)(data.TerrainConfig.MinTerrain / 100)) * 100).ToString("N0"));
-
-				string two = string.Format("|\n{0}", (((int)((data.TerrainConfig.MinTerrain + (data.TerrainConfig.TerrainRange / 2)) / 100)) * 100).ToString("N0"));
-
-				string three = string.Format("|\n{0}", (((int)(data.TerrainConfig.MaxTerrain / 100)) * 100).ToString("N0"));
-
-				return new List<string>(3) { one, two, three };
+				return SCANmapLegend.LegendLabels(SCANUtil.getTerrainConfig(body));
 			}
 		}
 
@@ -2459,7 +2448,7 @@ namespace SCANsat.SCAN_Unity
 
 					return Localizer.Format(body.BiomeMap.Attributes[current].displayname);
 				case mapType.Altimetry:
-					float terrain = xPos * data.TerrainConfig.TerrainRange + data.TerrainConfig.MinTerrain;
+					float terrain = xPos * SCANUtil.getTerrainConfig(data).TerrainRange + SCANUtil.getTerrainConfig(data).MinTerrain;
 
 					return string.Format("{0}m", terrain.ToString("N0"));
 			}

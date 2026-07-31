@@ -1,6 +1,7 @@
 {
   "NAME": "SCANsat",
-  "URL": "https://github.com/KSPModStewards/SCANsat/releases/latest/download/SCANsat.version",
-  "DOWNLOAD": "https://github.com/KSPModStewards/SCANsat/releases"
-
+  "VERSION": "21.1.0.0",
+  "KSP_VERSION": "1.12",
+  "KSP_VERSION_MIN": "1.12.3",
+  "KSP_VERSION_MAX": "1.12"
 }

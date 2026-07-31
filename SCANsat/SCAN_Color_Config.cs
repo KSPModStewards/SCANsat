@@ -14,9 +14,6 @@
 using System.Collections.Generic;
 using SCANsat.SCAN_Data;
 using SCANsat.SCAN_Platform;
-using SCANsat.SCAN_Palettes;
-using UnityEngine;
-using palette = SCANsat.SCAN_UI.UI_Framework.SCANcolorUtil;
 
 namespace SCANsat
 {

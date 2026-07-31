@@ -15,7 +15,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using Log = KSPBuildTools.Log;
+using Log = KSPCommunityLib.Logging.Log;
 
 namespace SCANsat.SCAN_Reflection
 {

@@ -6,9 +6,11 @@
     <TargetFramework>net4.8</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
-    <ReferenceKSPAssemblies>false</ReferenceKSPAssemblies>
+	  <KSPBT_GenerateAssemblyAttribute>false</KSPBT_GenerateAssemblyAttribute>
+	  <KSPBT_GenerateDependencyAttributes>true</KSPBT_GenerateDependencyAttributes>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="KSPBuildTools" Version="0.0.4" />
+    <PackageReference Include="KSPBuildTools" Version="1.1.1" />
+    <PackageReference Include="KSPCommunityLib" Version="0.1.1" />
   </ItemGroup>
 </Project>
