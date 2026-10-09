@@ -182,14 +182,25 @@ namespace SCANsat.SCAN_Data
 				if (anomalies == null)
 				{
 					PQSSurfaceObject[] sites = body.pqsSurfaceObjects;
+
+					if (sites == null)
+				    {
+				        anomalies = new SCANanomaly[0];
+				    }
+					
 					anomalies = new SCANanomaly[sites.Length];
+
+					var validAnomalies = new System.Collections.Generic.List<SCANanomaly>();
+					
 					for (int i = 0; i < sites.Length; ++i)
 					{
-						anomalies[i] = new SCANanomaly(sites[i].SurfaceObjectName
+						if (sites[i] == null) continue;
+						validAnomalies.Add(new SCANanomaly(sites[i].SurfaceObjectName
 							, body.GetLongitude(sites[i].transform.position)
 							, body.GetLatitude(sites[i].transform.position)
-							, sites[i]);
+							, sites[i]));
 					}
+					anomalies = validAnomalies.ToArray();
 				}
 
 				for (int i = 0; i < anomalies.Length; ++i)
