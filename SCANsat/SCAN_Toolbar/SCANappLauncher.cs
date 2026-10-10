@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 /*
  * [Scientific Committee on Advanced Navigation]
  * 			S.C.A.N. Satellite
@@ -11,16 +11,19 @@
 */
 #endregion
 
-using System.Collections;
+using KSP.UI;
+using KSP.UI.Screens;
 using SCANsat.SCAN_Platform;
 using SCANsat.SCAN_UI;
 using SCANsat.SCAN_UI.UI_Framework;
 using SCANsat.SCAN_Unity;
-using SCANsat.Unity.Unity;
 using SCANsat.Unity.Interfaces;
-using KSP.UI;
-using KSP.UI.Screens;
+using SCANsat.Unity.Unity;
+using System.Collections;
+using System.Reflection;
 using UnityEngine;
+
+[assembly: AssemblyMetadata("HotReload", "true")]
 
 namespace SCANsat.SCAN_Toolbar
 {
@@ -262,7 +265,6 @@ namespace SCANsat.SCAN_Toolbar
 			Vector3 anchor = SCANappLauncherButton.GetAnchor();
 
 			anchor.x -= 3;
-			anchor.y += 20;
 
 			return anchor;
 		}
@@ -274,7 +276,11 @@ namespace SCANsat.SCAN_Toolbar
 				return;
 			}
 
-			uiElement = (Instantiate(SCAN_UI_Loader.ToolbarPrefab, GetAnchor(), Quaternion.identity) as GameObject).GetComponent<SCANsat.Unity.Unity.SCAN_Toolbar>();
+			float toolbarScale = GetToolbarWorldScale();
+
+			Vector3 anchor = KeepMenuOnScreen(GetAnchor(), toolbarScale);
+
+			uiElement = (Instantiate(SCAN_UI_Loader.ToolbarPrefab, anchor, Quaternion.identity) as GameObject).GetComponent<SCANsat.Unity.Unity.SCAN_Toolbar>();
 
 			if (uiElement == null)
 			{
@@ -283,8 +289,91 @@ namespace SCANsat.SCAN_Toolbar
 
 			uiElement.transform.SetParent(UIMasterController.Instance.appCanvas.transform);
 
+			// SetParent (worldPositionStays, the default) preserves the menu's world scale of 1,
+			// which on the app canvas is a fixed number of screen pixels, so the menu would not
+			// follow the UI scale that KSP applies to the stock app launcher. Multiplying the
+			// menu's scale by the launcher button's effective world scale makes the menu grow
+			// and shrink exactly with the toolbar.
+			uiElement.transform.localScale = uiElement.transform.localScale * toolbarScale;
+
 			uiElement.Setup(this);
 		}
+
+		/// <summary>
+		/// The effective scale of the stock app launcher button in the app canvas world space,
+		/// i.e. its rendered size relative to its design size, whatever mechanism KSP uses to
+		/// apply the UI and app scale settings. 1 when the button is at its design size.
+		/// </summary>
+		private float GetToolbarWorldScale()
+		{
+			if (SCANappLauncherButton == null)
+			{
+				return 1f;
+			}
+
+			RectTransform buttonRect = SCANappLauncherButton.transform as RectTransform;
+
+			if (buttonRect == null || buttonRect.rect.width <= 0f)
+			{
+				return 1f;
+			}
+
+			Canvas.ForceUpdateCanvases();
+
+			Vector3[] corners = new Vector3[4];
+			buttonRect.GetWorldCorners(corners);
+
+			float worldWidth = corners[2].x - corners[0].x;
+
+			if (worldWidth <= 0f)
+			{
+				return 1f;
+			}
+
+			return worldWidth / buttonRect.rect.width;
+		}
+
+		/// <summary>
+		/// The toolbar menu hangs from its anchor (its middle-right corner) and extends
+		/// downward. If the scaled menu would run past the bottom of the screen, shift the
+		/// anchor up so the menu stays fully visible.
+		/// </summary>
+		private Vector3 KeepMenuOnScreen(Vector3 anchor, float toolbarScale)
+		{
+			if (SCAN_UI_Loader.ToolbarPrefab == null || UIMasterController.Instance == null)
+			{
+				return anchor;
+			}
+
+			RectTransform canvasRect = UIMasterController.Instance.appCanvas.transform as RectTransform;
+			RectTransform menuRect = SCAN_UI_Loader.ToolbarPrefab.GetComponent<RectTransform>();
+
+			if (canvasRect == null || menuRect == null)
+			{
+				return anchor;
+			}
+
+			// Screen centre is (0, 0)
+			Vector3[] corners = new Vector3[4];
+			canvasRect.GetWorldCorners(corners);
+
+			float screenBottom = corners[0].y;
+			float halfHeight = menuRect.rect.height * 0.5f * toolbarScale;
+
+			// off 1.5 tiles at 0.5x scale, off 0.5 tiles at 1, off ~1/4 tile at 1.5, centred at 2, off ~-1/4 at 3
+			// Use tiles * (1/x - 0.5) to line up center of widgets. Subtract another 1.5 tiles to line up big map with app launcher button.
+			// Shift up by toolbarScale pixels to account for button border.
+			float tile = halfHeight / 3;
+			anchor.y += tile * (1f / toolbarScale - 2f) + toolbarScale;
+
+			if (anchor.y - halfHeight < screenBottom)
+			{
+				anchor.y = screenBottom + halfHeight;
+			}
+
+			return anchor;
+		}
+		
 
 		private void CloseMenu()
 		{

@@ -34,4 +34,7 @@
   <ItemGroup>
     <ProjectReference Include="../SCANsat.Unity/SCANsat.Unity.csproj" />
   </ItemGroup>
+  <ItemGroup>
+	<AssemblyMetadata Include="HotReload" Value="true" />
+  </ItemGroup>
 </Project>
