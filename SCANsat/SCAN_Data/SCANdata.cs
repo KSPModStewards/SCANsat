@@ -185,7 +185,7 @@ namespace SCANsat.SCAN_Data
 
 					if (sites == null)
 				    {
-				        anomalies = new SCANanomaly[0];
+				        return new SCANanomaly[0]
 				    }
 					
 					anomalies = new SCANanomaly[sites.Length];
