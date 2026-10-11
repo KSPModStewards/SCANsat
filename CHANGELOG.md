@@ -2,7 +2,29 @@
 
 ## Unreleased
 
+- Requires KSPTextureLoader: SCANsat.dll declares it as a KSP assembly dependency and does not load without it. Bodies with a SCANSAT_BODY_TEXTURES cfg read one mip level of the pack's own DDS files through it; configs for every Real Solar System body ship in Patches/RSS_BodyTextures.cfg
+- Terrain colour ranges, clamps and palettes live only in SCANcolors.cfg; the per-save copies upstream also kept in the save file are neither read nor written. A customisation made in a save without "Save to config" is not carried over
+- Planet overlays (biome, terrain, resource) are composited by the map shader and read back into the same texture the planet always received; the per-pixel CPU drawing and its worker threads are gone. The material handoff is unchanged
+- Per-body height maps are built on request (small map Terrain, terrain overlay, the body shown in the big map) instead of walking every body at scene start
+- The zoom map and RPM fit their palette range inside the map build instead of a synchronous terrain sweep before every pan or zoom; the zoom legend lists the biomes from the built map
+- The big map's graticule is drawn by the map shader
+- Maps render on the GPU everywhere: big map, zoom map, small map and RPM, in every mode. The per-row CPU renderers are gone; a pass builds its data under a per-frame CPU budget (Map Generation Speed) and reveals with a one-second sweep
+- Fixed the big map wiping its height cache on every open, which made every reopen re-sample the whole terrain
+- Biome maps cache the biome index per body, so repeated Biome passes no longer re-sample every pixel
+- Added Linux and macOS shader bundles
+- Fixed stray colours at both ends of legend bars and the biome legend tooltip drifting on bodies with many biomes
 - Fixed benign yet annoying assembly loader error about SCANsat.Unity
+- Fixed the Visual map PNG export being transparent above the on-screen height
+- Fixed the colour/greyscale toggle doing nothing for Slope and Biome maps
+- Fixed the Biome elevation underlay going black where altimetry is unscanned or the body has no terrain
+- Fixed the small map drawing its 30-degree dots over scanned terrain, and restored the dimming of what the current vessel's own sensors have not covered
+- Fixed leaving Visual and coming back re-reading the body's texture files (128 MiB for a single-level Real Solar System file), and a single-level file's GPU downscale never growing for a wider map
+- Fixed the RPM scale bar disappearing after the first IVA exit, and the RPM map never releasing its Visual textures
+- Fixed scanned cells with no resource being painted in the resource colour when the range minimum is 0
+- Fixed an interrupted height-map build stalling the Terrain view for the rest of the scene and keeping the body's terrain data loaded
+- Fixed a SCANSAT_BODY_TEXTURES file that fails to load leaving a flat Visual map; the body's own textures are used instead
+- Fixed the colour window's Default and Apply silently dropping one end of a range that did not overlap the current one
+- Cut about 30 MB of never-read map buffers; data caches are allocated only for the map mode that reads them
 - Updated Russian localization (thanks @BalaurGD )
 - Added Japanese localization (thanks @ThS45m )
 - Improved performance when many parts are destroyed or other vessel changes occur on the same frame (e.g. during RUD)

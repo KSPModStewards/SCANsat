@@ -1473,7 +1473,7 @@ namespace SCANsat.Unity.Unity
 			m_Title.OnTextUpdate.Invoke(text);
 		}
 
-		public void UpdateMapTexture(Texture2D map)
+		public void UpdateMapTexture(Texture map)
 		{
 			if (m_ZoomImage == null)
 			{

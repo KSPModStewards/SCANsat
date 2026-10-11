@@ -84,9 +84,13 @@ namespace SCANsat.SCAN_Unity
 		private Color32 c_dn = palette.CB_orange;
 		private Color32 c_an = palette.CB_skyBlue;
 		private Texture2D clearMap;
+		private Texture2D gridMap;   // the graticule for the UI's grid layer, rendered by SCANmap.renderGrid
+		private Vector2 gridPixelSize;   // the map's on-screen size the grid was last rendered for
+		private Vector2 gridPendingSize;   // the size seen last frame, waiting to hold still before a re-render
+		private int gridDeferredFrames;    // frames the layer has been clear waiting for that
+		private const int GridSettleLimit = 30;   // render anyway after this many, so a size that never quite stops moving still gets a grid
 		private bool clearMapSet;
 
-		private Texture2D gridMap;
 
 		private Texture2D resourceLegend;
 		private const int RESOURCELEGENDWIDTH = 90;
@@ -244,6 +248,17 @@ namespace SCANsat.SCAN_Unity
 		{
 			_isVisible = false;
 
+			// Free the readable ScaledSpace copy on window close (only present if this map was
+			// in Visual mode). Without this it would persist for the whole session. The
+			// controller's shared-body guard keeps it alive if the zoom map still shows it.
+			if (bigmap != null && SCANcontroller.controller != null)
+			{
+				SCANcontroller.controller.UnloadVisualMapTexture(bigmap.Body, mapSource.BigMap);
+				// Also page out the body's OnDemand ScaledSpace (loaded in SCANmap.setBody). Guarded
+				// against evicting a body the zoom map still shows; only unloads when this window closes.
+				SCANcontroller.controller.unloadOnDemandScaledSpace(bigmap.Body, mapSource.BigMap);
+			}
+
 			if (uiElement == null)
 			{
 				return;
@@ -335,7 +350,7 @@ namespace SCANsat.SCAN_Unity
 
 			if (bigmap == null)
 			{
-				bigmap = new SCANmap(body, true, mapSource.BigMap);
+				bigmap = new SCANmap(body, mapSource.BigMap);
 
 				MapProjection p = MapProjection.Rectangular;
 				mapType t = mapType.Altimetry;
@@ -511,19 +526,25 @@ namespace SCANsat.SCAN_Unity
 				resourceLegend = null;
 			}
 
-			if (gridMap != null)
-			{
-				GameObject.Destroy(gridMap);
-				gridMap = null;
-			}
-
 			if (eqMap != null)
 			{
 				GameObject.Destroy(eqMap);
 				eqMap = null;
 			}
 
+			if (gridMap != null)
+			{
+				GameObject.Destroy(gridMap);
+				gridMap = null;
+			}
+
 			SCANcontroller.controller.unloadPQS(bigmap.Body, mapSource.BigMap);
+			// Scene change doesn't call Close(), so free the OnDemand ScaledSpace + this map's Unity
+			// objects here too (otherwise the SCANmap is orphaned per scene and leaks its textures/RT).
+			SCANcontroller.controller.unloadOnDemandScaledSpace(bigmap.Body, mapSource.BigMap);
+			SCANcontroller.controller.UnloadVisualMapTexture(bigmap.Body, mapSource.BigMap);
+			bigmap.Destroy();
+			SCANUtil.SCANdebugLog("[SCANmem] BigMap OnDestroy texMem={0:F1}MB", UnityEngine.Texture.currentTextureMemory / 1048576f);
 		}
 
 		public void SetScale(float scale)
@@ -560,19 +581,36 @@ namespace SCANsat.SCAN_Unity
 				return;
 			}
 
+			// The grid texture is rendered for the map's on-screen size, and renderGrid does a GPU
+			// readback, so it cannot run on every frame of a resize. Watch the size every frame instead
+			// - the check is two WorldToScreenPoint calls - and render once it has held still for a
+			// frame. The layer is cleared the moment the size stops matching what was rendered, so a
+			// grid built for one size is never stretched over another while the layout settles after an
+			// open or the window is being dragged.
+			if (GridToggle)
+			{
+				Vector2 px = uiElement.MapPixelSize();
+
+				if ((px - gridPixelSize).sqrMagnitude > 1f)
+				{
+					if (gridPixelSize != Vector2.zero)
+					{
+						gridPixelSize = Vector2.zero;
+						uiElement.UpdateGridTexture(clearMap);
+					}
+
+					if (px.x >= 2f && ((px - gridPendingSize).sqrMagnitude <= 1f || ++gridDeferredFrames > GridSettleLimit))
+					{
+						renderGridLines();
+					}
+
+					gridPendingSize = px;
+				}
+			}
+
 			if (!bigmap.isMapComplete())
 			{
-				if (SCAN_Settings_Config.Instance.MapGenerationSpeed > 2)
-				{
-					bigmap.getPartialMap(false);
-				}
-
-				if (SCAN_Settings_Config.Instance.MapGenerationSpeed > 1)
-				{
-					bigmap.getPartialMap(false);
-				}
-
-				bigmap.getPartialMap(true);
+				bigmap.getPartialMap();   // one call per frame; the map generation budget caps what it spends
 			}
 
 			if (OrbitToggle && ShowOrbit)
@@ -617,7 +655,7 @@ namespace SCANsat.SCAN_Unity
 			if (updateMap)
 			{
 				updateMap = false;
-				uiElement.UpdateMapTexture(bigmap.Map);
+				uiElement.UpdateMapTexture(bigmap.DisplayTexture);
 
 				if (OrbitToggle && ShowOrbit && bigmap.Projection != MapProjection.Polar && vessel.orbit.PeA > 0)
 				{
@@ -1188,6 +1226,13 @@ namespace SCANsat.SCAN_Unity
 			eqMap.Apply();
 		}
 
+		/// <summary>
+		/// Invalidate the graticule: clear the layer and let Update render it once the map's on-screen
+		/// size has settled. Rendering here instead would use whatever size the layout happens to hold
+		/// at this instant, and every caller runs before that is final - the open at Startup, a
+		/// projection change, the grid toggle, a resize. At open that is the pre-layout size, and the
+		/// grid built for it was stretched across the map for the whole 0.3 s fade-in.
+		/// </summary>
 		private void SetGridLines()
 		{
 			if (uiElement == null)
@@ -1195,70 +1240,38 @@ namespace SCANsat.SCAN_Unity
 				return;
 			}
 
-			if (!GridToggle)
-			{
-				uiElement.UpdateGridTexture(clearMap);
-			}
-			else
-			{
-				GenerateGridMap();
-
-				uiElement.UpdateGridTexture(gridMap);
-			}
+			gridPixelSize = Vector2.zero;
+			gridPendingSize = new Vector2(-1f, -1f);   // no match next frame: one settle frame before the render
+			gridDeferredFrames = 0;
+			uiElement.UpdateGridTexture(clearMap);
 		}
 
-		private void GenerateGridMap()
+		// Same dotted graticule on the same UI layer as before (was the CPU GenerateGridMap), but
+		// rendered at the map's on-screen pixel size, so a dot is one screen pixel whatever the window
+		// size and UI scale instead of a map texel resampled by the UI. Only Update calls this, and only
+		// once the size has stopped moving.
+		private void renderGridLines()
 		{
-			if (gridMap == null || gridMap.width != bigmap.MapWidth)
+			if (uiElement == null || bigmap == null)
 			{
-				gridMap = new Texture2D(bigmap.MapWidth, bigmap.MapHeight, TextureFormat.ARGB32, false);
+				return;
 			}
 
-			Color32[] pix = gridMap.GetPixels32();
+			Vector2 px = uiElement.MapPixelSize();
 
-			for (int i = pix.Length - 1; i >= 0; i--)
+			if (px.x < 2f)
 			{
-				pix[i] = palette.Clear;
+				gridPixelSize = Vector2.zero;
+				uiElement.UpdateGridTexture(clearMap);
+				return;
 			}
 
-			int x, y;
-			for (double lat = -90; lat < 90; lat += 2)
-			{
-				for (double lon = -180; lon < 180; lon += 2)
-				{
-					if (lat % 30 == 0 || lon % 30 == 0)
-					{
-						x = (int)(bigmap.MapScale * ((bigmap.projectLongitude(lon, lat) + 180) % 360));
-						y = (int)(bigmap.MapScale * ((bigmap.projectLatitude(lon, lat) + 90) % 180));
-
-						pix[y * bigmap.MapWidth + x] = palette.White;
-
-						if (x < bigmap.MapWidth - 1)
-						{
-							pix[(y * bigmap.MapWidth) + (x + 1)] = palette.Black;
-						}
-
-						if (x > 0)
-						{
-							pix[(y * bigmap.MapWidth) + (x - 1)] = palette.Black;
-						}
-
-						if (y < bigmap.MapHeight - 1)
-						{
-							pix[((y + 1) * bigmap.MapWidth) + x] = palette.Black;
-						}
-
-						if (y > 0)
-						{
-							pix[((y - 1) * bigmap.MapWidth) + x] = palette.Black;
-						}
-					}
-				}
-			}
-
-			gridMap.SetPixels32(pix);
-
-			gridMap.Apply();
+			int w = Mathf.Clamp(Mathf.RoundToInt(px.x), 2, 8192);
+			int h = Mathf.Max(1, Mathf.RoundToInt(w * (float)bigmap.MapHeight / bigmap.MapWidth));
+			gridPixelSize = px;
+			gridDeferredFrames = 0;
+			gridMap = bigmap.renderGrid(gridMap, w, h);
+			uiElement.UpdateGridTexture(gridMap != null ? gridMap : clearMap);
 		}
 
 		public void SetMapSize()
@@ -1327,6 +1340,11 @@ namespace SCANsat.SCAN_Unity
 					SCANcontroller.controller.bigMapType = value;
 					bigmap.MType = t;
 					bigmap.resetMap(SCANcontroller.controller.bigMapResourceOn);
+					// DisplayTexture changes object identity between the CPU Texture2D and the GPU
+					// Visual RenderTexture across modes. The RawImage is only re-pointed when updateMap
+					// is set, so without this a switch out of Visual stays frozen on the stale GPU
+					// texture (the CPU path gets away with it by mutating one Texture2D in place).
+					updateMap = true;
 				}
 				catch (Exception e)
 				{
@@ -1580,6 +1598,9 @@ namespace SCANsat.SCAN_Unity
 				SCANcontroller.controller.bigMapResourceOn = value;
 
 				bigmap.resetMap(SCANcontroller.controller.bigMapResourceOn);
+				// Toggling resources in Visual mode swaps DisplayTexture between the GPU RenderTexture
+				// and the CPU copy; re-push it so the RawImage doesn't stay on the old one.
+				updateMap = true;
 			}
 		}
 
@@ -1780,11 +1801,11 @@ namespace SCANsat.SCAN_Unity
 				switch (bigmap.MType)
 				{
 					case mapType.Altimetry:
-						return bigmap.MapLegend.getLegend(SCANcontroller.controller.bigMapColor, data.TerrainConfig);
+						return bigmap.MapLegend.getLegend(SCANcontroller.controller.bigMapColor, SCANUtil.getTerrainConfig(data));
 					case mapType.Biome:
 						if (body != null && body.BiomeMap != null && body.BiomeMap.Attributes != null)
 						{
-							return bigmap.MapLegend.getLegend(data, SCANcontroller.controller.bigMapColor, SCAN_Settings_Config.Instance.BigMapStockBiomes, body.BiomeMap.Attributes);
+							return bigmap.MapLegend.getLegend(data, SCANcontroller.controller.bigMapColor, SCAN_Settings_Config.Instance.BigMapStockBiomes, SCANUtil.GetOrBuildPalette(body));
 						}
 						else
 						{
@@ -1963,18 +1984,7 @@ namespace SCANsat.SCAN_Unity
 		{
 			get
 			{
-				if (data == null)
-				{
-					return null;
-				}
-
-				string one = string.Format("|\n{0}", (((int)(data.TerrainConfig.MinTerrain / 100)) * 100).ToString("N0"));
-
-				string two = string.Format("|\n{0}", (((int)((data.TerrainConfig.MinTerrain + (data.TerrainConfig.TerrainRange / 2)) / 100)) * 100).ToString("N0"));
-
-				string three = string.Format("|\n{0}", (((int)(data.TerrainConfig.MaxTerrain / 100)) * 100).ToString("N0"));
-
-				return new List<string>(3) { one, two, three };
+				return SCANmapLegend.LegendLabels(SCANUtil.getTerrainConfig(body));
 			}
 		}
 
@@ -2444,22 +2454,13 @@ namespace SCANsat.SCAN_Unity
 
 					int count = body.BiomeMap.Attributes.Length;
 
-					int blockSize = (int)Math.Truncate(256 / (count * 1d));
-
-					int current = (int)Math.Truncate((xPos * 256) / (blockSize * 1d));
-
-					if (current >= count)
-					{
-						current = count - 1;
-					}
-					else if (current < 0)
-					{
-						current = 0;
-					}
+					// Same block boundaries the legend texture is drawn with (256 / count texels each);
+					// the old truncated block size drifted off by one towards the right end.
+					int current = Mathf.Clamp((int)(xPos * count), 0, count - 1);
 
 					return Localizer.Format(body.BiomeMap.Attributes[current].displayname);
 				case mapType.Altimetry:
-					float terrain = xPos * data.TerrainConfig.TerrainRange + data.TerrainConfig.MinTerrain;
+					float terrain = xPos * SCANUtil.getTerrainConfig(data).TerrainRange + SCANUtil.getTerrainConfig(data).MinTerrain;
 
 					return string.Format("{0}m", terrain.ToString("N0"));
 			}

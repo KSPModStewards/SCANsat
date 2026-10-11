@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="SCANsat.version.props" />
-  <PropertyGroup>
-    <BinariesOutputRelativePath>GameData/SCANsat/Plugins</BinariesOutputRelativePath>
-  </PropertyGroup>
-</Project>

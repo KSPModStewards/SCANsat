@@ -202,6 +202,11 @@ namespace SCANsat.SCAN_Palettes
 		{
 			if (_paletteSwatch == null || length != _swatchLength)
 			{
+				if (_paletteSwatch != null)
+				{
+					for (int d = 0; d < _paletteSwatch.Length; d++)
+						if (_paletteSwatch[d] != null) UnityEngine.Object.Destroy(_paletteSwatch[d]);
+				}
 				_paletteSwatch = new Texture2D[MasterPaletteGroupList.Count];
 
 				for (int i = 0; i < MasterPaletteGroupList.Count; i++)

@@ -150,6 +150,18 @@ namespace SCANsat.SCAN_UI
 		private bool satFound;
 		private bool satModuleFound = true;
 
+		// InternalModule has no teardown, so its per-instance Material + SCANmap (map texture/RT/material)
+		// leak on every IVA load / vessel switch. Free them here (Unity calls OnDestroy on component destroy).
+		// scaleBarTexture/scaleLabelTexture are NOT ours: GameDatabase owns them and hands the same instance
+		// to every prop that names the path, so they are dropped here, never destroyed.
+		private void OnDestroy()
+		{
+			if (iconMaterial != null) { UnityEngine.Object.Destroy(iconMaterial); iconMaterial = null; }
+			scaleBarTexture = null;
+			scaleLabelTexture = null;
+			if (map != null) { map.Destroy(); map = null; }
+		}
+
 		private bool TestForActiveSCANsat()
 		{
 			if (satFound)
@@ -238,7 +250,17 @@ namespace SCANsat.SCAN_UI
 
 			start = Planetarium.GetUniversalTime();
 
-			Graphics.Blit(map.Map, screen);
+			Texture mapTexture = map.DisplayTexture;
+
+			// No GPU composite yet this pass (or nothing renders this map): blitting a null source would
+			// fill the MFD with the built-in blit material's default white. Report "not drawn" instead,
+			// like the map == null case above.
+			if (mapTexture == null)
+			{
+				return false;
+			}
+
+			Graphics.Blit(mapTexture, screen);
 			GL.PushMatrix();
 			GL.LoadPixelMatrix(0, screenWidth, screenHeight, 0);
 
@@ -826,7 +848,7 @@ namespace SCANsat.SCAN_UI
 			orbitingBody = vessel.mainBody;
 			if (map == null)
 			{
-				map = new SCANmap(orbitingBody, false, mapSource.RPM);
+				map = new SCANmap(orbitingBody, mapSource.RPM);
 				map.ColorMap = persist.RPMColor;
 				map.setProjection(MapProjection.Rectangular);
 			}
@@ -856,8 +878,7 @@ namespace SCANsat.SCAN_UI
 				map.Resource = loadedResources[currentResource];
 				map.Resource.CurrentBodyConfig(orbitingBody.bodyName);
 			}
-			calcTerrainLimits(orbitingBody);
-			map.resetMap((mapType)mapMode, false, SCANconfigLoader.GlobalResource && resourceOverlay);
+			map.resetMap((mapType)mapMode, SCANconfigLoader.GlobalResource && resourceOverlay);
 
 			// Compute and store the map scale factors in mapSizeScale.  We
 			// use these values for every segment when drawing trails, so it
@@ -881,104 +902,6 @@ namespace SCANsat.SCAN_UI
 			double kmPerDegreeLon = (2 * Math.PI * (orbitingBody.Radius / 1000d)) / 360d;
 			double pixelsPerDegree = Math.Abs(longitudeToPixels(mapCenterLong + (((mapCenterLong + 1) > 360) ? -1 : 1), mapCenterLat) - longitudeToPixels(mapCenterLong, mapCenterLat));
 			pixelsPerKm = pixelsPerDegree / kmPerDegreeLon;
-		}
-
-		private void calcTerrainLimits(CelestialBody b)
-		{
-			if (map.MType == mapType.Slope)
-			{
-				return;
-			}
-
-			int w = map.MapWidth / 4;
-			int h = map.MapHeight / 4;
-
-			float max = -200000;
-			float min = 100000;
-
-			float resourceMax = 0;
-			float resourceMin = 100;
-
-			for (int i = 0; i < map.MapHeight; i += 4)
-			{
-				for (int j = 0; j < map.MapWidth; j += 4)
-				{
-					double lat = (i * 1.0f / map.MapScale) - 90f + map.Lat_Offset;
-					double lon = (j * 1.0f / map.MapScale) - 180f + map.Lon_Offset;
-					double la = lat, lo = lon;
-					lat = map.unprojectLatitude(lo, la);
-					lon = map.unprojectLongitude(lo, la);
-
-					float terrain = (float)SCANUtil.getElevation(b, lon, lat);
-
-					if (map.Resource != null)
-					{
-						float resource = SCANUtil.ResourceOverlay(lat, lon, map.Resource.Name, orbitingBody, false) * 100f;
-
-						if (resource < resourceMin)
-						{
-							resourceMin = resource;
-						}
-
-						if (resource > resourceMax)
-						{
-							resourceMax = resource;
-						}
-					}
-					else
-					{
-						resourceMax = 100;
-						resourceMin = 0;
-					}
-
-					if (terrain < min)
-					{
-						min = terrain;
-					}
-
-					if (terrain > max)
-					{
-						max = terrain;
-					}
-				}
-			}
-
-			if (min > max)
-			{
-				min = max - 1f;
-			}
-
-			if (min == max)
-			{
-				min = max - 1f;
-			}
-
-			if (map.Resource != null && map.Resource.CurrentBody != null && resourceMin < map.Resource.CurrentBody.MinValue)
-			{
-				resourceMin = map.Resource.CurrentBody.MinValue;
-			}
-
-			if (resourceMin >= resourceMax)
-			{
-				resourceMax = resourceMin + 1f;
-			}
-
-			if (resourceMin < 0)
-			{
-				resourceMin = 0;
-			}
-
-			if (map.Resource != null && map.Resource.CurrentBody != null && resourceMax > map.Resource.CurrentBody.MaxValue)
-			{
-				resourceMax = map.Resource.CurrentBody.MaxValue;
-			}
-
-			if (resourceMin >= resourceMax)
-			{
-				resourceMin = resourceMax - 1f;
-			}
-
-			map.setCustomRange(min, max, resourceMin, resourceMax);
 		}
 
 		private bool UpdateCheck()

@@ -5,3 +5,5 @@ Temp/
 obj/
 bin/
 AssetBundles/
+*.csproj
+*.sln

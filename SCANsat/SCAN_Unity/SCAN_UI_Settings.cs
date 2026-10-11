@@ -261,10 +261,16 @@ namespace SCANsat.SCAN_Unity
 			}
 		}
 
-		public int MapGenSpeed
+		public int MapGenBudget
 		{
-			get { return SCAN_Settings_Config.Instance.MapGenerationSpeed; }
-			set { SCAN_Settings_Config.Instance.MapGenerationSpeed = value; }
+			get { return SCAN_Settings_Config.Instance.MapGenerationBudgetMs; }
+			set { SCAN_Settings_Config.Instance.MapGenerationBudgetMs = value; }
+		}
+
+		public float ScanlineSpeed
+		{
+			get { return SCAN_Settings_Config.Instance.ScanlineSpeed; }
+			set { SCAN_Settings_Config.Instance.ScanlineSpeed = value; }
 		}
 
 		public int TimeWarp

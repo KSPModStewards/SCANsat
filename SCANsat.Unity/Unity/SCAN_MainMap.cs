@@ -140,7 +140,28 @@ namespace SCANsat.Unity.Unity
 
 			if (m_TypeToggle != null)
 			{
-				m_TypeToggle.isOn = map.MapType;
+				// Map display mode to toggle state for UI purposes
+				// We'll cycle through modes on click
+				m_TypeToggle.interactable = true;
+			}
+
+			if (m_TypeLabel != null)
+			{
+				// Show initial display mode
+				string label = "Altimetry";
+				switch (map.MapType)
+				{
+					case (MainMapDisplayMode.Terrain):
+						label = "Altimetry";
+						break;
+					case (MainMapDisplayMode.Biome):
+						label = "Biome";
+						break;
+					case (MainMapDisplayMode.Visual):
+						label = "Visual";
+						break;
+				}
+				m_TypeLabel.OnTextUpdate.Invoke(label);
 			}
 
 			if (m_MinimizeToggle != null)
@@ -148,19 +169,13 @@ namespace SCANsat.Unity.Unity
 				m_MinimizeToggle.isOn = map.Minimized;
 			}
 
-			//if (m_M700Text != null && !map.ResourcesOn)
-			//	m_M700Text.gameObject.SetActive(false);
-
-			//if (m_OreText != null && !map.ResourcesOn)
-			//	m_OreText.gameObject.SetActive(false);
-
 			CreateVessels(map.VesselInfoList);
 
 			SetScale(map.Scale);
 
 			SetPosition(map.Position);
 
-			if (!map.MapType)
+			if (map.MapType == MainMapDisplayMode.Terrain)
 			{
 				SetGeneratingText(map.MapGenerating);
 			}
@@ -493,7 +508,7 @@ namespace SCANsat.Unity.Unity
 			m_PercentageText.OnTextUpdate.Invoke(text);
 		}
 
-		public void UpdateMapTexture(Texture2D map)
+		public void UpdateMapTexture(Texture map)
 		{
 			if (m_MainMap == null)
 			{
@@ -523,19 +538,72 @@ namespace SCANsat.Unity.Unity
 			mapInterface.TerminatorToggle = isOn;
 		}
 
+		// Set while ToggleType writes m_TypeToggle.isOn: Toggle fires onValueChanged synchronously
+		// on any change, which would re-enter here and advance the mode again on the same click.
+		private bool typeToggleSyncing;
+
 		public void ToggleType(bool isOn)
 		{
-			if (m_TypeLabel != null)
-			{
-				m_TypeLabel.OnTextUpdate.Invoke(isOn ? "Biome" : "Terrain");
-			}
-
-			if (!loaded || mapInterface == null)
+			if (!loaded || mapInterface == null || typeToggleSyncing)
 			{
 				return;
 			}
 
-			mapInterface.MapType = isOn;
+			// Cycle through display modes: Terrain -> Visual -> Biome -> Terrain
+			MainMapDisplayMode currentMode = mapInterface.MapType;
+			MainMapDisplayMode nextMode;
+
+			switch (currentMode)
+			{
+				case MainMapDisplayMode.Terrain:
+					nextMode = MainMapDisplayMode.Visual;
+					break;
+				case MainMapDisplayMode.Visual:
+					nextMode = MainMapDisplayMode.Biome;
+					break;
+				case MainMapDisplayMode.Biome:
+					nextMode = MainMapDisplayMode.Terrain;
+					break;
+				default:
+					nextMode = MainMapDisplayMode.Terrain;
+					break;
+			}
+
+			mapInterface.MapType = nextMode;
+
+			// Update label
+			if (m_TypeLabel != null)
+			{
+				string label = "";
+				switch (nextMode)
+				{
+					case (MainMapDisplayMode.Terrain):
+						label = "Altimetry";
+						break;
+					case (MainMapDisplayMode.Biome):
+						label = "Biome";
+						break;
+					case (MainMapDisplayMode.Visual):
+						label = "Visual";
+						break;
+				}
+				m_TypeLabel.OnTextUpdate.Invoke(label);
+			}
+
+			// Update toggle appearance: on for Visual/Biome, off for Terrain. Guarded rather than
+			// SetIsOnWithoutNotify so it does not depend on the UnityEngine.UI version KSP ships.
+			if (m_TypeToggle != null)
+			{
+				typeToggleSyncing = true;
+				try
+				{
+					m_TypeToggle.isOn = (nextMode != MainMapDisplayMode.Terrain);
+				}
+				finally
+				{
+					typeToggleSyncing = false;
+				}
+			}
 		}
 
 		public void ToggleSize(bool isOn)

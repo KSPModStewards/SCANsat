@@ -3,6 +3,7 @@
 bin/
 obj/
 *.user
+SCANsat.Unity/Properties/launchSettings.json
 GameData/SCANsat/Plugins/SCAN*
 GameData/SCANsat/PluginData/Settings.cfg
 GameData/SCANsat/Parts/@thumbs/

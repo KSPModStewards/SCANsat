@@ -47,9 +47,21 @@ namespace SCANsat.Unity.Unity
 		[SerializeField]
 		private TextHandler m_UIScale = null;
 		[SerializeField]
-		private Slider m_MapSpeedSlider = null;
+		private TextHandler m_MapBudget = null;
+		[SerializeField]
+		private Slider m_MapBudgetSlider = null;
+		[SerializeField]
+		private TextHandler m_Scanline = null;
+		[SerializeField]
+		private Slider m_ScanlineSlider = null;
 		[SerializeField]
 		private Slider m_UIScaleSlider = null;
+
+		// Both map sliders are four-stop indices into these tables. The settings store the value itself,
+		// not the index, so a settings file edited by hand keeps whatever it says and the slider shows
+		// the nearest stop; the labels always report the real value.
+		private static readonly float[] budgets = new float[] { 2, 4, 8, 16 };
+		private static readonly float[] scanlineSpeeds = new float[] { 0.5f, 1f, 2f, 0f };   // 0: Instant, no reveal
 
 		private bool loaded;
 		private ISCAN_Settings settings;
@@ -121,9 +133,24 @@ namespace SCANsat.Unity.Unity
 				m_StockUIToggle.isOn = set.StockUIStyle;
 			}
 
-			if (m_MapSpeedSlider != null)
+			if (m_MapBudgetSlider != null)
 			{
-				m_MapSpeedSlider.value = set.MapGenSpeed;
+				m_MapBudgetSlider.value = nearestStop(budgets, set.MapGenBudget);
+			}
+
+			if (m_MapBudget != null)
+			{
+				m_MapBudget.OnTextUpdate.Invoke(budgetLabel(set.MapGenBudget));
+			}
+
+			if (m_ScanlineSlider != null)
+			{
+				m_ScanlineSlider.value = nearestStop(scanlineSpeeds, set.ScanlineSpeed);
+			}
+
+			if (m_Scanline != null)
+			{
+				m_Scanline.OnTextUpdate.Invoke(scanlineLabel(set.ScanlineSpeed));
 			}
 
 			if (m_UIScale != null)
@@ -254,14 +281,73 @@ namespace SCANsat.Unity.Unity
 			settings.MechJebLoad = isOn;
 		}
 
-		public void MapGenSlider(float speed)
+		public void MapBudgetSlider(float index)
 		{
 			if (!loaded || settings == null)
 			{
 				return;
 			}
 
-			settings.MapGenSpeed = Mathf.RoundToInt(speed);
+			int ms = (int)stopValue(budgets, index);
+
+			settings.MapGenBudget = ms;
+
+			if (m_MapBudget != null)
+			{
+				m_MapBudget.OnTextUpdate.Invoke(budgetLabel(ms));
+			}
+		}
+
+		public void ScanlineSlider(float index)
+		{
+			if (!loaded || settings == null)
+			{
+				return;
+			}
+
+			float speed = stopValue(scanlineSpeeds, index);
+
+			settings.ScanlineSpeed = speed;
+
+			if (m_Scanline != null)
+			{
+				m_Scanline.OnTextUpdate.Invoke(scanlineLabel(speed));
+			}
+		}
+
+		private static float stopValue(float[] stops, float index)
+		{
+			return stops[Mathf.Clamp(Mathf.RoundToInt(index), 0, stops.Length - 1)];
+		}
+
+		private static int nearestStop(float[] stops, float value)
+		{
+			int index = 0;
+
+			for (int i = 1; i < stops.Length; i++)
+			{
+				if (Mathf.Abs(stops[i] - value) < Mathf.Abs(stops[index] - value))
+				{
+					index = i;
+				}
+			}
+
+			return index;
+		}
+
+		private static string budgetLabel(int ms)
+		{
+			return string.Format("Map Generation Budget: {0} ms/frame", ms);
+		}
+
+		private static string scanlineLabel(float speed)
+		{
+			if (speed <= 0)
+			{
+				return "Scanline Speed: Instant";
+			}
+
+			return string.Format("Scanline Speed: {0:0.##}x ({1:0.0} s)", speed, 1 / speed);
 		}
 
 		public void UISlider(float scale)

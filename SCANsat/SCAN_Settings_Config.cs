@@ -47,7 +47,9 @@ namespace SCANsat
 		[Persistent]
 		public bool StockUIStyle = false;
 		[Persistent]
-		public int MapGenerationSpeed = 2;
+		public int MapGenerationBudgetMs = 4;
+		[Persistent]
+		public float ScanlineSpeed = 1;
 		[Persistent]
 		public float UIScale = 1;
 		[Persistent]
@@ -76,6 +78,12 @@ namespace SCANsat
 		public bool TrueGreyScale = false;
 		[Persistent]
 		public bool ExportCSV = false;
+		// PNG export width for the Visual map, which is texture-backed and so can be re-rendered
+		// larger than the on-screen map: 0 exports at the on-screen size, any other value re-renders
+		// up to this many pixels wide (capped at 16384) and never below the on-screen width. The
+		// data-backed modes are sampled per map pixel and always export at the on-screen size.
+		[Persistent]
+		public int VisualExportWidth = 4096;
 		[Persistent]
 		public float UnscannedTransparency = 0.4f;
 		[Persistent]
@@ -213,6 +221,7 @@ namespace SCANsat
 					ConfigNode node = ConfigNode.Load(fullPath);
 					ConfigNode unwrapped = node.GetNode(GetType().Name);
 					ConfigNode.LoadObjectFromConfig(this, unwrapped);
+					carryOverLegacyValues(unwrapped);
 					b = true;
 				}
 				else
@@ -228,6 +237,26 @@ namespace SCANsat
 			}
 
 			return b;
+		}
+
+		/// <summary>
+		/// Settings written before the map generation setting became an explicit per-frame budget carry
+		/// MapGenerationSpeed, the 1/2/3 slider index of the old rows-per-frame cadence. It already chose
+		/// between the same 2/4/8 ms budgets, so the value carries over; without this every existing
+		/// install would quietly drop back to the default the first time it loaded a renamed settings file.
+		/// </summary>
+		private void carryOverLegacyValues(ConfigNode node)
+		{
+			if (node == null || node.HasValue("MapGenerationBudgetMs") || !node.HasValue("MapGenerationSpeed"))
+			{
+				return;
+			}
+
+			if (int.TryParse(node.GetValue("MapGenerationSpeed"), out int legacy))
+			{
+				MapGenerationBudgetMs = legacy == 1 ? 2 : legacy == 3 ? 8 : 4;
+				SCANUtil.SCANlog("Map generation speed {0} carried over as a {1}ms per frame budget", legacy, MapGenerationBudgetMs);
+			}
 		}
 
 		public bool Save()

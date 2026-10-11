@@ -17,6 +17,13 @@ using UnityEngine;
 
 namespace SCANsat.Unity.Interfaces
 {
+	public enum MainMapDisplayMode
+	{
+		Terrain = 0,
+		Visual = 1,
+		Biome = 2
+	}
+
 	public interface ISCAN_MainMap
 	{
 		string Version { get; }
@@ -27,7 +34,7 @@ namespace SCANsat.Unity.Interfaces
 
 		bool TerminatorToggle { get; set; }
 
-		bool MapType { get; set; }
+		MainMapDisplayMode MapType { get; set; }
 
 		bool Minimized { get; set; }
 

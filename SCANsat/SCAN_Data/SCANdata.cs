@@ -11,22 +11,19 @@
  */
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using UnityEngine;
 using Contracts;
 using FinePrint;
 using FinePrint.Contracts;
 using FinePrint.Contracts.Parameters;
-using FinePrint.Utilities;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using SCANsat.SCAN_Platform;
-using SCANsat.SCAN_Palettes;
 using SCANsat.SCAN_Unity;
-using palette = SCANsat.SCAN_UI.UI_Framework.SCANcolorUtil;
-using Log = KSPBuildTools.Log;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using UnityEngine;
+using Log = KSPCommunityLib.Logging.Log;
 
 namespace SCANsat.SCAN_Data
 {
@@ -37,10 +34,18 @@ namespace SCANsat.SCAN_Data
 		/* MAP: state */
 		internal Int16[,] coverage;
 		private CelestialBody body;
-		private SCANterrainConfig terrainConfig;
 		private bool mapBuilding, overlayBuilding, controllerBuilding, built;
 
 		private float[,] tempHeightMap;
+
+		/* MAP: height map build stats, for the completion log */
+		private float buildStart = -1f;
+		private int buildFrames, buildLastFrame;
+
+		/* MAP: the build cursor. It lives with the map, not with whoever pumps it, so a build handed
+		   from one builder to another - a window closed, a SOI change, an abandoned overlay build -
+		   resumes where it stopped instead of sampling the body again (seconds on RSS). */
+		private int buildStep, buildXStart;
 
 		/* MAP: options */
 		private bool disabled;
@@ -56,38 +61,11 @@ namespace SCANsat.SCAN_Data
 			{
 				built = true;
 			}
-
-			terrainConfig = SCANcontroller.getTerrainNode(b.bodyName);
-
-			if (terrainConfig == null)
-			{
-				float? clamp = null;
-				if (b.ocean)
-				{
-					clamp = 0;
-				}
-
-				float newMax;
-
-				try
-				{
-					newMax = ((float)CelestialUtilities.GetHighestPeak(b)).Mathf_Round(-2);
-				}
-				catch (Exception e)
-				{
-					SCANUtil.SCANlog("Error in calculating Max Height for {0}; using default value\n{1}", b.displayName.LocalizeBodyName(), e);
-					newMax = SCANconfigLoader.SCANNode.DefaultMaxHeightRange;
-				}
-
-				terrainConfig = new SCANterrainConfig(SCANconfigLoader.SCANNode.DefaultMinHeightRange, newMax, clamp, SCAN_Palette_Config.DefaultPalette.GetPalette(0), 7, false, false, body);
-				SCANcontroller.addToTerrainConfigData(body.bodyName, terrainConfig);
-			}
 		}
 
 		public SCANdata(SCANdata copy)
 		{
 			coverage = copy.coverage;
-			terrainConfig = new SCANterrainConfig(copy.terrainConfig);
 
 			if (!heightMaps.ContainsKey(copy.body.flightGlobalsIndex))
 			{
@@ -135,12 +113,6 @@ namespace SCANsat.SCAN_Data
 			get { return body; }
 		}
 
-		public SCANterrainConfig TerrainConfig
-		{
-			get { return terrainConfig; }
-			internal set { terrainConfig = value; }
-		}
-
 		public bool Disabled
 		{
 			get { return disabled; }
@@ -163,6 +135,26 @@ namespace SCANsat.SCAN_Data
 		{
 			get { return controllerBuilding; }
 			internal set { controllerBuilding = value; }
+		}
+
+		/// <summary>
+		/// The build is claimed but nobody has pumped it for a few frames. No builder gets a callback
+		/// when it stops pumping - the small map's window closed, or its display mode left Terrain, or a
+		/// vessel or SOI change swapped the body under it; a newer overlay build abandoned this one - so
+		/// a claim is dropped by lapsing rather than by clearing. Whoever wants the map next takes the
+		/// build over and resumes from buildStep.
+		/// </summary>
+		public bool BuildStalled
+		{
+			get { return !built && buildLastFrame >= 0 && Time.frameCount - buildLastFrame > 5; }
+		}
+
+		/// <summary>Drop a lapsed claim so the caller can set its own.</summary>
+		internal void takeOverBuild()
+		{
+			mapBuilding = false;
+			overlayBuilding = false;
+			controllerBuilding = false;
 		}
 
 		public bool Built
@@ -836,7 +828,7 @@ namespace SCANsat.SCAN_Data
 
 		#region Height Map
 
-		internal void generateHeightMap(ref int step, ref int xStart, int width)
+		internal void generateHeightMap(int width)
 		{
 			if (body.pqsController == null)
 			{
@@ -852,7 +844,7 @@ namespace SCANsat.SCAN_Data
 				return;
 			}
 
-			if (step <= 0 && xStart <= 0)
+			if (buildStep <= 0 && buildXStart <= 0)
 			{
 				SCANcontroller.controller.loadPQS(body);
 
@@ -881,11 +873,28 @@ namespace SCANsat.SCAN_Data
 				tempHeightMap = new float[360, 180];
 			}
 
-			if (step >= 179)
+			// Stats for the completion log: wall time from the first row, and how many frames it was
+			// spread over - SCANcontroller.pumpHeightMap runs several rows per frame under the budget.
+			if (buildStart < 0f)
+			{
+				buildStart = Time.realtimeSinceStartup;
+				buildFrames = 0;
+				buildLastFrame = -1;
+			}
+
+			if (buildLastFrame != Time.frameCount)
+			{
+				buildLastFrame = Time.frameCount;
+				buildFrames++;
+			}
+
+			// Rows 0..179 are latitudes -90..89, so the map is full only at step 180: stopping at 179 left
+			// the north polar row unsampled and reading 0 m for every longitude.
+			if (buildStep >= 180)
 			{
 				SCANcontroller.controller.unloadPQS(body);
-				step = 0;
-				xStart = 0;
+				buildStep = 0;
+				buildXStart = 0;
 				built = true;
 				mapBuilding = false;
 				overlayBuilding = false;
@@ -896,24 +905,27 @@ namespace SCANsat.SCAN_Data
 				}
 
 				tempHeightMap = null;
-				SCANUtil.SCANlog("Height Map Of [{0}] Completed...", body.bodyName);
+				SCANUtil.SCANlog("Height Map Of [{0}] Completed: 360x180 samples, build {1} frames / {2:F0} ms", body.bodyName, buildFrames, (Time.realtimeSinceStartup - buildStart) * 1000f);
+				buildStart = -1f;
 				return;
 			}
 
-			for (int i = xStart; i < xStart + width; i++)
+			for (int i = buildXStart; i < buildXStart + width; i++)
 			{
-				tempHeightMap[i, step] = (float)SCANUtil.getElevation(body, i - 180, step - 90);
+				tempHeightMap[i, buildStep] = (float)SCANUtil.getElevation(body, i - 180, buildStep - 90);
 			}
 
-			if (xStart + width >= 359)
+			if (buildXStart + width >= 359)
 			{
-				step++;
-				xStart = 0;
+				buildStep++;
+				buildXStart = 0;
 				return;
 			}
 
-			xStart += width;
+			buildXStart += width;
 		}
+
+
 		#endregion
 
 		#region Map Utilities

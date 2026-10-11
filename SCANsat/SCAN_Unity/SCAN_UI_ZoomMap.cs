@@ -50,12 +50,6 @@ namespace SCANsat.SCAN_Unity
 
 		private bool initialized;
 
-		private float terrainMin;
-		private float terrainMax;
-
-		private float resourceMin;
-		private float resourceMax;
-
 		private SCANresourceGlobal currentResource;
 		private List<SCANresourceGlobal> resources;
 
@@ -201,6 +195,16 @@ namespace SCANsat.SCAN_Unity
 		{
 			_isVisible = false;
 
+			// Free the readable ScaledSpace copy on window close (only present if this map was
+			// in Visual mode); the shared-body guard keeps it alive if the big map still shows it.
+			if (spotmap != null && SCANcontroller.controller != null)
+			{
+				SCANcontroller.controller.UnloadVisualMapTexture(spotmap.Body, mapSource.ZoomMap);
+				// Also page out the body's OnDemand ScaledSpace (loaded in SCANmap.setBody); guarded
+				// against evicting a body the big map still shows.
+				SCANcontroller.controller.unloadOnDemandScaledSpace(spotmap.Body, mapSource.ZoomMap);
+			}
+
 			if (uiElement == null)
 			{
 				return;
@@ -248,7 +252,7 @@ namespace SCANsat.SCAN_Unity
 
 			if (spotmap == null)
 			{
-				spotmap = new SCANmap(body, false, mapSource.ZoomMap);
+				spotmap = new SCANmap(body, mapSource.ZoomMap);
 
 				mapType t = mapType.Altimetry;
 
@@ -347,8 +351,6 @@ namespace SCANsat.SCAN_Unity
 
 			spotmap.centerAround(lon, lat);
 
-			calcTerrainLimits();
-
 			mapType t = mapType.Altimetry;
 
 			try
@@ -368,7 +370,7 @@ namespace SCANsat.SCAN_Unity
 
 			rebuilding = true;
 
-			spotmap.resetMap(t, false, ResourceToggle, narrowBand);
+			spotmap.resetMap(t, ResourceToggle, narrowBand);
 		}
 
 		private void resetMap(double lat = 0, double lon = 0, bool withCenter = false)
@@ -401,11 +403,16 @@ namespace SCANsat.SCAN_Unity
 				checkForScanners();
 			}
 
-			calcTerrainLimits();
-
 			rebuilding = true;
 
 			spotmap.resetMap(ResourceToggle, narrowBand);
+
+			// Every mode renders on the GPU, but a mode switch can still hand back a different
+			// RenderTexture (a resize releases the old one), and DisplayTexture is null until the new
+			// map has composited once. The RawImage is only re-pointed when updateMap is set, so
+			// without this a mode switch leaves it on a released texture. Same as the big map's
+			// map-type setter.
+			updateMap = true;
 		}
 
 		public void resetMapToVessel()
@@ -438,111 +445,6 @@ namespace SCANsat.SCAN_Unity
 			}
 
 			resetMap(true, SCANUtil.fixLatShift(vessel.latitude), SCANUtil.fixLonShift(vessel.longitude));
-		}
-
-		protected void calcTerrainLimits()
-		{
-			bool terrainCalc = spotmap.MType == mapType.Altimetry || spotmap.MType == mapType.Biome;
-
-			int w = spotmap.MapWidth / 4;
-			int h = spotmap.MapHeight / 4;
-
-			resourceMax = 0;
-			resourceMin = 100;
-
-			terrainMax = -200000;
-			terrainMin = 100000;
-
-			for (int i = 0; i < spotmap.MapHeight; i += 4)
-			{
-				for (int j = 0; j < spotmap.MapWidth; j += 4)
-				{
-					double lat = (i * 1.0f / spotmap.MapScale) - 90f + spotmap.Lat_Offset;
-					double lon = (j * 1.0f / spotmap.MapScale) - 180f + spotmap.Lon_Offset;
-					double la = lat, lo = lon;
-					lat = spotmap.unprojectLatitude(lo, la);
-					lon = spotmap.unprojectLongitude(lo, la);
-
-					if (double.IsNaN(lon) || double.IsNaN(lat) || lon < -180 || lon >= 180 || lat < -90 && lat >= 90)
-					{
-						continue;
-					}
-
-					if (terrainCalc)
-					{
-						float terrain = (float)SCANUtil.getElevation(body, lon, lat);
-
-						if (terrain < terrainMin)
-						{
-							terrainMin = terrain;
-						}
-
-						if (terrain > terrainMax)
-						{
-							terrainMax = terrain;
-						}
-					}
-
-					if (currentResource != null)
-					{
-						float resource = SCANUtil.ResourceOverlay(lat, lon, currentResource.Name, body, SCAN_Settings_Config.Instance.BiomeLock) * 100f;
-
-						if (resource < resourceMin)
-						{
-							resourceMin = resource;
-						}
-
-						if (resource > resourceMax)
-						{
-							resourceMax = resource;
-						}
-						//SCANUtil.SCANlog("Check Location: Lat: {3} x Long: {4}\nResource: {0} - Min: {1} - Max: {2}"
-						//    , resource.ToString("F2"), resourceMin.ToString("F2"), resourceMax.ToString("F2"), lat.ToString("F2"), lon.ToString("F2") );
-					}
-					else
-					{
-						resourceMax = 100;
-						resourceMin = 0;
-					}
-				}
-			}
-
-			if (terrainMin > terrainMax)
-			{
-				terrainMin = terrainMax - 1f;
-			}
-
-			if (terrainMin == terrainMax)
-			{
-				terrainMin = terrainMax - 1f;
-			}
-
-			if (currentResource != null && currentResource.CurrentBody != null && resourceMin < currentResource.CurrentBody.MinValue)
-			{
-				resourceMin = currentResource.CurrentBody.MinValue;
-			}
-
-			if (resourceMin >= resourceMax)
-			{
-				resourceMax = resourceMin + 1f;
-			}
-
-			if (resourceMin < 0)
-			{
-				resourceMin = 0;
-			}
-
-			if (currentResource != null && currentResource.CurrentBody != null && resourceMax > currentResource.CurrentBody.MaxValue)
-			{
-				resourceMax = currentResource.CurrentBody.MaxValue;
-			}
-
-			if (resourceMin >= resourceMax)
-			{
-				resourceMin = resourceMax - 1f;
-			}
-
-			spotmap.setCustomRange(terrainMin, terrainMax, resourceMin, resourceMax);
 		}
 
 		private void checkForScanners()
@@ -664,7 +566,12 @@ namespace SCANsat.SCAN_Unity
 
 		public void OnDestroy()
 		{
-			SCANcontroller.controller.unloadPQS(spotmap.Body, mapSource.BigMap);
+			// 4b: was mapSource.BigMap (wrong source → left zoomMapBodyPQS stale, skipped a PQS unload).
+			SCANcontroller.controller.unloadPQS(spotmap.Body, mapSource.ZoomMap);
+			SCANcontroller.controller.unloadOnDemandScaledSpace(spotmap.Body, mapSource.ZoomMap);
+			SCANcontroller.controller.UnloadVisualMapTexture(spotmap.Body, mapSource.ZoomMap);
+			spotmap.Destroy();
+			SCANUtil.SCANdebugLog("[SCANmem] ZoomMap OnDestroy texMem={0:F1}MB", UnityEngine.Texture.currentTextureMemory / 1048576f);
 
 			GameEvents.onVesselChange.Remove(vesselChange);
 			GameEvents.onVesselWasModified.Remove(vesselChange);
@@ -723,24 +630,14 @@ namespace SCANsat.SCAN_Unity
 
 			if (!spotmap.isMapComplete())
 			{
-				if (SCAN_Settings_Config.Instance.MapGenerationSpeed > 2)
-				{
-					spotmap.getPartialMap(false);
-					spotmap.getPartialMap(false);
-				}
-
-				if (SCAN_Settings_Config.Instance.MapGenerationSpeed > 1)
-				{
-					spotmap.getPartialMap(false);
-				}
-
-				spotmap.getPartialMap(true);
+				spotmap.getPartialMap();   // one call per frame; the map generation budget caps what it spends
 			}
 			else if (rebuilding)
 			{
 				rebuilding = false;
 
 				uiElement.ResetRefresh();
+				uiElement.SetLegends(LegendToggle);   // the palette range and the biome list come from the finished pass
 			}
 
 			if (OrbitToggle && ShowOrbit)
@@ -756,7 +653,7 @@ namespace SCANsat.SCAN_Unity
 			if (updateMap)
 			{
 				updateMap = false;
-				uiElement.UpdateMapTexture(spotmap.Map);
+				uiElement.UpdateMapTexture(spotmap.DisplayTexture);
 			}
 		}
 
@@ -1633,52 +1530,20 @@ namespace SCANsat.SCAN_Unity
 				switch (spotmap.MType)
 				{
 					case mapType.Altimetry:
-						return spotmap.MapLegend.getLegend(SCANcontroller.controller.zoomMapColor, data.TerrainConfig);
+						return spotmap.MapLegend.getLegend(SCANcontroller.controller.zoomMapColor, SCANUtil.getTerrainConfig(data));
 					case mapType.Biome:
 						if (body != null && body.BiomeMap != null && body.BiomeMap.Attributes != null)
 						{
-							biomes = new List<CBAttributeMapSO.MapAttribute>();
+							// The biomes in view come from the pass's biome index cache (every pixel, no extra
+							// lookups). Until the first rows of a new window are built, keep the previous legend.
+							List<CBAttributeMapSO.MapAttribute> inView = spotmap.BiomesInView();
 
-							int w = spotmap.MapWidth / 4;
-							int h = spotmap.MapHeight / 4;
-
-							for (int i = 0; i < spotmap.MapHeight; i += 4)
+							if (inView == null)
 							{
-								for (int j = 0; j < spotmap.MapWidth; j += 4)
-								{
-									double lon = spotmap.Lon_Offset + (j * 1.0f / spotmap.MapScale) - 180;
-									double lat = spotmap.Lat_Offset + (i * 1.0f / spotmap.MapScale) - 90;
-									double la = lat, lo = lon;
-									lat = spotmap.unprojectLatitude(lo, la);
-									lon = spotmap.unprojectLongitude(lo, la);
-
-									if (lon < -180 || lon >= 180 || lat < -90 && lat >= 90 || double.IsNaN(lon) || double.IsNaN(lat))
-									{
-										continue;
-									}
-
-									CBAttributeMapSO.MapAttribute biome = SCANUtil.getBiome(body, lon, lat);
-
-									bool add = true;
-
-									for (int b = biomes.Count - 1; b >= 0; b--)
-									{
-										if (biome != biomes[b])
-										{
-											continue;
-										}
-
-										add = false;
-										break;
-									}
-
-									if (add)
-									{
-										biomes.Add(biome);
-									}
-								}
+								return spotmap.MapLegend.Legend;
 							}
 
+							biomes = inView;
 
 							return spotmap.MapLegend.getLegend(data, SCANcontroller.controller.zoomMapColor, SCAN_Settings_Config.Instance.BigMapStockBiomes, biomes.ToArray(), true);
 						}
@@ -1747,18 +1612,7 @@ namespace SCANsat.SCAN_Unity
 		{
 			get
 			{
-				if (data == null)
-				{
-					return null;
-				}
-
-				string one = string.Format("|\n{0}", (((int)(terrainMin / 100)) * 100).ToString("N0"));
-
-				string two = string.Format("|\n{0}", (((int)((terrainMin + ((terrainMax - terrainMin) / 2)) / 100)) * 100).ToString("N0"));
-
-				string three = string.Format("|\n{0}", (((int)(terrainMax / 100)) * 100).ToString("N0"));
-
-				return new List<string>(3) { one, two, three };
+				return SCANmapLegend.LegendLabels(spotmap.CustomMin, spotmap.CustomMax);   // the range the map fitted to its window
 			}
 		}
 
@@ -1883,7 +1737,7 @@ namespace SCANsat.SCAN_Unity
 
 		public Vector2 ResourceLegendLabels
 		{
-			get { return new Vector2(resourceMin / 100f, resourceMax / 100f); }
+			get { return new Vector2(spotmap.CustomResourceMin / 100f, spotmap.CustomResourceMax / 100f); }
 		}
 
 		public Dictionary<string, MapLabelInfo> OrbitLabelList
@@ -2339,22 +2193,13 @@ namespace SCANsat.SCAN_Unity
 
 					int count = biomes.Count;
 
-					int blockSize = (int)Math.Truncate(256 / (count * 1d));
-
-					int current = (int)Math.Truncate((xPos * 256) / (blockSize * 1d));
-
-					if (current >= count)
-					{
-						current = count - 1;
-					}
-					else if (current < 0)
-					{
-						current = 0;
-					}
+					// Same block boundaries the legend texture is drawn with (256 / count texels each);
+					// the old truncated block size drifted off by one towards the right end.
+					int current = Mathf.Clamp((int)(xPos * count), 0, count - 1);
 
 					return Localizer.Format(biomes[current].displayname);
 				case mapType.Altimetry:
-					float terrain = xPos * (terrainMax - terrainMin) + terrainMin;
+					float terrain = xPos * (spotmap.CustomMax - spotmap.CustomMin) + spotmap.CustomMin;
 
 					return string.Format("{0}m", terrain.ToString("N0"));
 			}

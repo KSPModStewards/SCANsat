@@ -2,21 +2,32 @@ name: build
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "dev", "rss-ram-gpu-visual" ]
     paths:
       - '**/*.cs'
       - '**/*.csproj'
       - '**/*.props'
+      - '**/*.slnx'
+      - 'global.json'
+      - '.github/workflows/*.yml'
   pull_request:
     paths:
       - '**/*.cs'
       - '**/*.csproj'
       - '**/*.props'
+      - '**/*.slnx'
+      - 'global.json'
+      - '.github/workflows/*.yml'
   workflow_dispatch:
   workflow_call:
 
 jobs:
   build:
-    uses: KSPModdingLibs/KSPBuildTools/.github/workflows/build.yml@0.0.4
+    uses: KSPModdingLibs/KSPBuildTools/.github/workflows/build.yml@1.1.1
     with:
       use-ckan: true
+      # The repo has a .slnx and no .sln. The compile action runs "dotnet restore/msbuild <solution-file-path>"
+      # with no discovery of its own, and .slnx needs the .NET 9.0.200+ SDK (global.json pins that floor;
+      # this makes sure a 9.x SDK is installed on the runner).
+      dotnet-version: 9.x
+      solution-file-path: SCANsat.slnx

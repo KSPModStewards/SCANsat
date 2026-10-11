@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <!--
+    Shared KSPBuildTools settings for every project in the repo.
+    Per-machine values - KSPBT_GameRoot (the KSP install) and KSPBT_InstallCKANDependencies=false
+    (never run ckan against it from a local build; CI turns it on itself) - belong in the gitignored
+    <project>.csproj.user files, never here.
+  -->
+  <Import Project="$(MSBuildThisFileDirectory)SCANsat.version.props" Condition="Exists('$(MSBuildThisFileDirectory)SCANsat.version.props')" />
+  <PropertyGroup>
+    <!-- Every project's DLL ships in GameData/SCANsat/Plugins. KSPBuildTools' default is GameData/<ProjectName>/. -->
+    <KSPBT_ModRoot>$(MSBuildThisFileDirectory)GameData/SCANsat/</KSPBT_ModRoot>
+    <KSPBT_ModPluginFolder>Plugins</KSPBT_ModPluginFolder>
+  </PropertyGroup>
+</Project>

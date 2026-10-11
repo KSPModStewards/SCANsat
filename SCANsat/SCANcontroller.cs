@@ -12,31 +12,396 @@
  */
 #endregion
 
-using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using UnityEngine;
-using UnityEngine.Events;
 using Contracts;
 using FinePrint.Contracts;
-using FinePrint.Utilities;
-using SCANsat.SCAN_UI.UI_Framework;
-using SCANsat.SCAN_Unity;
+using FinePrint.Contracts.Parameters;
+using KSPTextureLoader;
 using SCANsat.SCAN_Data;
 using SCANsat.SCAN_Map;
 using SCANsat.SCAN_Platform.Extensions.ConfigNodes;
-using SCANsat.SCAN_Palettes;
-using SCANsat.SCAN_Toolbar;
-using palette = SCANsat.SCAN_UI.UI_Framework.SCANcolorUtil;
-using FinePrint.Contracts.Parameters;
-using UnityEngine.Profiling;
-using Log = KSPBuildTools.Log;
 using SCANsat.SCAN_Reflection;
+using SCANsat.SCAN_Toolbar;
+using SCANsat.SCAN_UI.UI_Framework;
+using SCANsat.SCAN_Unity;
+using SCANsat.Unity.Interfaces;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.Events;
+using Log = KSPCommunityLib.Logging.Log;
+using palette = SCANsat.SCAN_UI.UI_Framework.SCANcolorUtil;
 
 namespace SCANsat
 {
+	/// <summary>
+	/// Per-body Visual-map texture sources. Reads the body's SCANSAT_BODY_TEXTURES node (if any) into
+	/// resolved absolute paths and loads the colour/normal maps to the GPU one mip level at a time -
+	/// the smallest mip that still covers the widest map asking for it - through KSPTextureLoader's
+	/// owned-texture API. Nothing is decompressed on the CPU and nothing is kept in RAM.
+	/// </summary>
+	public class SCANtextures
+	{
+		public CelestialBody body;
+
+		/* Resolved absolute paths from a SCANSAT_BODY_TEXTURES node; null when not declared */
+		public string heightMapPath = null;
+		public string normalMapPath = null;
+		public string colorMapPath = null;
+
+		/* GPU textures loaded from the cfg, one mip each */
+		private SCANddsHeader colorHeader;
+		private SCANddsHeader normalHeader;
+		private Texture colorTex;    // the loader's Texture2D, or a RenderTexture holding a downscale of a mip-less file
+		private Texture normalTex;
+		private int colorMip = -1;
+		private int normalMip = -1;
+		private bool colorFailed;    // header or loader rejected the file: logged once, not retried
+		private bool normalFailed;
+
+		private static HashSet<string> configuredBodies;
+		private static readonly HashSet<string> failedColorBodies = new HashSet<string>();
+
+		public bool HasConfig
+		{
+			get { return colorMapPath != null || normalMapPath != null || heightMapPath != null; }
+		}
+
+		public Texture ColorTexture
+		{
+			get { return colorTex; }
+		}
+
+		public Texture NormalTexture
+		{
+			get { return normalTex; }
+		}
+
+		/// <summary>The declared colorMap will not load: the cfg cannot serve this body's Visual map.</summary>
+		public bool ColorFailed
+		{
+			get { return colorFailed; }
+		}
+
+		/// <summary>Which normal-map channel carries Y for the shader: 1 = green (DXT5nm, BC5), 0 = blue.</summary>
+		public int NormalYChannel
+		{
+			get { return normalHeader == null ? 0 : NormalYChannelFor((TextureFormat)(int)normalHeader.Format); }
+		}
+
+		public static int NormalYChannelFor(TextureFormat format)
+		{
+			switch (format)
+			{
+				case TextureFormat.DXT5:   // DXT5nm: X in alpha, Y in green
+				case TextureFormat.BC5:    // X in red, Y in green
+					return 1;
+				default:
+					return 0;              // uncompressed RGB normals: KSP keeps Y in blue
+			}
+		}
+
+		/// <summary>True when a SCANSAT_BODY_TEXTURES node declares a colorMap for the body (cached from GameDatabase).</summary>
+		/// Declarative only - whether the file actually loads is another matter, so the OnDemand paths
+		/// ask UseConfigFor, not this.
+		public static bool HasConfigFor(CelestialBody b)
+		{
+			if (b == null)
+			{
+				return false;
+			}
+
+			if (configuredBodies == null)
+			{
+				configuredBodies = new HashSet<string>();
+
+				ConfigNode[] nodes = GameDatabase.Instance.GetConfigNodes("SCANSAT_BODY_TEXTURES");
+
+				for (int i = 0; i < nodes.Length; i++)
+				{
+					string name = nodes[i].GetValue("name");
+
+					if (!string.IsNullOrEmpty(name) && nodes[i].HasValue("colorMap"))
+					{
+						configuredBodies.Add(name);
+					}
+				}
+			}
+
+			return configuredBodies.Contains(b.name);
+		}
+
+		/// <summary>
+		/// True while the cfg really is this body's Visual source: a node declares a colorMap and that
+		/// file has not failed to load. Only then can Kopernicus OnDemand be left alone - once the
+		/// declared colour map is unusable the body needs its own ScaledSpace textures like any other.
+		/// Static, so it still answers after the body's SCANtextures handler has been released.
+		/// </summary>
+		public static bool UseConfigFor(CelestialBody b)
+		{
+			return HasConfigFor(b) && !failedColorBodies.Contains(b.name);
+		}
+
+		/// <summary>Records a failed colorMap; true the first time, so the caller logs once per session.</summary>
+		public static bool MarkColorFailed(CelestialBody b)
+		{
+			return b != null && failedColorBodies.Add(b.name);
+		}
+
+		public SCANtextures(CelestialBody b)
+		{
+			body = b;
+
+			ConfigNode[] visualOverrides = GameDatabase.Instance.GetConfigNodes("SCANSAT_BODY_TEXTURES");
+
+			for (int i = 0; i < visualOverrides.Length; i++)
+			{
+				ConfigNode node = visualOverrides[i];
+				if (node.HasValue("name"))
+				{
+					string bodyName = node.GetValue("name");
+					if (bodyName == b.name)
+					{
+						GetTexturePathsFromConfig(node);
+						break;
+					}
+				}
+			}
+
+			SCANUtil.SCANlog(TextureState());
+		}
+
+		public void GetTexturePathsFromConfig(ConfigNode node)
+		{
+			string bodyName = node.GetValue("name");
+			if (bodyName == body.name)
+			{
+				// Resolution kept exactly as the cfg format was documented to planet packs: relative to the KSP root.
+				string baseFolder = System.IO.Directory.GetParent(KSPUtil.ApplicationRootPath).FullName;
+
+				heightMapPath = resolve(baseFolder, node.GetValue("heightMap"));
+				normalMapPath = resolve(baseFolder, node.GetValue("normalMap"));
+				colorMapPath = resolve(baseFolder, node.GetValue("colorMap"));
+			}
+		}
+
+		private static string resolve(string baseFolder, string cfgPath)
+		{
+			if (string.IsNullOrEmpty(cfgPath))
+			{
+				return null;
+			}
+
+			return (baseFolder + '/' + cfgPath).Replace("\\", "/");
+		}
+
+		/// <summary>
+		/// Load, or upgrade to, the mip that covers targetWidth pixels across 360 degrees of longitude.
+		/// Only ever grows: a zoom map that zoomed in keeps the larger mip until the body is released.
+		/// Blocks on the load - mip 3 of a 16K DXT5 map is 2 MiB, the base mip of one is 128 MiB.
+		/// </summary>
+		public bool EnsureLoaded(int targetWidth)
+		{
+			// A RenderTexture downscale loses its contents on a graphics device reset; rebuild it then.
+			if (colorTex is RenderTexture crt && !crt.IsCreated())
+			{
+				destroyTexture(colorTex);
+				colorTex = null;
+				colorMip = -1;
+			}
+
+			if (normalTex is RenderTexture nrt && !nrt.IsCreated())
+			{
+				destroyTexture(normalTex);
+				normalTex = null;
+				normalMip = -1;
+			}
+
+			if (colorMapPath != null && !colorFailed)
+			{
+				loadMip(colorMapPath, "colorMap", false, targetWidth, ref colorHeader, ref colorTex, ref colorMip, ref colorFailed);
+			}
+
+			if (normalMapPath != null && !normalFailed)
+			{
+				loadMip(normalMapPath, "normalMap", true, targetWidth, ref normalHeader, ref normalTex, ref normalMip, ref normalFailed);
+			}
+
+			return colorTex != null;
+		}
+
+		/// <summary>Ceiling on a single resident source texture, compressed or not.</summary>
+		private const long TextureBudget = 32L * 1048576;
+
+		/// <summary>
+		/// Size of the GPU downscale kept in place of the base level of a file with no mip chain: about
+		/// two texels per map pixel, as the mip pick, never wider than the source and never over the same
+		/// 32 MiB budget. False when the file has a mip chain, or when the downscale would not be clearly
+		/// smaller than the base level and so is not worth the blit.
+		/// </summary>
+		private static bool downscaleSize(SCANddsHeader header, int targetWidth, out int w, out int h)
+		{
+			w = 0;
+			h = 0;
+
+			if (header.MipCount != 1)
+			{
+				return false;
+			}
+
+			w = Mathf.Min(header.Width, Mathf.NextPowerOfTwo(Mathf.Max(1, targetWidth) * 2));
+			h = Mathf.Max(1, (int)((long)w * header.Height / header.Width));
+
+			// ARGB32, so the budget bites sooner than on a compressed mip: 4096x2048 is exactly 32 MiB.
+			while (w > 1 && (long)w * h * 4 > TextureBudget)
+			{
+				w >>= 1;
+				h = Mathf.Max(1, (int)((long)w * header.Height / header.Width));
+			}
+
+			return (long)w * h * 4 * 2 < header.MipBytes(0);
+		}
+
+		private void loadMip(string path, string role, bool linear, int targetWidth, ref SCANddsHeader header, ref Texture tex, ref int loadedMip, ref bool failed)
+		{
+			if (header == null && !SCANddsHeader.TryRead(path, out header, out string error))
+			{
+				failed = true;
+				Log.Error($"[{body.name}] {role} {path}: {error}");
+				return;
+			}
+
+			// Aim for about two texels per map pixel - bilinear at 1:1 looks soft next to the old full-res
+			// CPU sampling - unless that mip costs more than 32 MiB, then settle for 1:1 (the zoom map at
+			// high magnification lands here, where the 1:1 mip is already the base level or close to it).
+			int mip = header.MipForWidth(targetWidth * 2);
+
+			if (header.MipBytes(mip) > TextureBudget && header.MipForWidth(targetWidth) > mip)
+			{
+				mip = header.MipForWidth(targetWidth);
+			}
+
+			// The width this call would end up holding: the mip's own, or - for a file with no mip
+			// chain, where a downscale replaces the base level - the downscale's.
+			bool downscale = downscaleSize(header, targetWidth, out int dsWidth, out int dsHeight);
+			int wantWidth = downscale ? dsWidth : header.MipWidth(mip);
+
+			// Only ever grow, and never shrink. The mip compare alone is not enough: a file with one
+			// level always picks mip 0, so once loaded every later call - however much wider the map
+			// asking - matched "mip >= loadedMip" and returned, and the GPU downscale stayed at whatever
+			// the first caller wanted (small map at 360 px -> 1024x512, and then the big map at 1440 and
+			// a 4096 export both composited from that).
+			if (tex != null && mip >= loadedMip && wantWidth <= tex.width)
+			{
+				return;   // already holding this mip or a larger one, at this width or wider
+			}
+
+			// The mip chain is the file's own claim; nothing guarantees the bytes behind it were
+			// written. Check the range against the file's length before asking the loader to read it.
+			if (!header.TryMipRange(mip, out long mipOffset, out long mipBytes, out string rangeError))
+			{
+				failed = true;
+				Log.Error($"[{body.name}] {role} {path}: {rangeError}");
+				return;
+			}
+
+			float start = Time.realtimeSinceStartup;
+
+			try
+			{
+				Texture2DConfig config = header.ConfigForMip(mip, linear);
+				TextureLoadTask<Texture2D> task = TextureLoader.LoadOwnedTexture2D(config, path, mipOffset, mipBytes);
+				Texture2D loaded = task.GetTexture();
+
+				if (loaded == null)
+				{
+					throw new Exception("loader returned no texture");
+				}
+
+				loaded.name = $"SCANsat {body.name} {role} mip{mip}";
+				loaded.wrapModeU = TextureWrapMode.Repeat;   // longitude wraps at the seam
+				loaded.wrapModeV = TextureWrapMode.Clamp;
+				loaded.filterMode = FilterMode.Bilinear;
+
+				Texture result = loaded;
+				string note = "";
+
+				// No mip chain to choose from, so the only level is the full-size one (RSS ships most of
+				// its PluginData maps that way: 16K, one level, 128 MiB). When a GPU downscale that covers
+				// the request is clearly smaller, keep that instead and release the base level - the
+				// transient cost is the same, the resident cost drops from 128 MiB to 2.
+				if (downscale)
+				{
+					long rtBytes = (long)dsWidth * dsHeight * 4;
+
+					RenderTexture rt = new RenderTexture(dsWidth, dsHeight, 0, RenderTextureFormat.ARGB32, linear ? RenderTextureReadWrite.Linear : RenderTextureReadWrite.sRGB);
+					rt.name = $"SCANsat {body.name} {role} downscale";
+					rt.wrapModeU = TextureWrapMode.Repeat;
+					rt.wrapModeV = TextureWrapMode.Clamp;
+					rt.filterMode = FilterMode.Bilinear;
+					rt.useMipMap = false;
+					rt.Create();
+					Graphics.Blit(loaded, rt);
+					UnityEngine.Object.Destroy(loaded);
+					result = rt;
+					note = $"; no mip chain, kept a {dsWidth}x{dsHeight} GPU downscale ({rtBytes / 1048576f:F1} MiB) and released the base level";
+				}
+
+				if (tex != null)
+				{
+					destroyTexture(tex);
+				}
+
+				tex = result;
+				loadedMip = mip;
+
+				SCANUtil.SCANlog("[{0}] {1}: mip {2}/{3} ({4}x{5} {6}, {7:F1} MiB at offset {8}) for target width {9}px in {10:F0} ms{11}",
+					body.name, role, mip, header.MipCount, config.Width, config.Height, header.FormatName,
+					mipBytes / 1048576f, mipOffset, targetWidth, (Time.realtimeSinceStartup - start) * 1000f, note);
+			}
+			catch (Exception e)
+			{
+				failed = true;
+				Log.Error($"[{body.name}] {role} {path}: mip {mip} failed to load");
+				Log.Exception(e);
+			}
+		}
+
+		private static void destroyTexture(Texture t)
+		{
+			if (t is RenderTexture rt)
+			{
+				rt.Release();
+			}
+
+			UnityEngine.Object.Destroy(t);
+		}
+
+		public void Release()
+		{
+			if (colorTex != null)
+			{
+				destroyTexture(colorTex);
+				colorTex = null;
+			}
+
+			if (normalTex != null)
+			{
+				destroyTexture(normalTex);
+				normalTex = null;
+			}
+
+			colorMip = -1;
+			normalMip = -1;
+		}
+
+		public string TextureState()
+		{
+			return $"{body.name} Visual textures: colorMap={(colorMapPath ?? "none")}, normalMap={(normalMapPath ?? "none")}, heightMap={(heightMapPath ?? "none")}";
+		}
+	}
+
 	[KSPScenario(ScenarioCreationOptions.AddToAllGames | ScenarioCreationOptions.AddToExistingGames, GameScenes.FLIGHT, GameScenes.SPACECENTER, GameScenes.TRACKSTATION)]
 	public class SCANcontroller : ScenarioModule
 	{
@@ -58,7 +423,7 @@ namespace SCANsat
 		[KSPField(isPersistant = true)]
 		public bool mainMapTerminator = false;
 		[KSPField(isPersistant = true)]
-		public bool mainMapBiome = false;
+		public MainMapDisplayMode mainMapDisplayMode = MainMapDisplayMode.Terrain;
 		[KSPField(isPersistant = true)]
 		public bool mainMapMinimized = false;
 		[KSPField(isPersistant = true)]
@@ -139,7 +504,7 @@ namespace SCANsat
 		/* Primary SCANsat vessel dictionary; loaded every time */
 		public DictionaryValueList<Guid, SCANvessel> knownVessels = new DictionaryValueList<Guid, SCANvessel>();
 
-		/* Primary SCANdata dictionary; loaded every time*/
+		/* Primary SCANdata dictionary; loaded every time */
 		private DictionaryValueList<string, SCANdata> body_data = new DictionaryValueList<string, SCANdata>();
 
 		/* MechJeb Landing Target Integration */
@@ -154,10 +519,11 @@ namespace SCANsat
 		private CelestialBody zoomMapBodyVisual;
 
 		/* Visual Map Texture Data */
-		private Dictionary<CelestialBody, Texture2D> readableScaledSpaceMaps = new Dictionary<CelestialBody, Texture2D>();
-		private Dictionary<CelestialBody, Texture2D> readableScaledSpaceNormalMaps = new Dictionary<CelestialBody, Texture2D>();
+		private Dictionary<CelestialBody, SCANtextures> mapTextureHandler = new Dictionary<CelestialBody, SCANtextures>();
 		private CelestialBody bigMapBodyScaledSpace;
 		private CelestialBody zoomMapBodyScaledSpace;
+		private CelestialBody dataBodyScaledSpace;   // the small main map
+		private CelestialBody rpmBodyScaledSpace;
 
 		private SCAN_UI_MainMap _mainMap;
 		private SCAN_UI_Instruments _instruments;
@@ -180,8 +546,6 @@ namespace SCANsat
 
 		/* Is the Breaking Ground Expansion installed */
 		private bool serenityLoaded = false;
-
-		private bool heightMapsBuilt = false;
 
 		private static SCANcontroller instance;
 
@@ -234,29 +598,110 @@ namespace SCANsat
 			}
 		}
 
-		public Texture2D getVisualMapTexture(CelestialBody b)
+		// Returns the body's ORIGINAL ScaledSpace color/normal textures (already resident on the
+		// GPU) with no readable CPU copy - for the GPU Visual-map compositor (SCANmap). Returns
+		// false if the material/texture isn't ready (e.g. a 1x1 on-demand placeholder), so the
+		// caller retries once loadOnDemandScaledSpace has run.
+		internal bool getScaledSpaceSource(CelestialBody b, out Texture colorTex, out Texture normalTex, out Material material, out Texture gasRamp)
 		{
-			if (!SCAN_Settings_Config.Instance.VisibleMapsActive)
-			{
-				return null;
-			}
+			colorTex = null;
+			normalTex = null;
+			gasRamp = null;
 
-			if (readableScaledSpaceMaps.ContainsKey(b))
-			{
-				return readableScaledSpaceMaps[b];
-			}
+			GetVisualMapTexturesForBody(b, out material, out string gasRampTextureName, out string colorMapTextureName, out string normalMapTextureName);
 
-			return null;
+			if (material == null)
+				return false;
+
+			if (colorMapTextureName != null)
+				colorTex = material.GetTexture(colorMapTextureName);
+
+			if (normalMapTextureName != null)
+				normalTex = material.GetTexture(normalMapTextureName);
+
+			// Non-null only for a gas giant, whose "colour map" is a cloud pattern (see
+			// GetVisualMapTexturesForBody): the gradient the composite looks that pattern up in.
+			if (gasRampTextureName != null)
+				gasRamp = material.GetTexture(gasRampTextureName);
+
+			if (colorTex == null || colorTex.width <= 1 || colorTex.height <= 1)
+				return false;
+
+			return true;
 		}
 
-		public Texture2D getVisualMapNormalTexture(CelestialBody b)
+		/// <summary>
+		/// The Visual map's GPU source textures for a body, for a map that needs targetWidth pixels
+		/// across 360 degrees. A SCANSAT_BODY_TEXTURES cfg wins: its files are loaded at the mip that
+		/// covers the request and Kopernicus OnDemand is never involved. Otherwise the body's own
+		/// ScaledSpace textures, which must already be resident (see getScaledSpaceSource) - or are
+		/// paged in here when a cfg the OnDemand paths trusted turns out not to load (see cfgFallback).
+		/// </summary>
+		internal bool getVisualSource(CelestialBody b, int targetWidth, out Texture colorTex, out Texture normalTex, out int normalYChannel, out Texture gasRamp, out bool fromConfig)
 		{
-			if (readableScaledSpaceNormalMaps.ContainsKey(b))
+			colorTex = null;
+			normalTex = null;
+			normalYChannel = 0;
+			gasRamp = null;
+			fromConfig = false;
+
+			if (b == null)
 			{
-				return readableScaledSpaceNormalMaps[b];
+				return false;
 			}
 
-			return null;
+			mapTextureHandler.TryGetValue(b, out SCANtextures t);
+
+			if (t != null && t.HasConfig && t.EnsureLoaded(targetWidth))
+			{
+				colorTex = t.ColorTexture;
+				normalTex = t.NormalTexture;
+				normalYChannel = t.NormalYChannel;
+				fromConfig = true;
+				return true;
+			}
+
+			if (!getScaledSpaceSource(b, out colorTex, out normalTex, out _, out gasRamp))
+			{
+				// A cfg body whose colour map would not load: OnDemand was told to skip it back in
+				// setBody, before the load could fail, so its own textures are not resident. Page them
+				// in here and take them instead of showing nothing.
+				if (!cfgFallback(b, t) || !getScaledSpaceSource(b, out colorTex, out normalTex, out _, out gasRamp))
+				{
+					colorTex = null;   // never hand back OnDemand's 1x1 placeholder (getScaledSpaceSource assigns it before rejecting it)
+					normalTex = null;
+					gasRamp = null;
+					return false;
+				}
+			}
+
+			Texture2D n2d = normalTex as Texture2D;
+			normalYChannel = n2d != null ? SCANtextures.NormalYChannelFor(n2d.format) : 0;
+			return true;
+		}
+
+		/// <summary>
+		/// The body declares a SCANSAT_BODY_TEXTURES colorMap that will not load. The cfg promised to
+		/// replace ScaledSpace, so loadOnDemandScaledSpace skipped this body - the skip happens in
+		/// setBody, before the first EnsureLoaded, so the failure is only known here. Remember it (both
+		/// OnDemand paths treat the body as an ordinary one from now on) and ask Kopernicus for its
+		/// textures. Not one-shot: two maps on the same body can evict each other's copy, and the next
+		/// composite has to be able to ask again.
+		/// </summary>
+		private bool cfgFallback(CelestialBody b, SCANtextures t)
+		{
+			if (t == null || !t.ColorFailed || b.scaledBody == null || !SCAN_Settings_Config.Instance.VisibleMapsActive)
+			{
+				return false;
+			}
+
+			if (SCANtextures.MarkColorFailed(b))
+			{
+				Log.Error($"[{b.bodyName}] Visual: SCANSAT_BODY_TEXTURES colorMap \"{t.colorMapPath}\" could not be loaded; falling back to this body's ScaledSpace textures");
+			}
+
+			SCANkopernicus.LoadOnDemand(b);
+			return true;
 		}
 
 		public static List<SCANterrainConfig> EncodeTerrainConfigs
@@ -289,6 +734,7 @@ namespace SCANsat
 			}
 		}
 
+
 		public static void checkLoadedTerrainNodes()
 		{
 			for (int i = 0; i < FlightGlobals.Bodies.Count; i++)
@@ -300,31 +746,16 @@ namespace SCANsat
 					continue;
 				}
 
-				if (getTerrainNode(b.bodyName) == null)
+				if (!hasTerrainNode(b.bodyName))   // quiet check: the getter logs "cannot be found" for every body on first generation
 				{
-					float? clamp = null;
-					if (b.ocean)
-					{
-						clamp = 0;
-					}
-
-					float newMax;
-
-					try
-					{
-						newMax = ((float)CelestialUtilities.GetHighestPeak(b)).Mathf_Round(-2);
-					}
-					catch (Exception e)
-					{
-						SCANUtil.SCANlog("Error in calculating Max Height for {0}; using default value/n{1}", b.bodyName, e);
-						newMax = SCANconfigLoader.SCANNode.DefaultMaxHeightRange;
-					}
-
-					SCANUtil.SCANlog("Generating new SCANsat Terrain Config for [{0}] - Max Height: [{1:F0}m]", b.bodyName, newMax);
-
-					addToTerrainConfigData(b.bodyName, new SCANterrainConfig(SCANconfigLoader.SCANNode.DefaultMinHeightRange, newMax, clamp, SCANUtil.PaletteLoader(SCANconfigLoader.SCANNode.DefaultPalette, 7), 7, false, false, b));
+					SCANUtil.generateTerrainConfig(b);  // Sets the terrain config in the dictionary
 				}
 			}
+		}
+
+		public static bool hasTerrainNode(string name)
+		{
+			return masterTerrainNodes.ContainsKey(name);
 		}
 
 		public static SCANterrainConfig getTerrainNode(string name)
@@ -333,11 +764,8 @@ namespace SCANsat
 			{
 				return masterTerrainNodes[name];
 			}
-			else
-			{
-				SCANUtil.SCANlog("SCANsat terrain config [{0}] cannot be found in master terrain storage list", name);
-			}
 
+			SCANUtil.SCANlog("SCANsat terrain config [{0}] cannot be found in master terrain storage list", name);
 			return null;
 		}
 
@@ -346,26 +774,46 @@ namespace SCANsat
 			SCANterrainConfig update = getTerrainNode(t.Name);
 			if (update != null)
 			{
-				update.MinTerrain = t.MinTerrain;
-				update.MaxTerrain = t.MaxTerrain;
+				// One call: the MinTerrain / MaxTerrain setters each refuse a value that crosses the other
+				// end, so assigning them in sequence drops half of any pair that does not overlap what is
+				// stored - which the colour window's Default button does whenever the defaults sit outside
+				// the range currently on screen.
+				update.SetRange(t.MinTerrain, t.MaxTerrain);
 				update.ClampTerrain = t.ClampTerrain;
 				update.PalSize = t.PalSize;
 				update.PalRev = t.PalRev;
 				update.PalDis = t.PalDis;
 				update.ColorPal = t.ColorPal;
+
+				// AutoGenerated records that the range is still the startup PQS guess, which is what lets
+				// an authored SCANSAT_TERRAIN node replace a guess that was written to SCANcolors.cfg.
+				// Only a value that differs from this config's own defaults is a user setting: Default,
+				// and an Apply that changed nothing, must leave the flag as it was.
+				update.AutoGenerated = update.DefaultAutoGenerated && atDefaultValues(update);
 			}
 		}
 
+		private static bool atDefaultValues(SCANterrainConfig t)
+		{
+			if (t.ColorPal == null || t.DefaultPalette == null || t.ColorPal.Hash != t.DefaultPalette.Hash)
+			{
+				return false;
+			}
+
+			return Mathf.Approximately(t.MinTerrain, t.DefaultMinHeight)
+				&& Mathf.Approximately(t.MaxTerrain, t.DefaultMaxHeight)
+				&& t.ClampTerrain == t.DefaultClampHeight
+				&& t.PalSize == t.DefaultPaletteSize
+				&& t.PalRev == t.DefaultReverse
+				&& t.PalDis == t.DefaultDiscrete;
+		}
+
+		// Terrain configs are generated once, at the main menu (checkLoadedTerrainNodes), for every
+		// body the cfg did not cover; nothing removes them at runtime. No duplicate guard: the one
+		// that used to be here only ever fired because of the controller-null bug in the getter.
 		public static void addToTerrainConfigData(string name, SCANterrainConfig data)
 		{
-			if (!masterTerrainNodes.ContainsKey(name))
-			{
-				masterTerrainNodes.Add(name, data);
-			}
-			else
-			{
-				Log.Error("SCANterrain Data Dictionary Already Contains Key Of This Type");
-			}
+			masterTerrainNodes[name] = data;
 		}
 
 		public static int MasterResourceCount
@@ -406,7 +854,7 @@ namespace SCANsat
 					{
 						continue;
 					}
-					//SCANUtil.SCANlog("Loading SCANsat resource config settings: {0}", r.Name);
+
 					if (!masterResourceNodes.Contains(r.Name))
 					{
 						masterResourceNodes.Add(r.Name, r);
@@ -604,6 +1052,12 @@ namespace SCANsat
 
 		public override void OnLoad(ConfigNode node)
 		{
+			// Saves from before mainMapDisplayMode existed stored the main map's mode as a bool.
+			if (node.HasValue("mainMapBiome") && !node.HasValue("mainMapDisplayMode"))
+			{
+				mainMapDisplayMode = node.parse("mainMapBiome", false) ? MainMapDisplayMode.Biome : MainMapDisplayMode.Terrain;
+			}
+
 			if (storageUpgraded)
 			{
 				ConfigNode node_vessels = node.GetNode("Scanners");
@@ -720,42 +1174,6 @@ namespace SCANsat
 							}
 
 							data.Disabled = node_body.parse("Disabled", false);
-
-							float min = node_body.parse("MinHeightRange", data.TerrainConfig.DefaultMinHeight);
-							float max = node_body.parse("MaxHeightRange", data.TerrainConfig.DefaultMaxHeight);
-							float? clampState = node_body.parse("ClampHeight", (float?)null);
-
-							int pSize = node_body.parse("PaletteSize", data.TerrainConfig.DefaultPaletteSize);
-							bool pRev = node_body.parse("PaletteReverse", data.TerrainConfig.DefaultReverse);
-							bool pDis = node_body.parse("PaletteDiscrete", data.TerrainConfig.DefaultDiscrete);
-
-							string paletteName = node_body.parse("PaletteName", "");
-
-							if (string.IsNullOrEmpty(paletteName))
-							{
-								paletteName = data.TerrainConfig.DefaultPalette.Name;
-							}
-
-							SCANPalette dataPalette = SCANUtil.PaletteLoader(paletteName, pSize);
-
-							if (dataPalette.Hash == SCAN_Palette_Config.DefaultPalette.GetPalette(0).Hash)
-							{
-								paletteName = "Default";
-								pSize = 7;
-							}
-
-							SCANterrainConfig dataTerrainConfig = getTerrainNode(body.bodyName);
-
-							if (dataTerrainConfig == null)
-							{
-								dataTerrainConfig = new SCANterrainConfig(min, max, clampState, dataPalette, pSize, pRev, pDis, body);
-							}
-							else
-							{
-								setNewTerrainConfigValues(dataTerrainConfig, min, max, clampState, dataPalette, pSize, pRev, pDis);
-							}
-
-							data.TerrainConfig = dataTerrainConfig;
 						}
 						catch (Exception e)
 						{
@@ -826,17 +1244,6 @@ namespace SCANsat
 							node_body.AddValue("LandingTarget", string.Format("{0:N4},{1:N4}", w.Latitude, w.Longitude));
 						}
 					}
-					node_body.AddValue("MinHeightRange", body_scan.TerrainConfig.MinTerrain / body_scan.TerrainConfig.MinHeightMultiplier);
-					node_body.AddValue("MaxHeightRange", body_scan.TerrainConfig.MaxTerrain / body_scan.TerrainConfig.MaxHeightMultiplier);
-					if (body_scan.TerrainConfig.ClampTerrain != null)
-					{
-						node_body.AddValue("ClampHeight", body_scan.TerrainConfig.ClampTerrain / body_scan.TerrainConfig.ClampHeightMultiplier);
-					}
-
-					node_body.AddValue("PaletteName", body_scan.TerrainConfig.ColorPal.Name);
-					node_body.AddValue("PaletteSize", body_scan.TerrainConfig.PalSize);
-					node_body.AddValue("PaletteReverse", body_scan.TerrainConfig.PalRev);
-					node_body.AddValue("PaletteDiscrete", body_scan.TerrainConfig.PalDis);
 					node_body.AddValue("Map", body_scan.shortSerialize());
 					node_progress.AddNode(node_body);
 				}
@@ -908,6 +1315,7 @@ namespace SCANsat
 				{
 					body_data.Add(FlightGlobals.currentMainBody.bodyName, new SCANdata(FlightGlobals.currentMainBody));
 				}
+
 
 				try
 				{
@@ -985,7 +1393,7 @@ namespace SCANsat
 				scanFromAllVessels();
 			}
 
-			if (!heightMapsBuilt)
+			if (heightMapWorkPending)
 			{
 				checkHeightMapStatus();
 			}
@@ -1064,65 +1472,120 @@ namespace SCANsat
 			}
 		}
 
-		private int dataStep, dataStart;
 		private bool currentlyBuilding;
 		private SCANdata buildingData;
+		private readonly List<SCANdata> heightMapRequests = new List<SCANdata>();
+
+		/// <summary>
+		/// Build a body's 360x180 height map in the background, under the shared per-frame CPU budget
+		/// (see pumpHeightMap), if it is not built yet. Only the two maps that actually read it - the
+		/// small map's Terrain and the terrain overlay - ever ask: the overlay from here when it takes a
+		/// body, so the grid is warm by the time terrain is picked, and both from their own pumps if it
+		/// is not. Nothing else builds it. The palette range no longer comes from here at all; it is the
+		/// authored terrain node, or the body's own pqsController.radiusMin/Max.
+		/// </summary>
+		internal void RequestHeightMap(SCANdata d)
+		{
+			// "d == buildingData" only bars a build this controller is actually running: the reference is
+			// dropped the moment the build is handed over, or every later request would be swallowed.
+			if (d == null || d.Built || (currentlyBuilding && d == buildingData) || heightMapRequests.Contains(d))
+			{
+				return;
+			}
+
+			heightMapRequests.Add(d);
+		}
+
+		/// <summary>
+		/// One frame's worth of a body's height map build, under the per-frame CPU budget the GPU map
+		/// builds share (SCANmap.claimBuildBudget): at least one row, then as many more as fit. The old
+		/// one-row-per-call cadence made this frame-rate bound rather than CPU bound - the 64,800 PQS
+		/// samples are only about 80 ms of work, but they took 4.5 s on the Moon (RSS) and around ten
+		/// in a heavier scene, ~98% of it spent waiting for the next frame. Whoever owns the build (here,
+		/// the small map or the overlay) pumps it through this, so all three run at the same pace. The
+		/// row cursor is the SCANdata's own, so a build taken over by another builder carries on from
+		/// where it stopped.
+		/// </summary>
+		internal static void pumpHeightMap(SCANdata d)
+		{
+			long start = System.Diagnostics.Stopwatch.GetTimestamp();
+			long budget = SCANmap.claimBuildBudget();
+
+			while (true)
+			{
+				d.generateHeightMap(360);
+
+				// Every call either finishes the map or advances a row, so this always terminates.
+				if (d.Built || System.Diagnostics.Stopwatch.GetTimestamp() - start >= budget)
+				{
+					break;
+				}
+			}
+
+			SCANmap.reportBuildBudgetUsed(System.Diagnostics.Stopwatch.GetTimestamp() - start);
+		}
+
+		private bool heightMapWorkPending
+		{
+			get { return currentlyBuilding || heightMapRequests.Count > 0; }
+		}
 
 		private void checkHeightMapStatus()
 		{
 			if (!currentlyBuilding)
 			{
-				for (int i = 0; i < body_data.Count; i++)
+				while (heightMapRequests.Count > 0)
 				{
-					buildingData = getData(i);
+					buildingData = heightMapRequests[0];
+					heightMapRequests.RemoveAt(0);
 
-					if (buildingData == null)
+					if (buildingData == null || buildingData.Built)
+					{
+						continue;   // built meanwhile
+					}
+
+					// A window is pumping it - unless its claim has lapsed, in which case that window is
+					// gone and the build is ours to finish, from the row it stopped on.
+					if ((buildingData.MapBuilding || buildingData.OverlayBuilding) && !buildingData.BuildStalled)
 					{
 						continue;
 					}
 
-					if (buildingData.Built)
-					{
-						continue;
-					}
-
-					if (buildingData.MapBuilding || buildingData.OverlayBuilding)
-					{
-						continue;
-					}
-
+					buildingData.takeOverBuild();
 					buildingData.ControllerBuilding = true;
 					currentlyBuilding = true;
-
 					return;
 				}
+
+				buildingData = null;
+				return;
 			}
-			else
+
+			if (buildingData == null)
 			{
-				if (buildingData == null)
-				{
-					currentlyBuilding = false;
-					return;
-				}
-
-				if (buildingData.Built)
-				{
-					currentlyBuilding = false;
-					buildingData.ControllerBuilding = false;
-					return;
-				}
-
-				if (buildingData.ControllerBuilding)
-				{
-					buildingData.generateHeightMap(ref dataStep, ref dataStart, 120);
-					return;
-				}
+				currentlyBuilding = false;
+				return;
 			}
 
-			SCANUtil.SCANlog("All Height Maps Generated");
+			if (buildingData.Built)
+			{
+				currentlyBuilding = false;
+				buildingData.ControllerBuilding = false;
+				buildingData = null;
+				return;
+			}
 
+			if (buildingData.ControllerBuilding)
+			{
+				pumpHeightMap(buildingData);
+				return;
+			}
+
+			// Another window took the build over. Drop the reference as well: heightMapWorkPending goes
+			// false here, so nothing would ever clear it again, and RequestHeightMap for this body would
+			// be a no-op for the rest of the scene.
 			buildingData = null;
-			heightMapsBuilt = true;
+			currentlyBuilding = false;
 		}
 
 		private void OnDestroy()
@@ -1168,7 +1631,7 @@ namespace SCANsat
 			if (_zoomMap != null)
 			{
 				_zoomMap.OnDestroy();
-				_settings = null;
+				_zoomMap = null;
 			}
 
 			if (SCAN_Settings_Config.Instance != null)
@@ -1176,15 +1639,20 @@ namespace SCANsat
 				SCAN_Settings_Config.Instance.Save();
 			}
 
-			if (!heightMapsBuilt)
+			// SCANdata.generateHeightMap loads and unloads PQS with mapSource.Data whichever builder drives
+			// it, so a build the small map or the terrain overlay owned leaves data loaded with this
+			// controller's own build flag clear. dataBodies is what is actually loaded; unload all of it.
+			for (int i = dataBodies.Count - 1; i >= 0; i--)
 			{
-				for (int i = dataBodies.Count - 1; i >= 0; i--)
-				{
-					CelestialBody b = dataBodies[i];
-
-					unloadPQS(b);
-				}
+				unloadPQS(dataBodies[i]);
 			}
+
+			// GPU textures loaded for Visual maps are not scene-managed either.
+			foreach (SCANtextures t in mapTextureHandler.Values)
+			{
+				t.Release();
+			}
+			mapTextureHandler.Clear();
 		}
 
 		private void watcher(float sci, ScienceSubject sub, ProtoVessel v, bool b)
@@ -1416,6 +1884,15 @@ namespace SCANsat
 
 		internal void loadOnDemandScaledSpace(CelestialBody b, mapSource s)
 		{
+			// Bodies with a SCANSAT_BODY_TEXTURES cfg never touch Kopernicus OnDemand: the Visual map
+			// reads its own mip of the declared files, so forcing the full-size ScaledSpace textures in
+			// (or out) would only cost VRAM and a stall. A body whose declared colour map failed to
+			// load is not one of them any more (see UseConfigFor): it pages in and out like any other.
+			if (SCANtextures.UseConfigFor(b))
+			{
+				return;
+			}
+
 			if (!SCAN_Settings_Config.Instance.VisibleMapsActive)
 			{
 				return;
@@ -1463,11 +1940,21 @@ namespace SCANsat
 					break;
 			}
 
-			SCANkopernicus.LoadOnDemand(b);
+			SCANUtil.SCANdebugLog("[SCANmem] OnDemand LOAD {0} src={1} texMem={2:F1}MB", b.bodyName, s, UnityEngine.Texture.currentTextureMemory / 1048576f);
+				SCANkopernicus.LoadOnDemand(b);
 		}
 
 		internal void unloadOnDemandScaledSpace(CelestialBody b, mapSource s)
 		{
+			// Bodies with a SCANSAT_BODY_TEXTURES cfg never touch Kopernicus OnDemand: the Visual map
+			// reads its own mip of the declared files, so forcing the full-size ScaledSpace textures in
+			// (or out) would only cost VRAM and a stall. A body whose declared colour map failed to
+			// load is not one of them any more (see UseConfigFor): it pages in and out like any other.
+			if (SCANtextures.UseConfigFor(b))
+			{
+				return;
+			}
+
 			if (!SCANkopernicus.KopernicusLoaded)
 			{
 				return;
@@ -1530,7 +2017,8 @@ namespace SCANsat
 				return;
 			}
 
-			SCANkopernicus.UnloadOnDemand(b);
+			SCANUtil.SCANdebugLog("[SCANmem] OnDemand UNLOAD {0} src={1} texMem={2:F1}MB", b.bodyName, s, UnityEngine.Texture.currentTextureMemory / 1048576f);
+				SCANkopernicus.UnloadOnDemand(b);
 		}
 
 		private bool InCurrentBodyFamily(CelestialBody b)
@@ -1538,6 +2026,8 @@ namespace SCANsat
 			switch (HighLogic.LoadedScene)
 			{
 				case GameScenes.TRACKSTATION:
+					if (PlanetariumCamera.fetch == null || PlanetariumCamera.fetch.target == null)
+						break;
 					MapObject mo = PlanetariumCamera.fetch.target;
 
 					CelestialBody tgt = null;
@@ -1573,6 +2063,8 @@ namespace SCANsat
 
 					break;
 				case GameScenes.FLIGHT:
+					if (FlightGlobals.currentMainBody == null)   // null mid scene-teardown (called via OnDestroy)
+						break;
 					if (b == FlightGlobals.currentMainBody)
 					{
 						return true;
@@ -1600,12 +2092,12 @@ namespace SCANsat
 
 		}
 
-		void GetVisualMapTexturesForBody(CelestialBody b, out Material material, out bool useMaterialForColorMap, out string colorMapTextureName, out string normalMapTextureName)
+		void GetVisualMapTexturesForBody(CelestialBody b, out Material material, out string gasRampTextureName, out string colorMapTextureName, out string normalMapTextureName)
 		{
 			material = null;
 			colorMapTextureName = null;
 			normalMapTextureName = null;
-			useMaterialForColorMap = true;
+			gasRampTextureName = null;
 
 			if (b.scaledBody == null)
 			{
@@ -1622,18 +2114,32 @@ namespace SCANsat
 			material = scaledMesh.sharedMaterial; // TODO: what if there are multiple materials?  do we need to check all of them?
 			string shaderName = material.shader.name;
 
-			if (shaderName == "Terrain/Gas Giant")
+			// A gas giant (Terrain/Gas Giant: Jool and everything templated on it) has no colour map to
+			// read. KSP builds its colour by looking a cloud PATTERN up in a 1-D gradient - Jool's
+			// _CloudColorMap is a 2x4096 ramp of greens - and both patterns are masks: _CloudPatternTexture
+			// keeps one cloud layer in red and another in green, _DetailCloudPatternTexture is a
+			// single-channel BC4 detail that the shader TILES. Drawing a pattern as if it were a colour
+			// map is what made Jool's Visual map come out red. Hand the composite the un-tiled pattern
+			// plus the ramp instead and let it do the lookup (SCANVisualComposite's _GasGiant branch).
+			// Decided by what the material actually has, not by the shader's name, so a stripped or
+			// re-shadered gas giant (Kopernicus, planet packs) is judged on its own textures; KSP's
+			// low-quality gas giant material has a real _MainTex and falls through to the checks below.
+			if (material.HasProperty("_CloudPatternTexture") && material.HasProperty("_CloudColorMap")
+				&& material.GetTexture("_CloudPatternTexture") != null && material.GetTexture("_CloudColorMap") != null)
 			{
-				colorMapTextureName = "_DetailCloudPatternTexture";
-				normalMapTextureName = "_NormalMap";
+				colorMapTextureName = "_CloudPatternTexture";
+				gasRampTextureName = "_CloudColorMap";
+				normalMapTextureName = material.HasProperty("_NormalMap") ? "_NormalMap" : null;
 				return;
 			}
-			else if (shaderName.Contains("ParallaxScaled"))
+			// HapkeScaled is Sol's Parallax-dependent scaled shader (from the simplify_map_drawing branch).
+			else if (shaderName.Contains("ParallaxScaled") || shaderName.Contains("HapkeScaled"))
 			{
 				SCANparallaxContinued.LoadParallax(b, ref material);
-				useMaterialForColorMap = false;
 				colorMapTextureName = "_ColorMap";
-				normalMapTextureName = null; // for whatever reason, the logic in ScANmap that uses the normal map doesn't work with parallax's normal maps
+				// Parallax normal maps are BC5 (Y in green). The shader selects the channel by format
+				// (_NormalYChannel); that is what the old "doesn't work with parallax" note was about.
+				normalMapTextureName = "_BumpMap";
 				return;
 			}
 			else if (material.HasProperty("_MainTex"))
@@ -1655,23 +2161,6 @@ namespace SCANsat
 			}
 		}
 
-		void CacheScaledSpaceTexture(Dictionary<CelestialBody, Texture2D> cache, CelestialBody b, Material material, string textureName, bool useMaterial)
-		{
-			if (cache.GetValueOrDefault(b) == null && textureName != null)
-			{
-				var sourceTexture = material.GetTexture(textureName) as Texture2D;
-				if (sourceTexture == null)
-				{
-					Log.Error($"GetTexture returned a null texture for body {b.name}, material {material.name} and texture name {textureName}");
-				}
-				else
-				{
-					var colorMap = sourceTexture.isReadable ? sourceTexture : readableTexture(sourceTexture, useMaterial ? material : null);
-					cache.Add(b, colorMap);
-				}
-			}
-		}
-
 		internal void LoadVisualMapTexture_Renamed(CelestialBody b, mapSource s)
 		{
 			if (!SCAN_Settings_Config.Instance.VisibleMapsActive)
@@ -1684,18 +2173,6 @@ namespace SCANsat
 				return;
 			}
 
-			GetVisualMapTexturesForBody(b, out Material material, out bool useMaterialForColorMap, out string colorMapTextureName, out string normalMapTextureName);
-
-			if (material == null)
-			{
-				Log.Error($"GetVisualMapTexturesForBody returned a null material for body {b.name}");
-			}
-			else
-			{
-				CacheScaledSpaceTexture(readableScaledSpaceMaps, b, material, colorMapTextureName, useMaterialForColorMap);
-				CacheScaledSpaceTexture(readableScaledSpaceNormalMaps, b, material, normalMapTextureName, false);
-			}
-
 			switch (s)
 			{
 				case mapSource.BigMap:
@@ -1704,6 +2181,18 @@ namespace SCANsat
 				case mapSource.ZoomMap:
 					zoomMapBodyScaledSpace = b;
 					break;
+				case mapSource.Data:
+					dataBodyScaledSpace = b;
+					break;
+				case mapSource.RPM:
+					rpmBodyScaledSpace = b;
+					break;
+			}
+
+			// Register the body; its textures load lazily, at the needed mip, in getVisualSource.
+			if (!mapTextureHandler.ContainsKey(b))
+			{
+				mapTextureHandler.Add(b, new SCANtextures(b));
 			}
 		}
 
@@ -1723,73 +2212,29 @@ namespace SCANsat
 			{
 				case mapSource.BigMap:
 					bigMapBodyScaledSpace = null;
-
-					if (zoomMapBodyScaledSpace != null && zoomMapBodyScaledSpace == b)
-					{
-						return;
-					}
-
 					break;
 				case mapSource.ZoomMap:
 					zoomMapBodyScaledSpace = null;
-
-					if (bigMapBodyScaledSpace != null && bigMapBodyScaledSpace == b)
-					{
-						return;
-					}
-
+					break;
+				case mapSource.Data:
+					dataBodyScaledSpace = null;
+					break;
+				case mapSource.RPM:
+					rpmBodyScaledSpace = null;
 					break;
 			}
 
-			if (readableScaledSpaceMaps.ContainsKey(b))
+			// Another map is still showing this body's Visual textures: keep them.
+			if (bigMapBodyScaledSpace == b || zoomMapBodyScaledSpace == b || dataBodyScaledSpace == b || rpmBodyScaledSpace == b)
 			{
-				GameObject.Destroy(readableScaledSpaceMaps[b]);
-				readableScaledSpaceMaps[b] = null;
-				readableScaledSpaceMaps.Remove(b);
+				return;
 			}
 
-			if (readableScaledSpaceNormalMaps.ContainsKey(b))
+			if (mapTextureHandler.TryGetValue(b, out SCANtextures t))
 			{
-				GameObject.Destroy(readableScaledSpaceNormalMaps[b]);
-				readableScaledSpaceNormalMaps[b] = null;
-				readableScaledSpaceNormalMaps.Remove(b);
+				t.Release();
+				mapTextureHandler.Remove(b);
 			}
-		}
-
-		private Texture2D readableTexture(Texture tex, Material mat)
-		{
-			if (tex == null)
-			{
-				return null;
-			}
-
-			Texture2D readable = new Texture2D(tex.width, tex.height);
-
-			var rt = RenderTexture.GetTemporary(tex.width, tex.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB, 1);
-
-			if (mat != null)
-			{
-				Graphics.Blit(tex, rt, mat);
-			}
-			else
-			{
-				Graphics.Blit(tex, rt);
-			}
-
-			RenderTexture.active = rt;
-
-			readable.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
-
-			RenderTexture.active = null;
-			RenderTexture.ReleaseTemporary(rt);
-
-			rt = null;
-
-			readable.Apply();
-
-			tex = null;
-
-			return readable;
 		}
 
 		private void OnGUI()
@@ -2180,17 +2625,6 @@ namespace SCANsat
 			}
 		}
 
-		private void setNewTerrainConfigValues(SCANterrainConfig terrain, float min, float max, float? clamp, SCANPalette c, int size, bool reverse, bool discrete)
-		{
-			terrain.MinTerrain = min * terrain.MinHeightMultiplier;
-			terrain.MaxTerrain = max * terrain.MaxHeightMultiplier;
-			terrain.ClampTerrain = clamp * terrain.ClampHeightMultiplier;
-			terrain.ColorPal = c;
-			terrain.PalSize = size;
-			terrain.PalRev = reverse;
-			terrain.PalDis = discrete;
-		}
-
 		private string saveResources(SCANresourceGlobal resource)
 		{
 			List<string> sL = new List<string>();
@@ -2283,8 +2717,6 @@ namespace SCANsat
 								res.MinValue = min;
 								res.MaxValue = max;
 							}
-							//else
-							//SCANUtil.SCANlog("No resources found assigned for Celestial Body: {0}, skipping...", b.bodyName);
 						}
 						else
 						{

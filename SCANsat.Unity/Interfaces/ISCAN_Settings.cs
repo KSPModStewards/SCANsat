@@ -43,7 +43,9 @@ namespace SCANsat.Unity.Interfaces
 
 		string CurrentMapData { get; set; }
 
-		int MapGenSpeed { get; set; }
+		int MapGenBudget { get; set; }
+
+		float ScanlineSpeed { get; set; }
 
 		int TimeWarp { get; set; }
 

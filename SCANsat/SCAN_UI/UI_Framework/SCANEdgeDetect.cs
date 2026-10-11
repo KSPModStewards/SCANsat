@@ -7,10 +7,6 @@ namespace SCANsat.SCAN_UI.UI_Framework
 {
 	public class SCANEdgeDetect : MonoBehaviour
 	{
-		private float _sensitivityDepth = 0.8f;
-		private float _sensitivityNormals = 0.6f;
-		private float _sampleDist = 0.8f;
-
 		private Material _edgeDetectMaterial = null;
 
 		private Texture2D _rampTexture;
@@ -27,11 +23,24 @@ namespace SCANsat.SCAN_UI.UI_Framework
 				Destroy(_rampTexture);
 				_rampTexture = null;
 			}
+
+			if (_edgeDetectMaterial != null)
+			{
+				Destroy(_edgeDetectMaterial);
+				_edgeDetectMaterial = null;
+			}
 		}
 
 		private void SetMaterial()
 		{
 			_edgeDetectMaterial = new Material(SCAN_UI_Loader.EdgeDetectShader);
+
+			// OnRenderImage calls back in here whenever the material has gone, so this can run more
+			// than once on the same component: the ramp of the previous material has to go with it.
+			if (_rampTexture != null)
+			{
+				Destroy(_rampTexture);
+			}
 
 			_rampTexture = new Texture2D(256, 1, TextureFormat.RGB24, false);
 
@@ -49,10 +58,9 @@ namespace SCANsat.SCAN_UI.UI_Framework
 
 			_rampTexture.Apply();
 
+			// _Sensitivity and _SampleDistance are commented out in EdgeDetectColors, which hardcodes
+			// 0.75 for both: setting them did nothing. _RampTex is the shader's only input.
 			_edgeDetectMaterial.SetTexture("_RampTex", _rampTexture);
-			Vector2 sensitivity = new Vector2(_sensitivityDepth, _sensitivityNormals);
-			_edgeDetectMaterial.SetVector("_Sensitivity", new Vector4(sensitivity.x, sensitivity.y, 1.0f, sensitivity.y));
-			_edgeDetectMaterial.SetFloat("_SampleDistance", _sampleDist);
 		}
 
 		private void OnEnable()

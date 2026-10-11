@@ -15,7 +15,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -23,10 +22,11 @@ using SCANsat.SCAN_Toolbar;
 using SCANsat.Unity.Interfaces;
 using SCANsat.Unity.Unity;
 using SCANsat.SCAN_Data;
+using SCANsat.SCAN_Map;
 using SCANsat.SCAN_UI.UI_Framework;
 using KSP.UI;
 using palette = SCANsat.SCAN_UI.UI_Framework.SCANcolorUtil;
-using Log = KSPBuildTools.Log;
+using Log = KSPCommunityLib.Logging.Log;
 
 namespace SCANsat.SCAN_Unity
 {
@@ -40,26 +40,16 @@ namespace SCANsat.SCAN_Unity
 		private SCANresourceGlobal currentResource;
 		private List<SCANresourceGlobal> resources;
 
-		private bool mapGenerating;
 		private double degreeOffset;
-		private int mapStep, mapStart;
 		private bool bodyBiome, bodyPQS;
 
 		private int timer;
-		//These are read/written on multiple threads; we use volatile to ensure that cached values are not used when reading the value
-		private volatile bool threadRunning, threadFinished;
-		private volatile bool terrainGenerated;
 
 		private StringBuilder tooltipText = new StringBuilder();
 		private string tooltipString = string.Empty;
 		private bool tooltipActive;
 
 		private Texture2D mapOverlay;
-		private Color32[] resourcePixels;
-		private Color32[] biomePixels;
-		private Color32[] terrainPixels;
-		private float[,] abundanceValues;
-		private float[,] terrainValues;
 
 		private Texture2D resourceLegend;
 		private const int RESOURCELEGENDWIDTH = 156;
@@ -101,6 +91,8 @@ namespace SCANsat.SCAN_Unity
 				GameObject.Destroy(mapOverlay);
 				mapOverlay = null;
 			}
+
+			destroyOverlayMap();
 
 			removeOverlay(true);
 		}
@@ -718,6 +710,10 @@ namespace SCANsat.SCAN_Unity
 				SCANcontroller.controller.addToBodyData(body, data);
 			}
 
+			// The terrain overlay reads the body's height map; start it now so it is ready by the time
+			// terrain is picked, instead of a few seconds of nothing while it builds on demand.
+			SCANcontroller.controller.RequestHeightMap(data);
+
 			if (currentResource == null)
 			{
 				if (resources.Count > 0)
@@ -751,8 +747,6 @@ namespace SCANsat.SCAN_Unity
 			bodyBiome = body.BiomeMap != null;
 			bodyPQS = body.pqsController != null;
 
-			terrainGenerated = false;
-
 			if (_overlayOn)
 			{
 				refreshMap(SCANcontroller.controller.overlaySelection);
@@ -772,6 +766,7 @@ namespace SCANsat.SCAN_Unity
 		private void removeOverlay(bool immediate = false)
 		{
 			_overlayOn = false;
+			overlayBuild++;   // abandon a build in flight
 
 			OverlayGenerator.Instance.ClearDisplay();
 
@@ -803,6 +798,9 @@ namespace SCANsat.SCAN_Unity
 			}
 		}
 
+		private SCANmap overlayMap;   // composites all three overlays on the GPU (mapSource.Overlay)
+		private int overlayBuild;     // generation counter: a newer request or a removal abandons an in-flight build
+
 		private void refreshMap(int i, bool remove = true)
 		{
 			if (remove)
@@ -810,204 +808,188 @@ namespace SCANsat.SCAN_Unity
 				removeOverlay();
 			}
 
-			if (mapGenerating)
+			if (i < 0 || i > 2)
 			{
 				return;
 			}
 
-			if (threadRunning)
-			{
-				return;
-			}
-
+			// A build already in flight is abandoned by the generation counter (removeOverlay bumped it,
+			// and buildOverlay bumps it again), so a quick switch of overlay type starts the new one at once.
 			_overlayOn = true;
 
-			switch (i)
-			{
-				case 0:
-					body.SetResourceMap(SCANuiUtil.drawBiomeMap(ref mapOverlay, ref biomePixels, data, SCAN_Settings_Config.Instance.CoverageTransparency, SCAN_Settings_Config.Instance.BiomeMapHeight));
-					break;
-				case 1:
-					SCANcontroller.controller.StartCoroutine(setTerrainMap());
-					break;
-				case 2:
-					SCANcontroller.controller.StartCoroutine(setOverlayMap());
-					break;
-				default:
-					break;
-			}
+			SCANcontroller.controller.StartCoroutine(buildOverlay(i));
 		}
 
-		private IEnumerator setOverlayMap()
+		// The overlay is composited by the same shader as the map windows, then read back into the
+		// mipmapped Texture2D the planet has always been handed, through the same stock setter: nothing
+		// on the material side changes. selection: 0 biome, 1 terrain, 2 resource.
+		private IEnumerator buildOverlay(int selection)
 		{
+			int build = ++overlayBuild;
 			int timer = 0;
 
-			mapGenerating = true;
-
-			SCANuiUtil.generateOverlayResourceValues(ref abundanceValues, SCAN_Settings_Config.Instance.ResourceMapHeight, data, currentResource, SCAN_Settings_Config.Instance.Interpolation);
-
-			SCANdata copy = new SCANdata(data);
-			SCANresourceGlobal resourceCopy = new SCANresourceGlobal(currentResource);
-			resourceCopy.CurrentBodyConfig(body.bodyName);
-
-			Thread t = new Thread(() => resourceThreadRun(SCAN_Settings_Config.Instance.ResourceMapHeight, SCAN_Settings_Config.Instance.Interpolation, SCAN_Settings_Config.Instance.CoverageTransparency, new System.Random(ResourceScenario.Instance.gameSettings.Seed), copy, resourceCopy));
-			threadRunning = true;
-			threadFinished = false;
-			t.Start();
-
-			while (threadRunning && timer < 1000)
+			// Terrain draws from the body's 360x180 height map; pump its build from here if needed, as before.
+			if (selection == 1)
 			{
-				timer++;
-				yield return null;
-			}
-
-			mapGenerating = false;
-			copy = null;
-			resourceCopy = null;
-
-			if (timer >= 1000)
-			{
-				Log.Error("Something went wrong when drawing the SCANsat resource map overlay...");
-				t.Abort();
-				threadRunning = false;
-				yield break;
-			}
-
-			if (!threadFinished)
-			{
-				Log.Error("Something went wrong when drawing the SCANsat resource map overlay...");
-				yield break;
-			}
-
-			if (mapOverlay == null || mapOverlay.height != SCAN_Settings_Config.Instance.ResourceMapHeight)
-			{
-				mapOverlay = new Texture2D(SCAN_Settings_Config.Instance.ResourceMapHeight * 2, SCAN_Settings_Config.Instance.ResourceMapHeight, TextureFormat.ARGB32, true);
-			}
-
-			mapOverlay.SetPixels32(resourcePixels);
-			mapOverlay.Apply();
-
-			body.SetResourceMap(mapOverlay);
-		}
-
-		private void resourceThreadRun(int height, int step, float transparent, System.Random r, SCANdata copyData, SCANresourceGlobal copyResource)
-		{
-			try
-			{
-				SCANuiUtil.generateOverlayResourcePixels(ref resourcePixels, ref abundanceValues, height, copyData, copyResource, r, step, transparent);
-				threadFinished = true;
-			}
-			catch
-			{
-				threadFinished = false;
-			}
-			finally
-			{
-				threadRunning = false;
-			}
-		}
-
-		private IEnumerator setTerrainMap()
-		{
-			if (data.Body.pqsController == null)
-			{
-				yield break;
-			}
-
-			int timer = 0;
-
-			while (!data.Built && timer < 2000)
-			{
-				mapGenerating = true;
-				if (!data.ControllerBuilding && !data.MapBuilding)
+				if (data.Body.pqsController == null)
 				{
-					if (!data.OverlayBuilding)
+					yield break;
+				}
+
+				while (!data.Built && timer < 2000 && build == overlayBuild)
+				{
+					// Someone else owns the build - unless nobody has pumped it for a few frames, in which
+					// case that owner is gone and the build is ours to finish, from the row it stopped on.
+					bool ownedElsewhere = (data.ControllerBuilding || data.MapBuilding) && !data.BuildStalled;
+
+					if (!ownedElsewhere)
 					{
-						mapStep = 0;
-						mapStart = 0;
+						data.takeOverBuild();
+						data.OverlayBuilding = true;
+						SCANcontroller.pumpHeightMap(data);
 					}
 
-					data.OverlayBuilding = true;
-					data.generateHeightMap(ref mapStep, ref mapStart, 360);
+					timer++;
+					yield return null;
 				}
-				timer++;
-				yield return null;
+
+				if (timer >= 2000 || build != overlayBuild)
+				{
+					yield break;
+				}
 			}
 
-			if (timer >= 2000)
+			int outWidth, dataWidth;
+			mapType mode;
+
+			switch (selection)
 			{
-				mapGenerating = false;
-				yield break;
+				case 0:   // biome: one lookup per output pixel, as the CPU overlay did
+					outWidth = SCAN_Settings_Config.Instance.BiomeMapHeight * 2;
+					dataWidth = outWidth;
+					mode = mapType.Biome;
+					break;
+				case 1:   // terrain: the 360x180 height map, upsampled by the shader's bilinear fetch (the CPU overlay interpolated it x4)
+					outWidth = 1440;
+					dataWidth = 360;
+					mode = mapType.Altimetry;
+					break;
+				default:  // resource: the resource layer alone, over clear
+					outWidth = SCAN_Settings_Config.Instance.ResourceMapHeight * 2;
+					dataWidth = outWidth;
+					mode = mapType.Altimetry;
+					break;
 			}
+
+			int outHeight = outWidth / 2;
+
+			ensureOverlayMap(dataWidth);
+
+			overlayMap.BaseNone = selection == 2;
+			overlayMap.OutputAlpha = selection == 1 ? 0.9f : 1f;   // drawTerrainMap faded its colours 10 percent toward clear
+			overlayMap.ResGreyBlend = SCAN_Settings_Config.Instance.CoverageTransparency;
+			overlayMap.Resource = selection == 2 ? currentResource : null;
+			overlayMap.ColorMap = true;
+			overlayMap.Terminator = false;
+			overlayMap.resetMap(mode, selection == 2 && currentResource != null);
 
 			timer = 0;
 
-			SCANdata copy = new SCANdata(data);
-			int index = data.Body.flightGlobalsIndex;
-
-			Thread t = new Thread(() => terrainThreadRun(copy, index));
-			threadFinished = false;
-			threadRunning = true;
-			t.Start();
-
-			while (threadRunning && timer < 1000)
+			while (!overlayMap.isMapComplete() && timer < 20000)
 			{
+				if (build != overlayBuild)
+				{
+					yield break;   // a newer build has taken over
+				}
+
+				overlayMap.getPartialMap();
 				timer++;
 				yield return null;
 			}
 
-			mapGenerating = false;
-			copy = null;
-
-			if (timer >= 1000)
+			if (build != overlayBuild)
 			{
-				Log.Error("Something went wrong when drawing the SCANsat terrain map overlay...");
-				t.Abort();
-				threadRunning = false;
 				yield break;
 			}
 
-			if (!threadFinished)
+			if (timer >= 20000 || !_overlayOn)
 			{
-				Log.Error("Something went wrong when drawing the SCANsat terrain map overlay...");
 				yield break;
 			}
 
-			if (mapOverlay == null)
+			RenderTexture rt = overlayMap.renderAt(outWidth, outHeight);
+
+			if (rt == null)
 			{
-				mapOverlay = new Texture2D(1440, 720, TextureFormat.ARGB32, true);
+				Log.Error("Something went wrong when drawing the SCANsat planet overlay: the map did not render");
+				yield break;
 			}
 
-			mapOverlay.SetPixels32(terrainPixels);
-			mapOverlay.Apply();
+			if (mapOverlay == null || mapOverlay.width != outWidth || mapOverlay.height != outHeight)
+			{
+				if (mapOverlay != null)
+				{
+					UnityEngine.Object.Destroy(mapOverlay);
+				}
+
+				mapOverlay = new Texture2D(outWidth, outHeight, TextureFormat.ARGB32, true);
+				// A Texture2D defaults to Repeat on both axes, and the scaled-space sphere puts its pole
+				// vertices at v = 0 and v = 1 exactly - where the bilinear fetch lands half a texel outside
+				// the map and wraps, blending the north polar row with the south polar row over both caps.
+				// Latitude has no wrap to honour, so clamp it; longitude does, so the seam keeps Repeat
+				// (the same split SCANcontroller gives a body's ScaledSpace textures).
+				mapOverlay.wrapModeU = TextureWrapMode.Repeat;
+				mapOverlay.wrapModeV = TextureWrapMode.Clamp;
+				// The sphere is edge-on at the poles, where the runaway longitude derivative drags an
+				// isotropic mip far coarser than the latitude axis needs and rings the cap with bands.
+				// Anisotropic sampling takes the mip from the short axis instead.
+				mapOverlay.anisoLevel = 9;
+			}
+
+			RenderTexture prev = RenderTexture.active;
+			RenderTexture.active = rt;
+			mapOverlay.ReadPixels(new Rect(0, 0, outWidth, outHeight), 0, 0);
+			mapOverlay.Apply(true);
+			RenderTexture.active = prev;
+			rt.Release();
+			UnityEngine.Object.Destroy(rt);
 
 			body.SetResourceMap(mapOverlay);
 		}
 
-		private void terrainThreadRun(SCANdata copyData, int i)
+		private void ensureOverlayMap(int width)
 		{
-			try
+			if (overlayMap != null && overlayMap.Body != body)
 			{
-				if (!terrainGenerated)
-				{
-					SCANuiUtil.generateTerrainArray(ref terrainValues, 720, 4, copyData, i);
-					terrainGenerated = true;
-				}
-
-				SCANuiUtil.drawTerrainMap(ref terrainPixels, ref terrainValues, copyData, 720, 4);
-
-				threadFinished = true;
+				destroyOverlayMap();
 			}
-			catch
+
+			if (overlayMap == null)
 			{
-				threadFinished = false;
+				overlayMap = new SCANmap(body, mapSource.Overlay);
+				overlayMap.setProjection(MapProjection.Rectangular);
+				// No reset here: buildOverlay resets with the real mode straight after this returns. The
+				// reset setWidth used to do ran with the previous selection's mType, and the overlay's
+				// three widths meant a build reset twice every time the selection changed.
+				overlayMap.setWidth(width, false);
+				overlayMap.setBody(body);
 			}
-			finally
+			else if (overlayMap.MapWidth != width)
 			{
-				threadRunning = false;
+				overlayMap.setWidth(width, false);
 			}
 		}
 
+		private void destroyOverlayMap()
+		{
+			if (overlayMap == null)
+			{
+				return;
+			}
+
+			overlayMap.Destroy();
+			overlayMap = null;
+		}
 		public void ResetPosition()
 		{
 			SCAN_Settings_Config.Instance.OverlayPosition = new Vector2(600, -200);

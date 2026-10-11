@@ -9,7 +9,10 @@ on:
 
 jobs:
   create-release:
-    uses: KSPModdingLibs/KSPBuildTools/.github/workflows/create-release.yml@0.0.4
+    uses: KSPModdingLibs/KSPBuildTools/.github/workflows/create-release.yml@1.1.1
     with:
       version-string: ${{ inputs.version-string }}
       use-ckan: true
+      # No .sln in the repo: the compile action needs the .slnx named. This workflow has no SDK input;
+      # global.json makes the runner's preinstalled .NET 9+ SDK the one "dotnet" picks.
+      solution-file-path: SCANsat.slnx

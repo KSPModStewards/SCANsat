@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<KSPBundleDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" UrlName="scan_shaders" Name="scan_shaders" CreatedTime="-8587130464924746226">
+<KSPBundleDefinition xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" UrlName="scan_shaders" Name="scan_shaders" CreatedTime="-8584116275338971866">
   <Author />
   <Info />
   <Assets>
+    <Asset Name="Hidden/EdgeDetectColors" Path="Assets/Shaders/EdgeDetectColors.shader" Type="Shader" Url="Shaders/EdgeDetectColors" AutoLoad="false" />
     <Asset Name="Hidden/Edge Detect X" Path="Assets/Shaders/EdgeDetectX.shader" Type="Shader" Url="Shaders/EdgeDetectX" AutoLoad="false" />
     <Asset Name="Hidden/Grayscale Effect" Path="Assets/Shaders/GrayscaleEffect.shader" Type="Shader" Url="Shaders/GrayscaleEffect" AutoLoad="false" />
+    <Asset Name="Hidden/SCANsat/VisualComposite" Path="Assets/Shaders/SCANVisualComposite.shader" Type="Shader" Url="Shaders/SCANVisualComposite" AutoLoad="false" />
   </Assets>
   <Dependencies />
 </KSPBundleDefinition>

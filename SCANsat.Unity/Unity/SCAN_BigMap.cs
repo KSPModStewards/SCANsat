@@ -691,6 +691,26 @@ namespace SCANsat.Unity.Unity
 			rect.localScale = Vector3.one * scale;
 		}
 
+		// The map image's size on screen in real pixels (window size, SCANsat's own scale and the
+		// canvas scale all applied), so a layer drawn over the map can be rendered one texel per
+		// screen pixel. Zero before the first layout pass.
+		public Vector2 MapPixelSize()
+		{
+			if (m_MapImage == null || bigInterface == null || bigInterface.MainCanvas == null)
+			{
+				return Vector2.zero;
+			}
+
+			Vector3[] corners = new Vector3[4];
+			m_MapImage.rectTransform.GetWorldCorners(corners);
+
+			Camera cam = bigInterface.MainCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : bigInterface.MainCanvas.worldCamera;
+			Vector2 a = RectTransformUtility.WorldToScreenPoint(cam, corners[0]);
+			Vector2 b = RectTransformUtility.WorldToScreenPoint(cam, corners[2]);
+
+			return new Vector2(Mathf.Abs(b.x - a.x), Mathf.Abs(b.y - a.y));
+		}
+
 		public void SetPosition(Vector2 pos)
 		{
 			if (rect == null)
@@ -1572,7 +1592,7 @@ namespace SCANsat.Unity.Unity
 			m_Title.OnTextUpdate.Invoke(text);
 		}
 
-		public void UpdateMapTexture(Texture2D map)
+		public void UpdateMapTexture(Texture map)
 		{
 			if (m_MapImage == null)
 			{

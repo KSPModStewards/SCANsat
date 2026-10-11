@@ -122,7 +122,7 @@ namespace SCANsat.SCAN_Unity
 				_resourceTransparency = currentResource.Transparency;
 			}
 
-			currentTerrain = SCANcontroller.getTerrainNode(_terrainPlanet);
+			currentTerrain = SCANUtil.getTerrainConfig(_terrainPlanet);
 
 			if (currentTerrain != null)
 			{
@@ -211,7 +211,7 @@ namespace SCANsat.SCAN_Unity
 
 				_terrainPlanet = body;
 
-				currentTerrain = SCANcontroller.getTerrainNode(body);
+				currentTerrain = SCANUtil.getTerrainConfig(body);
 
 				if (currentTerrain != null)
 				{
@@ -690,7 +690,7 @@ namespace SCANsat.SCAN_Unity
 				SCAN_UI_BigMap.Instance.RefreshMap();
 			}
 
-			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && SCAN_UI_MainMap.Instance.MapType)
+			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && SCAN_UI_MainMap.Instance.MapType == MainMapDisplayMode.Biome)
 			{
 				SCAN_UI_MainMap.Instance.resetImages();
 			}
@@ -727,7 +727,7 @@ namespace SCANsat.SCAN_Unity
 				SCAN_UI_BigMap.Instance.RefreshMap();
 			}
 
-			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && SCAN_UI_MainMap.Instance.MapType)
+			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && SCAN_UI_MainMap.Instance.MapType == MainMapDisplayMode.Biome)
 			{
 				SCAN_UI_MainMap.Instance.resetImages();
 			}
@@ -928,8 +928,7 @@ namespace SCANsat.SCAN_Unity
 
 		public void TerrainApply()
 		{
-			currentTerrain.MinTerrain = _terrainCurrentMin;
-			currentTerrain.MaxTerrain = _terrainCurrentMax;
+			currentTerrain.SetRange(_terrainCurrentMin, _terrainCurrentMax);
 			currentTerrain.ClampTerrain = _terrainClampOn ? (float?)_terrainClamp : null;
 			currentTerrain.PalDis = _terrainDiscrete;
 			currentTerrain.PalRev = _terrainReverse;
@@ -944,7 +943,7 @@ namespace SCANsat.SCAN_Unity
 				SCAN_UI_BigMap.Instance.RefreshMap();
 			}
 
-			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && !SCAN_UI_MainMap.Instance.MapType)
+			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && SCAN_UI_MainMap.Instance.MapType == MainMapDisplayMode.Terrain)
 			{
 				SCAN_UI_MainMap.Instance.resetImages();
 			}
@@ -962,8 +961,7 @@ namespace SCANsat.SCAN_Unity
 
 		public void TerrainDefault()
 		{
-			currentTerrain.MinTerrain = currentTerrain.DefaultMinHeight;
-			currentTerrain.MaxTerrain = currentTerrain.DefaultMaxHeight;
+			currentTerrain.SetRange(currentTerrain.DefaultMinHeight, currentTerrain.DefaultMaxHeight);
 			currentTerrain.ClampTerrain = currentTerrain.DefaultClampHeight;
 			currentTerrain.ColorPal = currentTerrain.DefaultPalette;
 			currentTerrain.PalRev = currentTerrain.DefaultReverse;
@@ -979,7 +977,7 @@ namespace SCANsat.SCAN_Unity
 				SCAN_UI_BigMap.Instance.RefreshMap();
 			}
 
-			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && !SCAN_UI_MainMap.Instance.MapType)
+			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && SCAN_UI_MainMap.Instance.MapType == MainMapDisplayMode.Terrain)
 			{
 				SCAN_UI_MainMap.Instance.resetImages();
 			}
@@ -997,8 +995,7 @@ namespace SCANsat.SCAN_Unity
 
 		public void TerrainSaveToConfig()
 		{
-			currentTerrain.MinTerrain = _terrainCurrentMin;
-			currentTerrain.MaxTerrain = _terrainCurrentMax;
+			currentTerrain.SetRange(_terrainCurrentMin, _terrainCurrentMax);
 			currentTerrain.ClampTerrain = _terrainClampOn ? (float?)_terrainClamp : null;
 			currentTerrain.PalDis = _terrainDiscrete;
 			currentTerrain.PalRev = _terrainReverse;
@@ -1013,7 +1010,7 @@ namespace SCANsat.SCAN_Unity
 				SCAN_UI_BigMap.Instance.RefreshMap();
 			}
 
-			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && !SCAN_UI_MainMap.Instance.MapType)
+			if (SCAN_UI_MainMap.Instance != null && SCAN_UI_MainMap.Instance.IsVisible && SCAN_UI_MainMap.Instance.MapType == MainMapDisplayMode.Terrain)
 			{
 				SCAN_UI_MainMap.Instance.resetImages();
 			}
