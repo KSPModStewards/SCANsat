@@ -14,11 +14,12 @@ This is used by [KSPBuildTools](https://github.com/kspmoddingLibs/kspbuildTools/
 </Project>
 ```
 
-Using CKAN, install MechJeb2 in your development instance (because `SCANmechjeb` depends on it).
+Using CKAN, install KSP Texture Loader in your development instance. May also install MechJeb 2
+(because `SCANmechjeb` depends on it).
 
 # Compiling the mod
 
-You should now be able to open `SCANsat.sln` and build it.
+You should now be able to open `SCANsat.slnx` and build it.
 The compiled DLLs should be copied to `GameData/SCANsat/Plugins` automatically.
 These should be excluded from .gitignore and never committed.
 You can then manually copy this directory to your KSP install, or ideally set up a directory junction in your KSP install to point at this directory.

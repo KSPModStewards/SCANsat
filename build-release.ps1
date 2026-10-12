@@ -1,8 +1,8 @@
 <#
-build-release.ps1 - build + package SCANsat-GPU for a GitHub/CKAN release.
+build-release.ps1 - build + package SCANsat for a GitHub/CKAN release.
 
 Produces under .\Releases\ :
-  SCANsat-GPU-<version>.zip   the installable mod (GameData/SCANsat/... ready to drop into KSP)
+  SCANsat-<version>.zip   the installable mod (GameData/SCANsat/... ready to drop into KSP)
   SCANsat.version            the KSP-AVC file - attach this to the GitHub release too, so the
                              "releases/latest/download/SCANsat.version" AVC URL resolves.
 
@@ -10,7 +10,7 @@ The zip is assembled from git-tracked GameData/SCANsat content (so gitignored bu
 user's PluginData/Settings.cfg are excluded), with the freshly built DLLs + the build-stamped
 .version overlaid on top.
 
-Usage:   .\build-release.ps1 [-KspRoot ..\Instance] [-Version 21.1.1]
+Usage:   .\build-release.ps1 [-KspRoot ..\Instance] [-Version 22.1.0]
 Requires: dotnet SDK, git, PowerShell 5+.
 #>
 [CmdletBinding()]
@@ -40,12 +40,12 @@ $ver = (Get-Content $verFile -Raw | ConvertFrom-Json).VERSION
 $verStr = if ($ver -is [string]) { $ver } else { (@($ver.MAJOR,$ver.MINOR,$ver.PATCH,$ver.BUILD) | Where-Object { $null -ne $_ }) -join '.' }
 Write-Host "==> Packaging version $verStr"
 
-$stage = Join-Path $env:TEMP "scansat-gpu-stage"
+$stage = Join-Path $env:TEMP "scansat-stage"
 if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
 New-Item -ItemType Directory -Path $stage | Out-Null
 
 # 1) export git-tracked GameData/SCANsat via a zip (no gitignored DLL, no user Settings.cfg, no untracked junk)
-$arch = Join-Path $env:TEMP "scansat-gpu-archive.zip"
+$arch = Join-Path $env:TEMP "scansat-archive.zip"
 if (Test-Path $arch) { Remove-Item $arch -Force }
 git -C $root archive --format=zip -o $arch HEAD GameData/SCANsat
 if ($LASTEXITCODE -ne 0) { throw "git archive failed" }
@@ -72,7 +72,7 @@ Copy-Item (Join-Path $root "LICENSE.txt") (Join-Path $sat "LICENSE.txt") -Force
 #    backslashes, which violate the ZIP spec and break CKAN's installer, so build the archive by hand)
 $dist = Join-Path $root "Releases"
 New-Item -ItemType Directory -Path $dist -Force | Out-Null
-$zip = Join-Path $dist "SCANsat-GPU-$verStr.zip"
+$zip = Join-Path $dist "SCANsat-$verStr.zip"
 if (Test-Path $zip) { Remove-Item $zip -Force }
 Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
 $fs = [System.IO.Compression.ZipFile]::Open($zip, [System.IO.Compression.ZipArchiveMode]::Create)

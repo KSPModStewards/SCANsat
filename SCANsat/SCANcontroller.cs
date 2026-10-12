@@ -177,12 +177,12 @@ namespace SCANsat
 			string bodyName = node.GetValue("name");
 			if (bodyName == body.name)
 			{
-				// Resolution kept exactly as the cfg format was documented to planet packs: relative to the KSP root.
-				string baseFolder = System.IO.Directory.GetParent(KSPUtil.ApplicationRootPath).FullName;
+				// Allow cfg definitions for custom planet packs: all paths relative to GameData.
+				string gameDataFolder = System.IO.Directory.GetParent(KSPUtil.ApplicationRootPath).FullName + "/GameData/";
 
-				heightMapPath = resolve(baseFolder, node.GetValue("heightMap"));
-				normalMapPath = resolve(baseFolder, node.GetValue("normalMap"));
-				colorMapPath = resolve(baseFolder, node.GetValue("colorMap"));
+				heightMapPath = resolve(gameDataFolder, node.GetValue("heightMap"));
+				normalMapPath = resolve(gameDataFolder, node.GetValue("normalMap"));
+				colorMapPath = resolve(gameDataFolder, node.GetValue("colorMap"));
 			}
 		}
 
@@ -193,7 +193,7 @@ namespace SCANsat
 				return null;
 			}
 
-			return (baseFolder + '/' + cfgPath).Replace("\\", "/");
+			return (baseFolder + cfgPath).Replace("\\", "/");
 		}
 
 		/// <summary>

@@ -12,9 +12,9 @@
   <ItemGroup>
     <KSPVersionFile Include="$(KSPBT_ModRoot)/SCANsat.version">
       <Destination>$(KSPBT_ModRoot)/SCANsat.version</Destination>
-      <Name>SCANsat-GPU</Name>
-      <URL>https://github.com/miskoltrans/SCANsat-GPU/releases/latest/download/SCANsat.version</URL>
-      <Download>https://github.com/miskoltrans/SCANsat-GPU/releases</Download>
+      <Name>SCANsat</Name>
+      <URL>https://github.com/KSPModStewards/SCANsat/releases/latest/download/SCANsat.version</URL>
+      <Download>https://github.com/KSPModStewards/SCANsat/releases</Download>
       <KSP_Version>1.12.5</KSP_Version>
       <KSP_Version_Min>1.12.3</KSP_Version_Min>
       <KSP_Version_Max>1.12.5</KSP_Version_Max>
