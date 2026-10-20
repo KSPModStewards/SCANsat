@@ -95,7 +95,7 @@ namespace SCANsat.SCAN_Data
 				return 0;
 			}
 
-			if (body.pqsController == null)
+			if (!SCANUtil.isValidPQSTerrain(body))
 			{
 				return 0;
 			}
@@ -249,9 +249,13 @@ namespace SCANsat.SCAN_Data
 				return null;
 			}
 
-			PQS controller = body.pqsController;
+			if (!SCANUtil.isValidPQSTerrain(body))
+			{
+				return null;
+			}
 
-			if (controller == null || controller.transform == null)
+			PQS controller = body.pqsController;
+			if (controller.transform == null)
 			{
 				return null;
 			}
@@ -839,7 +843,7 @@ namespace SCANsat.SCAN_Data
 
 		internal void generateHeightMap(int width)
 		{
-			if (body.pqsController == null)
+			if (!SCANUtil.isValidPQSTerrain(body))
 			{
 				built = true;
 				mapBuilding = false;

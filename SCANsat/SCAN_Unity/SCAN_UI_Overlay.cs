@@ -189,7 +189,7 @@ namespace SCANsat.SCAN_Unity
 
 			coords.ToDMS(tooltipText);
 
-			if (body.pqsController != null)
+			if (SCANUtil.isValidPQSTerrain(body))
 			{
 				if (SCANUtil.isCovered(coords.longitude, coords.latitude, data, SCANtype.Altimetry))
 				{
@@ -745,7 +745,7 @@ namespace SCANsat.SCAN_Unity
 			}
 
 			bodyBiome = body.BiomeMap != null;
-			bodyPQS = body.pqsController != null;
+			bodyPQS = SCANUtil.isValidPQSTerrain(body);
 
 			if (_overlayOn)
 			{
@@ -831,7 +831,7 @@ namespace SCANsat.SCAN_Unity
 			// Terrain draws from the body's 360x180 height map; pump its build from here if needed, as before.
 			if (selection == 1)
 			{
-				if (data.Body.pqsController == null)
+				if (!SCANUtil.isValidPQSTerrain(data.Body))
 				{
 					yield break;
 				}

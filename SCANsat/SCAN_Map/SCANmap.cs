@@ -32,7 +32,7 @@ namespace SCANsat.SCAN_Map
 			{
 				useCustomRange = true;   // the pre-pass fills the values in before the first row is revealed
 			}
-			pqs = body.pqsController != null;
+			pqs = SCANUtil.isValidPQSTerrain(body);
 			biomeMap = body.BiomeMap != null;
 			data = SCANUtil.getData(body);
 			if (data == null)
@@ -50,7 +50,9 @@ namespace SCANsat.SCAN_Map
 			internal set
 			{
 				if (!profile.GeographicCache && mapscale != value)
+				{
 					clearWindowCaches();   // pixel-space caches: a new zoom level is a new window
+				}
 				mapscale = value;
 				resourceMapScale = mapscale * mapwidth / resourceMapWidth;
 			}
@@ -285,7 +287,9 @@ namespace SCANsat.SCAN_Map
 			// A window map's caches are sampled in projected pixel space; a geographic cache is the globe
 			// whatever projection is shown, and stays.
 			if (!profile.GeographicCache)
+			{
 				clearWindowCaches();
+			}
 		}
 
 		internal double projectLongitude(double lon, double lat)
@@ -748,7 +752,9 @@ namespace SCANsat.SCAN_Map
 			// A window map's caches are pixel space, so a moved window invalidates them. Same window
 			// (the zoom map re-centres on every reset) keeps them, which is what makes a refresh warm.
 			if (!profile.GeographicCache && (lon_offset != oldLonOffset || lat_offset != oldLatOffset || centeredLong != oldCenteredLong || centeredLat != oldCenteredLat))
+			{
 				clearWindowCaches();
+			}
 		}
 
 		internal double scaleLatitude(double lat)
@@ -912,7 +918,7 @@ namespace SCANsat.SCAN_Map
 			data = SCANUtil.getData(body);
 
 			SCANcontroller.controller.loadPQS(body, mSource);
-			pqs = body.pqsController != null;
+			pqs = SCANUtil.isValidPQSTerrain(body);
 			biomeMap = body.BiomeMap != null;
 
 			// The height and biome-index caches are per body: terrain and biomes do not change at
@@ -1135,7 +1141,9 @@ namespace SCANsat.SCAN_Map
 		private bool willRenderGPU(mapType m)
 		{
 			if (SCAN_UI_Loader.VisualCompositeShader == null || body == null || data == null || SCANcontroller.controller == null)
+			{
 				return false;
+			}
 			switch (m)
 			{
 				// The setting disables Visual maps outright (the CPU path only honoured it by accident). A
@@ -1199,7 +1207,9 @@ namespace SCANsat.SCAN_Map
 			SCANcontroller.controller.getVisualSource(body, visualTargetWidth(), out Texture colorTex, out Texture normalTex, out int normalYChannel, out Texture gasRamp, out _);
 
 			if (compositeMaterial == null || compositeMaterial.shader != shader)
+			{
 				compositeMaterial = new Material(shader);
+			}
 
 			updateCoverageFlags();
 
@@ -1276,7 +1286,9 @@ namespace SCANsat.SCAN_Map
 			// fully revealed, when its build is done.
 			float reveal = 1f;
 			if (profile.Sweep && mapheight > 0)
+			{
 				reveal = Mathf.Min(timedSweepFraction(), Mathf.Clamp01(mapstep / (float)mapheight));
+			}
 
 			compositeMaterial.SetColor("_RedlineColor", palette.Red);
 			compositeMaterial.SetFloat("_SweepY", reveal);
@@ -1284,7 +1296,9 @@ namespace SCANsat.SCAN_Map
 			Graphics.Blit(null, visualRenderTex, compositeMaterial);
 
 			if (reveal >= 1f)
+			{
 				passComplete = true;   // that Blit was the fully revealed one (no redline)
+			}
 		}
 
 		// The big map's graticule as a texture for the UI's grid layer, which sits above the map with
@@ -1357,10 +1371,10 @@ namespace SCANsat.SCAN_Map
 
 					gridPixel(x, y, palette.white);
 
-					if (x < w - 1) gridPixel(x + 1, y, palette.black);
-					if (x > 0) gridPixel(x - 1, y, palette.black);
-					if (y < h - 1) gridPixel(x, y + 1, palette.black);
-					if (y > 0) gridPixel(x, y - 1, palette.black);
+					if (x < w - 1) { gridPixel(x + 1, y, palette.black); }
+					if (x > 0) { gridPixel(x - 1, y, palette.black); }
+					if (y < h - 1) { gridPixel(x, y + 1, palette.black); }
+					if (y > 0) { gridPixel(x, y - 1, palette.black); }
 				}
 			}
 
@@ -1372,7 +1386,9 @@ namespace SCANsat.SCAN_Map
 			if (tex == null || tex.width != w || tex.height != h)
 			{
 				if (tex != null)
+				{
 					UnityEngine.Object.Destroy(tex);
+				}
 				tex = new Texture2D(w, h, TextureFormat.ARGB32, false);
 			}
 
@@ -1441,8 +1457,9 @@ namespace SCANsat.SCAN_Map
 			}
 
 			if (sweepDuration <= 0f)
+			{
 				return 1f;   // Instant: no reveal, the pass shows whatever it has
-
+			}
 			return Mathf.Clamp01((now - sweepStart) / sweepDuration);
 		}
 
@@ -1516,7 +1533,7 @@ namespace SCANsat.SCAN_Map
 				float tMin, tRange;
 				if (useCustomRange) { tMin = customMin; tRange = customRange; }
 				else { SCANterrainConfig tc = SCANUtil.getTerrainConfig(data); tMin = tc.MinTerrain; tRange = tc.MaxTerrain - tc.MinTerrain; }
-				if (tRange <= 0f) tRange = 1f;
+				if (tRange <= 0f) { tRange = 1f; }
 				compositeMaterial.SetFloat("_TerrainMin", tMin);
 				compositeMaterial.SetFloat("_TerrainRange", tRange);
 
@@ -1558,7 +1575,7 @@ namespace SCANsat.SCAN_Map
 				float bMin, bRange;
 				if (useCustomRange) { bMin = customMin; bRange = customRange; }
 				else { SCANterrainConfig tc = SCANUtil.getTerrainConfig(data); bMin = tc.MinTerrain; bRange = tc.MaxTerrain - tc.MinTerrain; }
-				if (bRange <= 0f) bRange = 1f;
+				if (bRange <= 0f) { bRange = 1f; }
 				compositeMaterial.SetFloat("_TerrainMin", bMin);
 				compositeMaterial.SetFloat("_TerrainRange", bRange);
 			}
@@ -1571,7 +1588,9 @@ namespace SCANsat.SCAN_Map
 				// return. The key itself is not free - under BiomeLock it walks the body's biomes - so it
 				// is taken once a pass and handed to both.
 				if (resourceConfigKey == 0)
+				{
 					resourceConfigKey = resourceConfigHash();
+				}
 
 				buildResourceCache(resourceConfigKey);
 				uploadResourceTexture();
@@ -1741,8 +1760,8 @@ namespace SCANsat.SCAN_Map
 		// points under a non-rectangular projection, where a bilinear blend of two labels is a third biome.
 		private void ensureDataTex(ref Texture2D tex, bool point = false)
 		{
-			if (tex != null && tex.width == mapwidth && tex.height == mapheight) return;
-			if (tex != null) UnityEngine.Object.Destroy(tex);
+			if (tex != null && tex.width == mapwidth && tex.height == mapheight) { return; }
+			if (tex != null) { UnityEngine.Object.Destroy(tex); }
 			tex = new Texture2D(mapwidth, mapheight, TextureFormat.RFloat, false);
 			tex.wrapMode = TextureWrapMode.Clamp;
 			tex.filterMode = point ? FilterMode.Point : FilterMode.Bilinear;
@@ -1751,7 +1770,9 @@ namespace SCANsat.SCAN_Map
 			// SCANsat.Unity rather than to UnityEngine's Unity.Collections.
 			global::Unity.Collections.NativeArray<float> raw = tex.GetRawTextureData<float>();
 			for (int i = 0; i < raw.Length; i++)
+			{
 				raw[i] = 0f;
+			}
 			tex.Apply(false);
 		}
 
@@ -1759,11 +1780,15 @@ namespace SCANsat.SCAN_Map
 		// here: Apply re-uploads the whole texture, so the caller does it once per frame.
 		private void stageDataRow(Texture2D tex, float[,] src, int row)
 		{
-			if (tex == null || src == null || row < 0 || row >= mapheight) return;
+			if (tex == null || src == null || row < 0 || row >= mapheight) { return; }
 			if (gpuRowBuf == null || gpuRowBuf.Length != mapwidth)
+			{
 				gpuRowBuf = new Color[mapwidth];
+			}
 			for (int x = 0; x < mapwidth; x++)
+			{
 				gpuRowBuf[x] = new Color(src[x, row], 0f, 0f, 0f);
+			}
 			tex.SetPixels(0, row, mapwidth, 1, gpuRowBuf);
 		}
 
@@ -1784,7 +1809,9 @@ namespace SCANsat.SCAN_Map
 				// (setCustomRange) may have overwritten the range since; interpolation never rewrites the
 				// sampled cells that fit reads, so a reused grid fits to exactly what a fresh one would.
 				if (profile.AutoRange)
+				{
 					applyAutoResourceRange();
+				}
 
 				return;
 			}
@@ -1806,7 +1833,9 @@ namespace SCANsat.SCAN_Map
 
 			SCANuiUtil.generateResourceCache(ref resourceCache, resourceMapHeight, resourceMapWidth, resourceInterpolation, resourceMapScale, this, !profile.GeographicCache);
 			if (profile.AutoRange)
+			{
 				applyAutoResourceRange();   // from the sampled cells, before interpolation fills the gaps
+			}
 			System.Random rr = new System.Random(ResourceScenario.Instance.gameSettings.Seed);
 			for (int i = resourceInterpolation / 2; i >= 1; i /= 2)
 			{
@@ -1821,10 +1850,10 @@ namespace SCANsat.SCAN_Map
 		// Upload resourceCache (geographic resW x resH) as an R-float abundance texture (fraction 0..1).
 		private void uploadResourceTexture()
 		{
-			if (resourceCache == null) return;
+			if (resourceCache == null) { return; }
 			if (resourceTex == null || resourceTex.width != resourceMapWidth || resourceTex.height != resourceMapHeight)
 			{
-				if (resourceTex != null) UnityEngine.Object.Destroy(resourceTex);
+				if (resourceTex != null) { UnityEngine.Object.Destroy(resourceTex); }
 				resourceTex = new Texture2D(resourceMapWidth, resourceMapHeight, TextureFormat.RFloat, false);
 				resourceTex.wrapMode = TextureWrapMode.Clamp;
 				resourceTexKey.Invalidate();
@@ -1844,7 +1873,9 @@ namespace SCANsat.SCAN_Map
 			{
 				int row = y * resourceMapWidth;
 				for (int x = 0; x < resourceMapWidth; x++)
+				{
 					raw[row + x] = resourceCache[x, y] / 100f;
+				}
 			}
 			resourceTex.Apply(false);
 			// Keyed by the grid, not by the pass: a grid that failed to finish sampling holds key 0, and
@@ -1857,19 +1888,22 @@ namespace SCANsat.SCAN_Map
 		// 1-D LUT of the body's stock biome mapColors, indexed by the biome fraction. Cached per body.
 		private void buildBiomeLUT()
 		{
-			if (body.BiomeMap == null) return;
+			if (body.BiomeMap == null) { return; }
 			int n = body.BiomeMap.Attributes.Length;
 			// The body index rather than the body itself: these maps are static and outlive a scene, so
 			// holding the CelestialBody here kept the last browsed body's object alive for the session.
 			int key = seal(mix(mix(0, body.flightGlobalsIndex), n));
-			if (biomeLUT != null && biomeLUTKey.Valid(key)) return;
-			if (biomeLUT != null) UnityEngine.Object.Destroy(biomeLUT);
+			if (biomeLUT != null && biomeLUTKey.Valid(key)) { return; }
+			if (biomeLUT != null) { UnityEngine.Object.Destroy(biomeLUT); }
 			int w = Mathf.Max(n, 1);
 			biomeLUT = new Texture2D(w, 1, TextureFormat.RGBA32, false);
 			biomeLUT.filterMode = FilterMode.Point;
 			biomeLUT.wrapMode = TextureWrapMode.Clamp;
 			Color[] c = new Color[w];
-			for (int i = 0; i < n; i++) c[i] = SCANUtil.getBiomeDisplayColor(body, i);   // one colour source for map, legend and tooltips (grayscale-encoded biome maps get a generated palette)
+			for (int i = 0; i < n; i++)
+			{
+				c[i] = SCANUtil.getBiomeDisplayColor(body, i);   // one colour source for map, legend and tooltips (grayscale-encoded biome maps get a generated palette)
+			}
 			biomeLUT.SetPixels(c);
 			biomeLUT.Apply(false);
 			biomeLUTCount = n;
@@ -1888,7 +1922,9 @@ namespace SCANsat.SCAN_Map
 			key = mix(key, range.GetHashCode());
 			key = seal(mix(key, useCustomRange ? 1 : 0));
 			if (paletteLUT != null && paletteLUTKey.Valid(key))
+			{
 				return;
+			}
 			if (paletteLUT == null)
 			{
 				paletteLUT = new Texture2D(1024, 1, TextureFormat.RGBA32, false);
@@ -1933,10 +1969,14 @@ namespace SCANsat.SCAN_Map
 			// within the per-row sweep - so rebuild + GPU-upload once per pass instead of on every
 			// composite. The CPU buffer is a reused member, so the sweep allocates nothing.
 			if (!created && !coverageFlagsDirty)
+			{
 				return;
+			}
 
 			if (coverageFlagsBuf == null)
+			{
 				coverageFlagsBuf = new Color32[360 * 180];
+			}
 
 			Int16[,] cov = data.Coverage;
 
@@ -2005,7 +2045,9 @@ namespace SCANsat.SCAN_Map
 		private void clearBiomeRowCache()
 		{
 			if (biomeRowCached != null)
-				System.Array.Clear(biomeRowCached, 0, biomeRowCached.Length);
+			{
+				Array.Clear(biomeRowCached, 0, biomeRowCached.Length);
+			}
 		}
 
 		// A window map's elevation and biome caches (no GeographicCache) are in pixel space, valid for
@@ -2013,7 +2055,9 @@ namespace SCANsat.SCAN_Map
 		private void clearWindowCaches()
 		{
 			if (big_heightmap != null)
-				System.Array.Clear(big_heightmap, 0, big_heightmap.Length);
+			{
+				Array.Clear(big_heightmap, 0, big_heightmap.Length);
+			}
 			clearBiomeRowCache();
 			dataTexKey.Invalidate();
 		}
@@ -2061,8 +2105,8 @@ namespace SCANsat.SCAN_Map
 						v = 0f;   // the cache's stand-in for a true 0 m
 					}
 
-					if (v < rangeMin) rangeMin = v;
-					if (v > rangeMax) rangeMax = v;
+					if (v < rangeMin) { rangeMin = v; }
+					if (v > rangeMax) { rangeMax = v; }
 					rangeSamples++;
 				}
 			}
@@ -2109,8 +2153,8 @@ namespace SCANsat.SCAN_Map
 				for (int i = 0; i < resourceMapWidth; i += step)
 				{
 					float v = resourceCache[i, j];
-					if (v < min) min = v;
-					if (v > max) max = v;
+					if (v < min) { min = v; }
+					if (v > max) { max = v; }
 					any = true;
 				}
 			}
@@ -2121,11 +2165,11 @@ namespace SCANsat.SCAN_Map
 				max = 100f;
 			}
 
-			if (min < resource.CurrentBody.MinValue) min = resource.CurrentBody.MinValue;
-			if (min >= max) max = min + 1f;
-			if (min < 0f) min = 0f;
-			if (max > resource.CurrentBody.MaxValue) max = resource.CurrentBody.MaxValue;
-			if (min >= max) min = max - 1f;
+			if (min < resource.CurrentBody.MinValue) { min = resource.CurrentBody.MinValue; }
+			if (min >= max) { max = min + 1f; }
+			if (min < 0f) { min = 0f; }
+			if (max > resource.CurrentBody.MaxValue) { max = resource.CurrentBody.MaxValue; }
+			if (min >= max) { min = max - 1f; }
 
 			useCustomRange = true;
 			customResourceMin = min;
@@ -2213,7 +2257,9 @@ namespace SCANsat.SCAN_Map
 		private bool gpuNoData()
 		{
 			if (mType == mapType.Biome)
+			{
 				return !biomeMap;
+			}
 			return (mType == mapType.Altimetry || mType == mapType.Slope) && !pqs;
 		}
 
@@ -2300,9 +2346,13 @@ namespace SCANsat.SCAN_Map
 						// neighbours into dark fringes along every coverage edge. PQS is sampled for covered
 						// pixels only, as ever.
 						if (heightGridPass)
+						{
 							gridHeightToArray(i, row);   // one pixel per degree: the body's prebuilt height map, no PQS
+						}
 						else if (SCANUtil.isCovered(sampleLon, sampleLat, data, SCANtype.Altimetry))
+						{
 							terrainHeightToArray(sampleLon, sampleLat, i, row);
+						}
 					}
 				}
 
@@ -2347,10 +2397,14 @@ namespace SCANsat.SCAN_Map
 			bool elevDirty = false, biomeDirty = false;
 
 			if (biomeRowCached == null || biomeRowCached.Length != mapheight)
+			{
 				biomeRowCached = new bool[mapheight];
+			}
 
 			if (passBuildStart < 0f)
+			{
 				passBuildStart = Time.realtimeSinceStartup;
+			}
 			passBuildFrames++;
 
 			// Auto range (zoom map, RPM): before any row is built or revealed, sample every 4th pixel of
@@ -2370,7 +2424,9 @@ namespace SCANsat.SCAN_Map
 					}
 
 					if (System.Diagnostics.Stopwatch.GetTimestamp() - start >= budget)
+					{
 						break;
+					}
 				}
 
 				if (rangeRow < mapheight)
@@ -2392,7 +2448,9 @@ namespace SCANsat.SCAN_Map
 					if (!biomeRowCached[mapstep])
 					{
 						for (int bi = 0; bi < mapwidth; bi++)
+						{
 							biome_indexmap[bi, mapstep] = (float)biomeIndex[bi];
+						}
 						biomeRowCached[mapstep] = true;
 					}
 					ensureDataTex(ref biomeIndexTex, true);
@@ -2412,13 +2470,17 @@ namespace SCANsat.SCAN_Map
 
 				mapstep++;
 				if (mapstep >= mapheight)
+				{
 					break;
+				}
 				if (System.Diagnostics.Stopwatch.GetTimestamp() - start >= budget)
+				{
 					break;
+				}
 			}
 
-			if (elevDirty) elevationTex.Apply(false);
-			if (biomeDirty) biomeIndexTex.Apply(false);
+			if (elevDirty) { elevationTex.Apply(false); }
+			if (biomeDirty) { biomeIndexTex.Apply(false); }
 
 			reportBuildBudgetUsed(System.Diagnostics.Stopwatch.GetTimestamp() - start);
 

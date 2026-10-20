@@ -618,21 +618,31 @@ namespace SCANsat
 			GetVisualMapTexturesForBody(b, out material, out string gasRampTextureName, out string colorMapTextureName, out string normalMapTextureName);
 
 			if (material == null)
+			{
 				return false;
+			}
 
 			if (colorMapTextureName != null)
+			{
 				colorTex = material.GetTexture(colorMapTextureName);
+			}
 
 			if (normalMapTextureName != null)
+			{
 				normalTex = material.GetTexture(normalMapTextureName);
+			}
 
 			// Non-null only for a gas giant, whose "colour map" is a cloud pattern (see
 			// GetVisualMapTexturesForBody): the gradient the composite looks that pattern up in.
 			if (gasRampTextureName != null)
+			{
 				gasRamp = material.GetTexture(gasRampTextureName);
+			}
 
 			if (colorTex == null || colorTex.width <= 1 || colorTex.height <= 1)
+			{
 				return false;
+			}
 
 			return true;
 		}
@@ -2034,7 +2044,9 @@ namespace SCANsat
 			{
 				case GameScenes.TRACKSTATION:
 					if (PlanetariumCamera.fetch == null || PlanetariumCamera.fetch.target == null)
+					{
 						break;
+					}
 					MapObject mo = PlanetariumCamera.fetch.target;
 
 					CelestialBody tgt = null;
@@ -2070,8 +2082,10 @@ namespace SCANsat
 
 					break;
 				case GameScenes.FLIGHT:
-					if (FlightGlobals.currentMainBody == null)   // null mid scene-teardown (called via OnDestroy)
+					if (FlightGlobals.currentMainBody == null)
+					{   // null mid scene-teardown (called via OnDestroy)
 						break;
+					}
 					if (b == FlightGlobals.currentMainBody)
 					{
 						return true;

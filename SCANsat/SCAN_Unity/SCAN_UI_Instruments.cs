@@ -498,7 +498,7 @@ namespace SCANsat.SCAN_Unity
 		{
 			double h = v.altitude;
 			double pqs = 0;
-			if (v.mainBody.pqsController != null)
+			if (SCANUtil.isValidPQSTerrain(v.mainBody))
 			{
 				pqs = v.PQSAltitude();
 				if (pqs > 0 || !v.mainBody.ocean)
@@ -561,7 +561,7 @@ namespace SCANsat.SCAN_Unity
 			if (drawSlope)
 			{
 				//Calculate slope less frequently; the rapidly changing value makes it difficult to read otherwise
-				if (v.mainBody.pqsController != null)
+				if (SCANUtil.isValidPQSTerrain(v.mainBody))
 				{
 					float deltaTime = 1f;
 					if (Time.deltaTime != 0)
@@ -601,7 +601,7 @@ namespace SCANsat.SCAN_Unity
 
 		private void resourceInfo()
 		{
-			if (v.mainBody.pqsController == null)
+			if (!SCANUtil.isValidPQSTerrain(v.mainBody))
 			{
 				return;
 			}

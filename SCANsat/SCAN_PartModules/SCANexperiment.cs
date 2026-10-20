@@ -189,7 +189,7 @@ namespace SCANsat.SCAN_PartModules
 			switch (expType)
 			{
 				case SCANexperimentType.SCANsatAltimetryLoRes:
-					if (vessel.mainBody.pqsController == null)
+					if (!SCANUtil.isValidPQSTerrain(vessel.mainBody))
 					{
 						multiplier = 0.5f;
 					}
@@ -199,7 +199,7 @@ namespace SCANsat.SCAN_PartModules
 					coverage = GetScienceCoverage(expType.ToString(), ref se, ref su, coverage, multiplier);
 					break;
 				case SCANexperimentType.SCANsatAltimetryHiRes:
-					if (vessel.mainBody.pqsController == null)
+					if (!SCANUtil.isValidPQSTerrain(vessel.mainBody))
 					{
 						multiplier = 0.5f;
 					}
@@ -209,7 +209,7 @@ namespace SCANsat.SCAN_PartModules
 					coverage = GetScienceCoverage(expType.ToString(), ref se, ref su, coverage, multiplier);
 					break;
 				case SCANexperimentType.SCANsatBiomeAnomaly:
-					if (vessel.mainBody.BiomeMap == null)
+					if (!SCANUtil.isValidPQSTerrain(vessel.mainBody))
 					{
 						multiplier = 0.5f;
 					}

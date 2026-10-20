@@ -1581,7 +1581,7 @@ namespace SCANsat.SCAN_Unity
 				switch (bigmap.MType)
 				{
 					case mapType.Altimetry:
-						return body.pqsController != null;
+						return SCANUtil.isValidPQSTerrain(body);
 					case mapType.Biome:
 						return body.BiomeMap != null && SCAN_Settings_Config.Instance.LegendTooltips;
 				}

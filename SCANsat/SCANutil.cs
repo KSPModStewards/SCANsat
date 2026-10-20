@@ -298,6 +298,25 @@ namespace SCANsat
 		}
 
 		/// <summary>
+		/// Check whether a given Celestial Body supports altimetry through its PQS and return true if it doesn't.
+		/// </summary>
+		/// <param name="body">Celestial Body object</param>
+		/// <returns>True if the PQS controller is valid; false otherwise</returns>
+		public static bool isValidPQSTerrain(CelestialBody body)
+		{
+			if (body.pqsController != null)
+			{
+				if (body.pqsController.radiusMin == body.pqsController.radiusMax)
+				{
+					SCANlog($"[WARNING] [{body.name}] PQS controller is perfectly flat; assume this is erroneous and treat as missing data.");
+					return false;
+				}
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
 		/// Generate the default SCANterrainConfig for the provided body and set / update its entry in the masterTerrainNodes.
 		/// </summary>
 		/// <param name="body">CelestialBody instance to generate the SCANterrainConfig for</param>
@@ -390,11 +409,10 @@ namespace SCANsat
 					SCANlog($"[{b.name}] terrain range unavailable ({e.Message}); removing terrain reference.");
 					newMin = SCANconfigLoader.SCANNode.DefaultMinHeightRange;
 					newMax = SCANconfigLoader.SCANNode.DefaultMaxHeightRange;
-					b.pqsController = null;  // Remove the reference so SCANsat doesn't use altimetry (gas giant flat / invalid)
 				}
 			}
 
-			SCANlog("[{0}] terrain config generated: {1:F0} m to {2:F0} m{3}", b.name, newMin, newMax, b.pqsController == null ? " (no PQS controller: defaults)" : "");
+			SCANlog("[{0}] terrain config generated: {1:F0} m to {2:F0} m{3}", b.name, newMin, newMax, isValidPQSTerrain(b) ? "" : " (no PQS controller: defaults)");
 
 			float? clamp = null;
 			if (b.ocean)
@@ -920,7 +938,7 @@ namespace SCANsat
 
 		internal static double getElevation(CelestialBody body, double lon, double lat)
 		{
-			if (body.pqsController == null)
+			if (!isValidPQSTerrain(body))
 			{
 				return 0;
 			}
@@ -933,7 +951,7 @@ namespace SCANsat
 
 		internal static double getElevation(CelestialBody body, int lon, int lat)
 		{
-			if (body.pqsController == null)
+			if (!isValidPQSTerrain(body))
 			{
 				return 0;
 			}
@@ -946,7 +964,7 @@ namespace SCANsat
 
 		internal static double getElevation(this CelestialBody body, Vector3d worldPosition)
 		{
-			if (body.pqsController == null)
+			if (!isValidPQSTerrain(body))
 			{
 				return 0;
 			}
@@ -985,9 +1003,9 @@ namespace SCANsat
 		{
 			foreach (var a in attrs)
 			{
-				if (a == null) continue;
-				if (Mathf.Abs(a.mapColor.g - 1f) > 0.01f) return false;
-				if (Mathf.Abs(a.mapColor.b - 1f) > 0.01f) return false;
+				if (a == null) { continue; }
+				if (Mathf.Abs(a.mapColor.g - 1f) > 0.01f) { return false; }
+				if (Mathf.Abs(a.mapColor.b - 1f) > 0.01f) { return false; }
 			}
 			return true;
 		}
@@ -1079,7 +1097,9 @@ namespace SCANsat
 
 			var palette = GetOrBuildPalette(body);
 			if (palette != null && i < palette.Length && palette[i] != null)
+			{
 				return palette[i];
+			}
 
 			return body.BiomeMap.Attributes[i];
 		}
@@ -1129,14 +1149,14 @@ namespace SCANsat
 		}
 		internal static Color getBiomeDisplayColor(CelestialBody body, int idx)
 		{
-			if (body == null || body.BiomeMap == null)
-				return Color.gray;
-			if (idx < 0 || idx >= body.BiomeMap.Attributes.Length)
-				return Color.gray;
+			if (body == null || body.BiomeMap == null) { return Color.gray; }
+			if (idx < 0 || idx >= body.BiomeMap.Attributes.Length) { return Color.gray; }
 
 			var palette = GetOrBuildPalette(body);
 			if (palette != null && palette[idx] != null)
+			{
 				return palette[idx].mapColor;
+			}
 
 			return body.BiomeMap.Attributes[idx].mapColor;
 		}
@@ -1488,7 +1508,7 @@ namespace SCANsat
 			mouseRay.origin = ScaledSpace.ScaledToLocalSpace(mouseRay.origin);
 			Vector3d relOrigin = mouseRay.origin - body.position;
 			Vector3d relSurfacePosition;
-			double curRadius = body.pqsController == null ? body.Radius : body.pqsController.radiusMax;
+			double curRadius = isValidPQSTerrain(body) ? body.pqsController.radiusMax : body.Radius;
 			double lastRadius = 0;
 			double error = 0;
 			int loops = 0;
@@ -1498,18 +1518,22 @@ namespace SCANsat
 				if (PQS.LineSphereIntersection(relOrigin, mouseRay.direction, curRadius, out relSurfacePosition))
 				{
 					Vector3d surfacePoint = body.position + relSurfacePosition;
-					double alt = body.pqsController == null ? 0 : body.pqsController.GetSurfaceHeight(QuaternionD.AngleAxis(body.GetLongitude(surfacePoint), Vector3d.down) * QuaternionD.AngleAxis(body.GetLatitude(surfacePoint), Vector3d.forward) * Vector3d.right);
-					error = Math.Abs(curRadius - alt);
-					if (body.pqsController == null || error < (body.pqsController.radiusMax - body.pqsController.radiusMin) / 100)
+					bool use_pqs = false;
+					if (isValidPQSTerrain(body))
+					{
+						double alt = body.pqsController.GetSurfaceHeight(QuaternionD.AngleAxis(body.GetLongitude(surfacePoint), Vector3d.down) * QuaternionD.AngleAxis(body.GetLatitude(surfacePoint), Vector3d.forward) * Vector3d.right);
+						error = Math.Abs(curRadius - alt);
+						if ((body.pqsController.radiusMax - body.pqsController.radiusMin) / 100 <= error)
+						{
+							use_pqs = true;
+							lastRadius = curRadius;
+							curRadius = alt;
+							loops++;
+						}
+					}
+					if (!use_pqs)
 					{
 						return new SCANCoordinates(fixLonShift((body.GetLongitude(surfacePoint))), fixLatShift(body.GetLatitude(surfacePoint)));
-					}
-					else
-					{
-
-						lastRadius = curRadius;
-						curRadius = alt;
-						loops++;
 					}
 				}
 				else
