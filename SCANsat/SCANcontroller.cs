@@ -25,6 +25,7 @@ using SCANsat.SCAN_UI.UI_Framework;
 using SCANsat.SCAN_Unity;
 using SCANsat.Unity.Interfaces;
 using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -178,7 +179,7 @@ namespace SCANsat
 			if (bodyName == body.name)
 			{
 				// Allow cfg definitions for custom planet packs: all paths relative to GameData.
-				string gameDataFolder = System.IO.Directory.GetParent(KSPUtil.ApplicationRootPath).FullName + "/GameData/";
+				string gameDataFolder = Directory.GetParent(KSPUtil.ApplicationRootPath).FullName + "/GameData/";
 
 				heightMapPath = resolve(gameDataFolder, node.GetValue("heightMap"));
 				normalMapPath = resolve(gameDataFolder, node.GetValue("normalMap"));
@@ -193,7 +194,13 @@ namespace SCANsat
 				return null;
 			}
 
-			return (baseFolder + cfgPath).Replace("\\", "/");
+			string path = (baseFolder + cfgPath).Replace("\\", "/");
+			if (File.Exists(path))
+			{
+				return path;
+			}
+			SCANUtil.SCANlog($"[WARNING] SCANSAT_BODY_TEXTURES path \"GameData/{cfgPath}\" does not exist.");
+			return null;
 		}
 
 		/// <summary>
