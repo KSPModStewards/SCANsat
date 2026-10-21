@@ -24,7 +24,7 @@
 	<ModReference Include="KSPTextureLoader">
 	  <DLLPath>GameData/KSPTextureLoader/Plugins/KSPTextureLoader.dll</DLLPath>
 	  <CKANIdentifier>KSPTextureLoader</CKANIdentifier>
-      <KSPAssemblyVersion>1.0.34</KSPAssemblyVersion>
+      <KSPAssemblyVersion>1.0.36</KSPAssemblyVersion>
 	</ModReference>
   </ItemGroup>
   <ItemGroup>
