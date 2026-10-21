@@ -1,0 +1,36 @@
+{
+    "editor.formatOnSave": true,
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 88,
+        "editor.rulers": [
+            88
+        ],
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "notebook.formatOnSave.enabled": true,
+    "notebook.defaultFormatter": "charliermarsh.ruff",
+    "notebook.codeActionsOnSave": {
+        "notebook.source.organizeImports": "explicit"
+    },
+    "notebook.output.wordWrap": true,
+    "notebook.output.textLineLimit": 88,
+    "jupyter.debugJustMyCode": false,
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "files.exclude": {
+        "**/*.egg-info": true,
+        "**/htmlcov": true,
+        "**/~$*": true,
+        "**/.coverage.*": true,
+        "**./venv": true,
+        "**/__pycache__": true,
+        "**/.mypy_cache": true,
+        "**/.pytest_cache": true
+    }
+}
